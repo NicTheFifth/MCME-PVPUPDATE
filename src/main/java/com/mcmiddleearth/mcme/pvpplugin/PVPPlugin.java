@@ -1,12 +1,12 @@
-package com.mcmiddleearth.mcme.baseplugin;
+package com.mcmiddleearth.mcme.pvpplugin;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class BasePlugin extends JavaPlugin{
+public class PVPPlugin extends JavaPlugin{
 
-    private static BasePlugin plugin;
+    private static PVPPlugin plugin;
 
     @Override
     public void onEnable(){
