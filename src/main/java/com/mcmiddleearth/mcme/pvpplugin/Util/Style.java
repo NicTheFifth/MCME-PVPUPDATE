@@ -1,4 +1,4 @@
-package com.mcmiddleearth.mcme.pvpplugin.util;
+package com.mcmiddleearth.mcme.pvpplugin.Util;
 
 import net.md_5.bungee.api.ChatColor;
 

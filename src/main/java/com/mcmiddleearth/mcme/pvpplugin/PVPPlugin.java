@@ -1,17 +1,16 @@
 package com.mcmiddleearth.mcme.pvpplugin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommand;
-import com.mcmiddleearth.mcme.pvpplugin.util.Style;
+import com.mcmiddleearth.mcme.pvpplugin.Util.Style;
+import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mojang.brigadier.CommandDispatcher;
+import jdk.nashorn.internal.objects.annotations.Setter;
 import lombok.Getter;
-import com.mojang.brigadier.CommandDispatcher;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -29,6 +28,10 @@ public class PVPPlugin extends JavaPlugin{
     private CommandDispatcher<Player> commandDispatcher;
     @Getter
     private static Location Spawn;
+
+    //Hashmap of <abbreviation map, map>
+    @Getter
+    private HashMap<String, Map> maps = new HashMap<>();
 
 
     @Override

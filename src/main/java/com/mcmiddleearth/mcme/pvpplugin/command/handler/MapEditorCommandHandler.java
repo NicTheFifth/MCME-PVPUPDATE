@@ -1,6 +1,6 @@
 package com.mcmiddleearth.mcme.pvpplugin.command.handler;
 
-import com.mcmiddleearth.mcme.pvpplugin.util.Permission;
+import com.mcmiddleearth.mcme.pvpplugin.Util.Permission;
 import com.mcmiddleearth.mcme.pvpplugin.command.builder.HelpfulLiteralBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import net.md_5.bungee.api.CommandSender;
