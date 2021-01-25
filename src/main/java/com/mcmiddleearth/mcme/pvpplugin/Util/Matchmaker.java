@@ -1,4 +1,4 @@
-package com.mcmiddleearth.mcme.pvpplugin.handlers;
+package com.mcmiddleearth.mcme.pvpplugin.Util;
 
 public class Matchmaker {
     //matchmaker could go in here

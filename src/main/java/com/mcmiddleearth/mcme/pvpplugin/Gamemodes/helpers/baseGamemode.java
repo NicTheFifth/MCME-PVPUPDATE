@@ -1,13 +1,13 @@
-package com.mcmiddleearth.mcme.pvpplugin.gamemodes.helpers;
+package com.mcmiddleearth.mcme.pvpplugin.Gamemodes.helpers;
 
-import com.mcmiddleearth.mcme.pvpplugin.gamemodes.gamemode;
-import com.mcmiddleearth.mcme.pvpplugin.maps.Map;
+import com.mcmiddleearth.mcme.pvpplugin.Gamemodes.Gamemode;
+import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public class baseGamemode implements gamemode {
+public class baseGamemode implements Gamemode {
 
     public enum gameState { IDLE, COUNTDOWN, RUNNING}
     @Getter

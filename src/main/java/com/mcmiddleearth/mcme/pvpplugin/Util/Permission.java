@@ -1,4 +1,4 @@
-package com.mcmiddleearth.mcme.pvpplugin.util;
+package com.mcmiddleearth.mcme.pvpplugin.Util;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class Permission {

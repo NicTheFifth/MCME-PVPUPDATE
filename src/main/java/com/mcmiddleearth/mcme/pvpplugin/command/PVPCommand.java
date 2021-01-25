@@ -4,7 +4,7 @@ import com.google.common.base.Joiner;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.command.handler.AbstractCommandHandler;
 import com.mcmiddleearth.mcme.pvpplugin.command.node.HelpfulNode;
-import com.mcmiddleearth.mcme.pvpplugin.util.Style;
+import com.mcmiddleearth.mcme.pvpplugin.Util.Style;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.ParsedCommandNode;
