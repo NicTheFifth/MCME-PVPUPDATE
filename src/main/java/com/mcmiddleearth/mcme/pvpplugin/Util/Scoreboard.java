@@ -1,4 +1,4 @@
-package com.mcmiddleearth.mcme.pvpplugin.handlers;
+package com.mcmiddleearth.mcme.pvpplugin.Util;
 
 public class Scoreboard {
     //scoreboard after the end of the game

@@ -1,12 +1,12 @@
-package com.mcmiddleearth.mcme.pvpplugin.gamemodes;
+package com.mcmiddleearth.mcme.pvpplugin.Gamemodes;
 
-import com.mcmiddleearth.mcme.pvpplugin.gamemodes.helpers.baseGamemode;
-import com.mcmiddleearth.mcme.pvpplugin.maps.Map;
+import com.mcmiddleearth.mcme.pvpplugin.Gamemodes.helpers.baseGamemode;
+import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public interface gamemode {
+public interface Gamemode {
 
     void Start(Map m, int parameter);
 
