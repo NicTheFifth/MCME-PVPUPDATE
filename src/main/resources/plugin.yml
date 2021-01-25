@@ -4,3 +4,52 @@ version: ${project.version}
 authors: [NicoviçTheSixth]
 depend: [WorldEdit]
 api-version: 1.16
+
+commands:
+  MapEditor:
+    description: edit/create new pvp maps
+    usage: /mapeditor <arguments>
+  Locker:
+    description: lock/unlock pvp server and/or kick people
+    usage: /locker <arguments>
+  PVP:
+    description: main command used for running pvp
+    usage: /pvp <arguments>
+  T:
+    description: team chat command
+    usage: /t <message>
+
+  permissions:
+    pvp.join:
+      description: Can join even when server is locked.
+      default: op
+    pvp.gameKick:
+      description: Can kick players from pvp server.
+      default: op
+    pvp.gameCanRun:
+      description: Can run games on pvp server.
+      default: op
+    pvp.mapEditor:
+      description: Can create/edit maps on pvp server.
+      default: op
+    pvp.adminPermission:
+      description: Can do everything with the pvp plugin.
+      default: op
+    pvp.builder:
+      children:
+        pvp.join: true
+    pvp.moderator:
+      children:
+        pvp.gameKick: true
+    pvp.manager:
+      children:
+        pvp.gameCanRun: true
+        pvp.join: true
+        pvp.moderator: true
+    pvp.admin:
+      children:
+        pvp.builder: true
+        pvp.mapEditor: true
+        pvp.manager: true
+        pvp.moderator: true
+        pvp.adminPermission: true
