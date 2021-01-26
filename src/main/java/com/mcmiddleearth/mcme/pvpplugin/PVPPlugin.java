@@ -10,6 +10,7 @@ import com.mcmiddleearth.mcme.pvpplugin.Util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mojang.brigadier.CommandDispatcher;
 import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
@@ -19,8 +20,10 @@ import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class PVPPlugin extends JavaPlugin{
+    @Getter @Setter
     private static boolean debug = true;
     @Getter
     private static PVPPlugin plugin;
@@ -47,7 +50,7 @@ public class PVPPlugin extends JavaPlugin{
     private File mapDirectory;
     @Getter
     private File statDirectory;
-
+    private WorldEditPlugin worldEdit;
     @Override
     public void onEnable(){
         //TODO: Add setup of plugin
@@ -87,6 +90,7 @@ public class PVPPlugin extends JavaPlugin{
         if (!statDirectory.exists()){
             statDirectory.mkdir();
         }
+        worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         PluginManager pm = this.serverInstance.getPluginManager();
         pm.registerEvents(new com.mcmiddleearth.mcme.pvpplugin.Handlers.ArrowHandler(), this);
         Logger.getLogger("PVPPlugin").log(Level.INFO,"PVPPlugin loaded correctly");
