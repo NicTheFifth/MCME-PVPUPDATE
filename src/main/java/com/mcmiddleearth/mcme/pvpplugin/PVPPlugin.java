@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+import com.mcmiddleearth.mcme.pvpplugin.Handlers.*;
 import com.mcmiddleearth.mcme.pvpplugin.Util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mojang.brigadier.CommandDispatcher;
@@ -18,6 +20,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -51,6 +54,9 @@ public class PVPPlugin extends JavaPlugin{
     @Getter
     private File statDirectory;
     private WorldEditPlugin worldEdit;
+    @Getter
+    private HashMap<Class<?>, EventRebroadcaster> listenerMap;
+
     @Override
     public void onEnable(){
         //TODO: Add setup of plugin
@@ -93,11 +99,22 @@ public class PVPPlugin extends JavaPlugin{
         worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         PluginManager pm = this.serverInstance.getPluginManager();
         pm.registerEvents(new com.mcmiddleearth.mcme.pvpplugin.Handlers.ArrowHandler(), this);
+        listenerMap.put(PlayerPickupArrowEvent.class, new OnArrowListener());
+
+        listenerMap.values().forEach(listener -> pm.registerEvents(listener, this));
         Logger.getLogger("PVPPlugin").log(Level.INFO,"PVPPlugin loaded correctly");
     }
     @Override
     public void onDisable(){
 
+    }
+
+    public <T> void addEventListener(Class<T> eventType, EventListener<T> listener) {
+        listenerMap.get(eventType).addListener(listener);
+    }
+
+    public <T> void removeEventListener(Class<T> eventType, EventListener<T> listener) {
+        listenerMap.get(eventType).removeListener(listener);
     }
 
     public static void sendInfo(CommandSender recipient, ComponentBuilder message) {

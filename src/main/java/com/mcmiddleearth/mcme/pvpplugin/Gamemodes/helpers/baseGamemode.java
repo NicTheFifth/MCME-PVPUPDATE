@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class baseGamemode implements Gamemode {
 
     public enum gameState { IDLE, COUNTDOWN, RUNNING}
+
     @Getter
     ArrayList<Player> players = new ArrayList<>();
 
