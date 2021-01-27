@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import com.mcmiddleearth.mcme.pvpplugin.Util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mojang.brigadier.CommandDispatcher;
-import jdk.nashorn.internal.objects.annotations.Setter;
 import lombok.Getter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -31,7 +30,8 @@ public class PVPPlugin extends JavaPlugin{
 
     //Hashmap of <abbreviation map, map>
     @Getter
-    private HashMap<String, Map> maps = new HashMap<>();
+    private static HashMap<String, Map> maps = new HashMap<>();
+    //if static causes a problem remove it
 
 
     @Override
