@@ -20,6 +20,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -98,12 +99,14 @@ public class PVPPlugin extends JavaPlugin{
         }
         worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         PluginManager pm = this.serverInstance.getPluginManager();
-        pm.registerEvents(new com.mcmiddleearth.mcme.pvpplugin.Handlers.ArrowHandler(), this);
-        listenerMap.put(PlayerPickupArrowEvent.class, new OnArrowListener());
+
+        listenerMap.put(PlayerPickupArrowEvent.class, new OnArrowPickupListener());
+        listenerMap.put(EntityShootBowEvent.class, new OnArrowShootListener());
 
         listenerMap.values().forEach(listener -> pm.registerEvents(listener, this));
         Logger.getLogger("PVPPlugin").log(Level.INFO,"PVPPlugin loaded correctly");
     }
+
     @Override
     public void onDisable(){
 
