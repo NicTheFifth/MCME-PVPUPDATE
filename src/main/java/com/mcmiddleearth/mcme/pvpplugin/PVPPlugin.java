@@ -22,6 +22,7 @@ import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -104,6 +105,7 @@ public class PVPPlugin extends JavaPlugin{
         listenerMap.put(PlayerPickupArrowEvent.class, new OnArrowPickupListener());
         listenerMap.put(EntityShootBowEvent.class, new OnArrowShootListener());
         listenerMap.put(PlayerDeathEvent.class, new OnDeathListener());
+        listenerMap.put(PlayerInteractEvent.class, new OnPlayerInteractListener());
 
         listenerMap.values().forEach(listener -> pm.registerEvents(listener, this));
         Logger.getLogger("PVPPlugin").log(Level.INFO,"PVPPlugin loaded correctly");
