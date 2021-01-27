@@ -17,10 +17,10 @@ public class OnArrowListener implements EventRebroadcaster<PlayerPickupArrowEven
         if (eventListeners.stream().anyMatch(listener -> listener.controlsPlayer(event.getPlayer()))){
             event.setCancelled(true);
         }
+    }
 //        eventListeners.stream().filter(controlsPlayer(event.player)).foreach();
 //        event.cancel();
 //        eventListener.foreach(listener -> listener.handle(event));
-    }
 
     @Override
     public void addListener(EventListener<PlayerPickupArrowEvent> eventListener) {
