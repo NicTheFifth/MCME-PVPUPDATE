@@ -15,7 +15,7 @@ public class OnPlayerBlockDamageRebroadcaster implements EventRebroadcaster<Enti
 
     @EventHandler
     public void onBlockDamage(EntityDamageByBlockEvent event){
-        if (event.getEntityType().equals(EntityType.PLAYER))
+        if (event.getEntity() instanceof Player)
             eventListeners.stream().filter(
                 listener -> listener.controlsPlayer((Player) event.getEntity())).forEach(
                 listener -> listener.handleEvent(event));

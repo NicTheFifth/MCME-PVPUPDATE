@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.plugin.PluginManager;
@@ -108,6 +109,7 @@ public class PVPPlugin extends JavaPlugin{
         listenerMap.put(PlayerDeathEvent.class, new OnDeathRebroadcaster());
         listenerMap.put(PlayerInteractEvent.class, new OnPlayerInteractRebroadcaster());
         listenerMap.put(EntityDamageByBlockEvent.class, new OnPlayerBlockDamageRebroadcaster());
+        listenerMap.put(PlayerCommandPreprocessEvent.class, new OnCommandRebroadcaster());
 
         listenerMap.values().forEach(listener -> pm.registerEvents(listener, this));
         Logger.getLogger("PVPPlugin").log(Level.INFO,"PVPPlugin loaded correctly");

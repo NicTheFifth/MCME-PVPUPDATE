@@ -23,7 +23,7 @@ public class OnArrowShootRebroadcaster implements EventRebroadcaster<EntityShoot
 
     @EventHandler
     public void onArrowShoot(EntityShootBowEvent event) {
-        if (event.getEntityType().equals(EntityType.PLAYER)){
+        if (event.getEntity() instanceof Player){
             Player player = (Player) event.getEntity();
             eventListeners.stream().filter(listener -> listener.controlsPlayer(player)).forEach(listener -> {
                 List<Entity> projectiles = trackedProjectiles.get(listener);

@@ -7,6 +7,7 @@ import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import lombok.Setter;
 import lombok.Getter;
+import net.md_5.bungee.protocol.packet.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -16,11 +17,16 @@ import java.util.HashMap;
 public class Map {
     //TODO: Make the map system
 
+    public enum gameState { IDLE, COUNTDOWN, RUNNING}
+
     @Getter @Setter
     private String mapTitle;
 
     @Getter @Setter
     private EventLocation spawn;
+
+    @Getter @Setter
+    private gameState gState;
 
     @Getter @Setter
     private String rp;

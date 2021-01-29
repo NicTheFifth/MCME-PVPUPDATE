@@ -2,7 +2,6 @@ package com.mcmiddleearth.mcme.pvpplugin.Handlers;
 
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 
 import java.util.HashSet;
