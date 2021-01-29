@@ -1,16 +1,15 @@
 package com.mcmiddleearth.mcme.pvpplugin.Gamemodes;
 
 import com.mcmiddleearth.mcme.pvpplugin.Gamemodes.helpers.baseGamemode;
+import com.mcmiddleearth.mcme.pvpplugin.Handlers.EventListener;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public interface Gamemode {
+public interface Gamemode<T> extends EventListener<T> {
 
     void Start(Map m, int parameter);
-
-    baseGamemode.gameState getState();
 
     ArrayList<String> getNeededPoints();
 

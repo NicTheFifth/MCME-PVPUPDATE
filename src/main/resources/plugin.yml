@@ -1,7 +1,7 @@
 name: ${project.artifactId}
 main: com.mcmiddleearth.mcme.pvpplugin.PVPPlugin
 version: ${project.version}
-authors: [NicoviçTheSixth]
+authors: [NicoviçTheSixth,Johnyeric]
 depend: [WorldEdit]
 api-version: 1.16
 

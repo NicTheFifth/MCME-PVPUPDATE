@@ -3,11 +3,12 @@ package com.mcmiddleearth.mcme.pvpplugin;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 import com.mcmiddleearth.mcme.pvpplugin.Handlers.*;
+import com.mcmiddleearth.mcme.pvpplugin.PVP.PlayerStat;
 import com.mcmiddleearth.mcme.pvpplugin.Util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mojang.brigadier.CommandDispatcher;
@@ -37,7 +38,7 @@ public class PVPPlugin extends JavaPlugin{
     private static PVPPlugin plugin;
     private String spawnWorld;
     @Getter
-    private final String fileSep = System.getProperty("file.separator");
+    private static final String fileSep = System.getProperty("file.separator");
     @Getter
     private final ArrayList<String> noHunger = new ArrayList<>();
     @Getter
@@ -51,16 +52,18 @@ public class PVPPlugin extends JavaPlugin{
     @Getter
     private Integer bc_min;
     @Getter
-    private File pluginDirectory;
+    private static File pluginDirectory;
     @Getter
-    private File playerDirectory;
+    private static File playerDirectory;
     @Getter
-    private File mapDirectory;
+    private static File mapDirectory;
     @Getter
-    private File statDirectory;
+    private static File statDirectory;
     private WorldEditPlugin worldEdit;
     @Getter
-    private HashMap<Class<?>, EventRebroadcaster> listenerMap;
+    private static HashMap<Class<?>, EventRebroadcaster> listenerMap;
+    @Getter
+    private static HashMap<UUID, PlayerStat> playerStats = new HashMap<>();
 
     @Override
     public void onEnable(){
@@ -120,11 +123,11 @@ public class PVPPlugin extends JavaPlugin{
 
     }
 
-    public <T> void addEventListener(Class<T> eventType, EventListener<T> listener) {
+    public static <T> void addEventListener(Class<T> eventType, EventListener<T> listener) {
         listenerMap.get(eventType).addListener(listener);
     }
 
-    public <T> void removeEventListener(Class<T> eventType, EventListener<T> listener) {
+    public static <T> void removeEventListener(Class<T> eventType, EventListener<T> listener) {
         listenerMap.get(eventType).removeListener(listener);
     }
 
