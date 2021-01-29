@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-public class OnPlayerInteractListener implements EventRebroadcaster<PlayerInteractEvent> {
+public class OnPlayerInteractRebroadcaster implements EventRebroadcaster<PlayerInteractEvent> {
 
     @Getter
     private final Set<EventListener<PlayerInteractEvent>> eventListeners = new HashSet<>();

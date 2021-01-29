@@ -11,13 +11,13 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 
 import java.util.*;
 
-public class OnArrowShootListener  implements EventRebroadcaster<EntityShootBowEvent>  {
+public class OnArrowShootRebroadcaster implements EventRebroadcaster<EntityShootBowEvent>  {
 
     @Getter
     private final Set<EventListener<EntityShootBowEvent>> eventListeners = new HashSet<>();
     private final HashMap<EventListener<EntityShootBowEvent>,List<Entity>> trackedProjectiles = new HashMap<>();
 
-    public OnArrowShootListener(){
+    public OnArrowShootRebroadcaster(){
         Bukkit.getScheduler().scheduleSyncRepeatingTask(PVPPlugin.getPlugin(), despawnArrows, 0, 5);
     }
 

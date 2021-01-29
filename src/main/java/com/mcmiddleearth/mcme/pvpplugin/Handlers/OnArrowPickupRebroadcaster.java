@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerPickupArrowEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-public class OnArrowPickupListener implements EventRebroadcaster<PlayerPickupArrowEvent>  {
+public class OnArrowPickupRebroadcaster implements EventRebroadcaster<PlayerPickupArrowEvent>  {
 
     @Getter
     private final Set<EventListener<PlayerPickupArrowEvent>> eventListeners = new HashSet<>();

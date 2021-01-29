@@ -20,6 +20,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -102,10 +103,11 @@ public class PVPPlugin extends JavaPlugin{
         worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         PluginManager pm = this.serverInstance.getPluginManager();
 
-        listenerMap.put(PlayerPickupArrowEvent.class, new OnArrowPickupListener());
-        listenerMap.put(EntityShootBowEvent.class, new OnArrowShootListener());
-        listenerMap.put(PlayerDeathEvent.class, new OnDeathListener());
-        listenerMap.put(PlayerInteractEvent.class, new OnPlayerInteractListener());
+        listenerMap.put(PlayerPickupArrowEvent.class, new OnArrowPickupRebroadcaster());
+        listenerMap.put(EntityShootBowEvent.class, new OnArrowShootRebroadcaster());
+        listenerMap.put(PlayerDeathEvent.class, new OnDeathRebroadcaster());
+        listenerMap.put(PlayerInteractEvent.class, new OnPlayerInteractRebroadcaster());
+        listenerMap.put(EntityDamageByBlockEvent.class, new OnPlayerBlockDamageRebroadcaster());
 
         listenerMap.values().forEach(listener -> pm.registerEvents(listener, this));
         Logger.getLogger("PVPPlugin").log(Level.INFO,"PVPPlugin loaded correctly");

@@ -7,7 +7,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-public class OnDeathListener implements EventRebroadcaster<PlayerDeathEvent> {
+public class OnDeathRebroadcaster implements EventRebroadcaster<PlayerDeathEvent> {
 
     @Getter
     private final Set<EventListener<PlayerDeathEvent>> eventListeners = new HashSet<>();
