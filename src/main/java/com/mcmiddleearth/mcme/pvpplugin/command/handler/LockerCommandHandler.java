@@ -40,17 +40,17 @@ public class LockerCommandHandler extends AbstractCommandHandler{
                                 }))
                         .then(HelpfulLiteralBuilder.literal("kick")
                                 .executes(command -> {
-                                    KickPlayer(command.getSource(),OnlinePlayerArgumentType);
+                                    KickPlayer(new OnlinePlayerArgumentType(), command.getSource(), command.getInput());
                                     return 0;
                                 }))
                         .then(HelpfulLiteralBuilder.literal("ban")
                                 .executes(command -> {
-                                    BanPlayer(command.getSource(), OnlinePlayerArgumentType);
+                                    BanPlayer(new OnlinePlayerArgumentType(),command.getSource());
                                     return 0;
                                 }))
                         .then(HelpfulLiteralBuilder.literal("pardon")
                                 .executes(command -> {
-                                    PardonPlayer(command.getSource(), OnlinePlayerArgumentType);
+                                    PardonPlayer( new OnlinePlayerArgumentType(), command.getSource());
                                     return 0;
                                 }))
                 );
