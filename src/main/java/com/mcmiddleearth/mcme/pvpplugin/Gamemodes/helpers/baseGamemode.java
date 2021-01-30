@@ -29,7 +29,7 @@ public abstract class baseGamemode implements Gamemode {
 
     @Override
     public void Start(Map m, int parameter) {
-        importantEvents.forEach(event -> PVPPlugin.addEventListener(event, this));
+        //importantEvents.forEach(event -> PVPPlugin.addEventListener(event, this));
     }
 
     @Override
@@ -47,7 +47,7 @@ public abstract class baseGamemode implements Gamemode {
         deadPlayers.clear();
         players.clear();
         winners.clear();
-        importantEvents.forEach(event -> PVPPlugin.removeEventListener(event, this));
+        //importantEvents.forEach(event -> PVPPlugin.removeEventListener(event, this));
     }
 
     @Override
@@ -66,6 +66,7 @@ public abstract class baseGamemode implements Gamemode {
     }
 
     public void handleEvent(EntityDamageByBlockEvent event) {
+
         if(event.getDamager().getType().equals(Material.CACTUS)){
             event.setCancelled(true);
         }
