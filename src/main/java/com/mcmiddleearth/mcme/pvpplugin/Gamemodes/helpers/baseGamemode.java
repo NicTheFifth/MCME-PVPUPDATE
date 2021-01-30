@@ -6,18 +6,18 @@ import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.Util.ShortEventClass;
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class baseGamemode implements Gamemode {
-
+    @Getter
+    private final ArrayList<Player> spectators = new ArrayList<>();
     @Getter
     private final ArrayList<Player> players = new ArrayList<>();
     @Getter
@@ -26,14 +26,10 @@ public abstract class baseGamemode implements Gamemode {
     ArrayList<Player> deadPlayers = new ArrayList<>();
     Set<Class<?>> importantEvents = new HashSet<Class<?>>(
             Lists.newArrayList(ShortEventClass.ARROW_GRAB, ShortEventClass.BLOCK_DAMAGE, ShortEventClass.PLAYER_COMMAND, ShortEventClass.PLAYER_INTERACT));
+
     @Override
     public void Start(Map m, int parameter) {
         importantEvents.forEach(event -> PVPPlugin.addEventListener(event, this));
-    }
-
-    @Override
-    public ArrayList<String> getNeededPoints() {
-        return null;
     }
 
     @Override
@@ -46,6 +42,8 @@ public abstract class baseGamemode implements Gamemode {
             }
             PVPPlugin.getPlayerStats().get(player.getUniqueId()).addPlayedGame();
         });
+        spectators.forEach(player ->{PVPPlugin.getPlayerStats().get(player.getUniqueId()).addGameSpectated();});
+        spectators.clear();
         deadPlayers.clear();
         players.clear();
         winners.clear();
@@ -67,9 +65,19 @@ public abstract class baseGamemode implements Gamemode {
         return false;
     }
 
-    @Override
-    public void handleEvent(Object event) {
+    public void handleEvent(EntityDamageByBlockEvent event) {
+        if(event.getDamager().getType().equals(Material.CACTUS)){
+            event.setCancelled(true);
+        }
+    }
 
+    public void handleEvent(PlayerDeathEvent event){
+        Player killed = event.getEntity();
+        PVPPlugin.getPlayerStats().get(killed.getUniqueId()).addDeath();
+        Player killer = event.getEntity().getKiller();
+        if(killer != null) {
+            PVPPlugin.getPlayerStats().get(killer.getUniqueId()).addKill();
+        }
     }
 
     @Override

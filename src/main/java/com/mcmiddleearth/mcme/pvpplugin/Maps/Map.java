@@ -33,6 +33,8 @@ public class Map {
     @Getter @Setter
     private HashMap<String,GmType> gamemodes = new HashMap<>();
 
+    public Map() {gState = gameState.IDLE;}
+
     public void setRegion(){
         ArrayList<BlockVector2> wePoints = new ArrayList<>();
         World world = Bukkit.getWorld("world");
