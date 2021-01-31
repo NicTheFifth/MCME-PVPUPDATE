@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import com.mcmiddleearth.mcme.pvpplugin.Handlers.*;
 import com.mcmiddleearth.mcme.pvpplugin.PVP.PlayerStat;
+import com.mcmiddleearth.mcme.pvpplugin.Util.ShortEventClass;
 import com.mcmiddleearth.mcme.pvpplugin.Util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mojang.brigadier.CommandDispatcher;
@@ -21,12 +22,6 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -35,10 +30,10 @@ public class PVPPlugin extends JavaPlugin{
     @Getter @Setter
     private static boolean debug = true;
     @Getter
-    private static PVPPlugin plugin;
+    private PVPPlugin plugin;
     private String spawnWorld;
     @Getter
-    private static final String fileSep = System.getProperty("file.separator");
+    private final String fileSep = System.getProperty("file.separator");
     @Getter
     private final ArrayList<String> noHunger = new ArrayList<>();
     @Getter
@@ -52,18 +47,18 @@ public class PVPPlugin extends JavaPlugin{
     @Getter
     private Integer bc_min;
     @Getter
-    private static File pluginDirectory;
+    private File pluginDirectory;
     @Getter
-    private static File playerDirectory;
+    private File playerDirectory;
     @Getter
-    private static File mapDirectory;
+    private File mapDirectory;
     @Getter
-    private static File statDirectory;
+    private File statDirectory;
     private WorldEditPlugin worldEdit;
     @Getter
-    private static HashMap<Class<?>, EventRebroadcaster> listenerMap;
+    private HashMap<Class<?>, EventRebroadcaster> listenerMap;
     @Getter
-    private static HashMap<UUID, PlayerStat> playerStats = new HashMap<>();
+    private HashMap<UUID, PlayerStat> playerStats = new HashMap<>();
 
     @Override
     public void onEnable(){
@@ -107,12 +102,13 @@ public class PVPPlugin extends JavaPlugin{
         worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         PluginManager pm = this.serverInstance.getPluginManager();
 
-        listenerMap.put(PlayerPickupArrowEvent.class, new OnArrowPickupRebroadcaster());
-        listenerMap.put(EntityShootBowEvent.class, new OnArrowShootRebroadcaster());
-        listenerMap.put(PlayerDeathEvent.class, new OnDeathRebroadcaster());
-        listenerMap.put(PlayerInteractEvent.class, new OnPlayerInteractRebroadcaster());
-        listenerMap.put(EntityDamageByBlockEvent.class, new OnPlayerBlockDamageRebroadcaster());
-        listenerMap.put(PlayerCommandPreprocessEvent.class, new OnCommandRebroadcaster());
+        listenerMap.put(ShortEventClass.ARROW_GRAB, new OnArrowPickupRebroadcaster());
+        listenerMap.put(ShortEventClass.SHOOT, new OnArrowShootRebroadcaster());
+        listenerMap.put(ShortEventClass.PLAYER_DEATH, new OnDeathRebroadcaster());
+        listenerMap.put(ShortEventClass.PLAYER_INTERACT, new OnPlayerInteractRebroadcaster());
+        listenerMap.put(ShortEventClass.BLOCK_DAMAGE, new OnPlayerBlockDamageRebroadcaster());
+        listenerMap.put(ShortEventClass.PLAYER_COMMAND, new OnCommandRebroadcaster());
+        listenerMap.put(ShortEventClass.PLAYER_MOVE, new OnPlayerMoveRebroadcaster());
 
         listenerMap.values().forEach(listener -> pm.registerEvents(listener, this));
         Logger.getLogger("PVPPlugin").log(Level.INFO,"PVPPlugin loaded correctly");
@@ -123,11 +119,11 @@ public class PVPPlugin extends JavaPlugin{
 
     }
 
-    public static <T> void addEventListener(Class<T> eventType, EventListener<T> listener) {
+    public <T> void addEventListener(Class<T> eventType, EventListener<T> listener) {
         listenerMap.get(eventType).addListener(listener);
     }
 
-    public static <T> void removeEventListener(Class<T> eventType, EventListener<T> listener) {
+    public <T> void removeEventListener(Class<T> eventType, EventListener<T> listener) {
         listenerMap.get(eventType).removeListener(listener);
     }
 
