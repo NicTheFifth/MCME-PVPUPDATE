@@ -8,6 +8,7 @@ import com.mcmiddleearth.mcme.pvpplugin.Util.ShortEventClass;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,9 +28,10 @@ public abstract class BaseGamemode implements Gamemode {
     @Getter
     private final ArrayList<Player> players = new ArrayList<>();
     @Getter
-    private ArrayList<Player> winners = new ArrayList<>();
+    @Setter
+    private Integer maxPlayers;
     @Getter
-    private final ArrayList<Player> deadPlayers = new ArrayList<>();
+    private ArrayList<Player> winners = new ArrayList<>();
     @Getter
     private final Set<Class<?>> importantEvents = new HashSet<Class<?>>(
             Lists.newArrayList(ShortEventClass.PLAYER_MOVE, ShortEventClass.ARROW_GRAB, ShortEventClass.BLOCK_DAMAGE, ShortEventClass.PLAYER_COMMAND, ShortEventClass.PLAYER_INTERACT));
@@ -37,15 +39,16 @@ public abstract class BaseGamemode implements Gamemode {
     private Region mapRegion;
     private final HashMap<String, Long> lastOutOfBounds = new HashMap<>();
     private PVPPlugin pvpPlugin;
+
     @Override
-    public void Start(Map m, PVPPlugin plugin) {
+    public void start(Map m, PVPPlugin plugin) {
         pvpPlugin = plugin;
         mapRegion = m.getRegion();
         //importantEvents.forEach(event -> PVPPlugin.addEventListener(event, this));
     }
 
     @Override
-    public void End() {
+    public void end() {
         players.forEach(player -> {
             if (winners.contains(player)) {
                 pvpPlugin.getPlayerStats().get(player.getUniqueId()).addGameWon();
@@ -56,10 +59,8 @@ public abstract class BaseGamemode implements Gamemode {
         });
         spectators.forEach(player -> pvpPlugin.getPlayerStats().get(player.getUniqueId()).addGameSpectated());
         spectators.clear();
-        deadPlayers.clear();
         players.clear();
         winners.clear();
-        //importantEvents.forEach(event -> PVPPlugin.removeEventListener(event, this));
     }
 
     @Override
@@ -94,13 +95,8 @@ public abstract class BaseGamemode implements Gamemode {
     }
 
     public void handleEvent(PlayerMoveEvent e) {
-        Location from = e.getFrom();
         Location to = e.getTo();
 
-        if (from.getX() != to.getX() || from.getZ() != to.getZ()) {
-            e.setTo(new Location(to.getWorld(), from.getX(), to.getY(), from.getZ()));
-            return;
-        }
         if (!mapRegion.contains(BlockVector3.at(to.getX(), to.getY(), to.getZ()))) {
             e.setCancelled(true);
 

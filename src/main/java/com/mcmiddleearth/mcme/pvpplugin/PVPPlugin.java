@@ -56,7 +56,7 @@ public class PVPPlugin extends JavaPlugin{
     private File statDirectory;
     private WorldEditPlugin worldEdit;
     @Getter
-    private HashMap<Class<?>, EventRebroadcaster> listenerMap;
+    private final HashMap<Class<?>, EventRebroadcaster> listenerMap = new HashMap<>();
     @Getter
     private HashMap<UUID, PlayerStat> playerStats = new HashMap<>();
 

@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 
 public interface Gamemode<T> extends EventListener<T> {
-    void Start(Map m, PVPPlugin plugin);
+    void start(Map m, PVPPlugin plugin);
     ArrayList<String> getNeededPoints();
-    void End();
+    void end();
     boolean midgamePlayerJoin(Player p);
     void onPlayerJoin(Player p);
     void onPlayerLeave(Player p);

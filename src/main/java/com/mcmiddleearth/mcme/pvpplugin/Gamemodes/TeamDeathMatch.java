@@ -5,31 +5,62 @@ import com.mcmiddleearth.mcme.pvpplugin.Gamemodes.helpers.BaseGamemode;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mcmiddleearth.mcme.pvpplugin.PVP.Team;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.mcme.pvpplugin.PVP.Matchmaker;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TeamDeathMatch extends BaseGamemode {
 
+    public enum gameState { IDLE, COUNTDOWN, RUNNING}
     @Getter
     private final List<String> neededPoints = new ArrayList<>(Lists.newArrayList("BlueSpawn", "RedSpawn"));
     private PVPPlugin pvpPlugin;
     private final Team blue = new Team("Blue", ChatColor.BLUE);
     private final Team red = new Team("Red", ChatColor.RED);
+    private gameState gState;
+    private Matchmaker matchmaker;
 
     @Override
-    public void Start(Map m, PVPPlugin plugin){
+    public void start(Map m, PVPPlugin plugin){
+        matchmaker = new Matchmaker(plugin);
+        ArrayList<Set<Player>> teams = matchmaker.makeTeams(2, super.getPlayers());
+        blue.setMembers(teams.get(0));
+        red.setMembers(teams.get(1));
         pvpPlugin = plugin;
+        super.getImportantEvents().forEach(event -> pvpPlugin.removeEventListener(event, this));
+        gState = gameState.RUNNING;
+        super.start(m, plugin);
     }
 
     @Override
-    public void End(){
+    public void end(){
         blue.clear();
         red.clear();
-        super.End();
+        gState = gameState.IDLE;
+        super.end();
+    }
+
+    @Override
+    public void handleEvent(PlayerDeathEvent event) {
+        blue.getMembers().remove(event.getEntity());
+        red.getMembers().remove(event.getEntity());
+        super.handleEvent(event);
+    }
+
+    @Override
+    public void handleEvent(PlayerMoveEvent event) {
+        if(gState == gameState.COUNTDOWN){
+            event.setCancelled(true);
+        } else {
+            super.handleEvent(event);
+        }
     }
 
     @Override
@@ -37,13 +68,30 @@ public class TeamDeathMatch extends BaseGamemode {
 
     }
 
-    @Override
-    public void onPlayerJoin(Player p) {
+    public void respawnPlayer(Player player){
 
     }
 
     @Override
-    public void onPlayerLeave(Player p) {
+    public void onPlayerJoin(Player player) {
+        if(super.getMaxPlayers() >= super.getPlayers().size()){
+            player.sendMessage(ChatColor.YELLOW + "Can't join, the game is full.");
+        } else{
+            if (!super.getPlayers().contains(player)){
+                super.getPlayers().add(player);
+                if(gState!=gameState.IDLE){
+                    matchmaker.addPlayer(Lists.newArrayList(blue, red), player).getMembers().add(player);
+                    respawnPlayer(player);
+                }
+            }else{
+                player.sendMessage(ChatColor.YELLOW + "You can't rejoin this game.");
+            }
+        }
+    }
 
+    @Override
+    public void onPlayerLeave(Player player) {
+        blue.getMembers().remove(player);
+        red.getMembers().remove(player);
     }
 }

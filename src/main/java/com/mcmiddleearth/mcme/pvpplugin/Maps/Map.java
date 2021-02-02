@@ -16,14 +16,13 @@ import java.util.HashMap;
 public class Map {
     //TODO: Make the map system
 
-    public enum gameState { IDLE, COUNTDOWN, RUNNING}
 
     @Getter @Setter
     private String mapTitle;
     @Getter @Setter
     private EventLocation spawn;
     @Getter @Setter
-    private gameState gState;
+    private Boolean running;
     @Getter @Setter
     private String rp;
     @Getter @Setter
@@ -33,7 +32,7 @@ public class Map {
     @Getter @Setter
     private HashMap<String,GmType> gamemodes = new HashMap<>();
 
-    public Map() {gState = gameState.IDLE;}
+    public Map() {running = false;}
 
     public void setRegion(){
         ArrayList<BlockVector2> wePoints = new ArrayList<>();
