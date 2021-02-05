@@ -24,14 +24,15 @@ import java.util.Set;
 
 public abstract class BaseGamemode implements Gamemode {
     @Getter
-    private final ArrayList<Player> spectators = new ArrayList<>();
+    private final Set<Player> spectators = new HashSet<>();
     @Getter
-    private final ArrayList<Player> players = new ArrayList<>();
+    private final Set<Player> players = new HashSet<>();
     @Getter
     @Setter
     private Integer maxPlayers;
+    @Setter
     @Getter
-    private ArrayList<Player> winners = new ArrayList<>();
+    private Set<Player> winners = new HashSet<>();
     @Getter
     private final Set<Class<?>> importantEvents = new HashSet<Class<?>>(
             Lists.newArrayList(ShortEventClass.PLAYER_MOVE, ShortEventClass.ARROW_GRAB, ShortEventClass.BLOCK_DAMAGE, ShortEventClass.PLAYER_COMMAND, ShortEventClass.PLAYER_INTERACT));
@@ -79,7 +80,6 @@ public abstract class BaseGamemode implements Gamemode {
     }
 
     public void handleEvent(EntityDamageByBlockEvent event) {
-
         if(event.getDamager().getType().equals(Material.CACTUS)){
             event.setCancelled(true);
         }

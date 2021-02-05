@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 public class TeamDeathMatch extends BaseGamemode {
-
+    //TODO: Check functionality and start bugfixing
     public enum gameState { IDLE, COUNTDOWN, RUNNING}
     @Getter
     private final List<String> neededPoints = new ArrayList<>(Lists.newArrayList("BlueSpawn", "RedSpawn"));
@@ -34,7 +34,7 @@ public class TeamDeathMatch extends BaseGamemode {
         blue.setMembers(teams.get(0));
         red.setMembers(teams.get(1));
         pvpPlugin = plugin;
-        super.getImportantEvents().forEach(event -> pvpPlugin.removeEventListener(event, this));
+        super.getImportantEvents().forEach(event -> pvpPlugin.addEventListener(event, this));
         gState = gameState.RUNNING;
         super.start(m, plugin);
     }
@@ -44,13 +44,25 @@ public class TeamDeathMatch extends BaseGamemode {
         blue.clear();
         red.clear();
         gState = gameState.IDLE;
+        super.getImportantEvents().forEach(event -> pvpPlugin.removeEventListener(event, this));
         super.end();
     }
 
     @Override
     public void handleEvent(PlayerDeathEvent event) {
-        blue.getMembers().remove(event.getEntity());
-        red.getMembers().remove(event.getEntity());
+        if(blue.isInTeam(event.getEntity())) {
+            blue.getDeadMembers().add(event.getEntity());
+        } else {
+            red.getDeadMembers().add(event.getEntity());
+        }
+        if(blue.allDead()) {
+            super.setWinners(blue.getMembers());
+            end();
+        }
+        if(red.allDead()) {
+            super.setWinners(red.getMembers());
+            end();
+        }
         super.handleEvent(event);
     }
 

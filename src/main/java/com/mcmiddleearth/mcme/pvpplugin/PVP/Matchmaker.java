@@ -15,7 +15,7 @@ public class Matchmaker {
         pvpPlugin = plugin;
     }
 
-    public ArrayList<Set<Player>> makeTeams(Integer teamAmounts, List<Player> players){
+    public ArrayList<Set<Player>> makeTeams(Integer teamAmounts, Set<Player> players){
         return null;
     }
 
