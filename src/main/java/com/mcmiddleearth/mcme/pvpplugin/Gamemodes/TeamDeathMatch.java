@@ -52,15 +52,17 @@ public class TeamDeathMatch extends BaseGamemode {
     public void handleEvent(PlayerDeathEvent event) {
         if(blue.isInTeam(event.getEntity())) {
             blue.getDeadMembers().add(event.getEntity());
+            //TODO: add change gm and such
         } else {
             red.getDeadMembers().add(event.getEntity());
+            //TODO: add change gm and such
         }
         if(blue.allDead()) {
-            super.setWinners(blue.getMembers());
+            super.setWinners(red.getMembers());
             end();
         }
         if(red.allDead()) {
-            super.setWinners(red.getMembers());
+            super.setWinners(blue.getMembers());
             end();
         }
         super.handleEvent(event);
