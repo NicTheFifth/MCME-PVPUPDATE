@@ -14,10 +14,6 @@ import net.md_5.bungee.api.CommandSender;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.security.Permissions;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class LockerCommandHandler extends AbstractCommandHandler{
 
     @Setter@Getter
@@ -50,13 +46,13 @@ public class LockerCommandHandler extends AbstractCommandHandler{
                                 .executes(command -> {
                                     BanPlayer(command.getArgument("bannedPlayer", String.class),command.getSource());
                                     return 0;
-                                }))
+                                })))
                         .then(HelpfulLiteralBuilder.literal("pardon")
                                 .then(HelpfulRequiredArgumentBuilder.argument("pardonedPlayer", new OnlinePlayerArgumentType())
                                 .executes(command -> {
                                     PardonPlayer(command.getArgument("pardonedPlayer", String.class), command.getSource());
                                     return 0;
-                                }))
+                                })))
                 );
     }
 
