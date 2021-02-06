@@ -6,6 +6,7 @@ import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.Util.Permission;
 import com.mcmiddleearth.mcme.pvpplugin.command.argument.OnlinePlayerArgumentType;
 import com.mcmiddleearth.mcme.pvpplugin.command.builder.HelpfulLiteralBuilder;
+import com.mcmiddleearth.mcme.pvpplugin.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,10 +40,11 @@ public class LockerCommandHandler extends AbstractCommandHandler{
                                     return 0;
                                 }))
                         .then(HelpfulLiteralBuilder.literal("kick")
+                            .then(HelpfulRequiredArgumentBuilder.argument("kickedPlayer", new OnlinePlayerArgumentType())
                                 .executes(command -> {
-                                    KickPlayer(new OnlinePlayerArgumentType(), command.getSource(), command.getInput());
+                                    KickPlayer(command.getSource(), command.getArgument("kickedPlayer", String.class));
                                     return 0;
-                                }))
+                                })))
                         .then(HelpfulLiteralBuilder.literal("ban")
                                 .executes(command -> {
                                     BanPlayer(new OnlinePlayerArgumentType(),command.getSource());
@@ -82,8 +84,11 @@ public class LockerCommandHandler extends AbstractCommandHandler{
         }
         source.sendMessage("All players kicked!");
     }
-    private void KickPlayer(OnlinePlayerArgumentType playername, CommandSender source, String argument){
-        Logger.getLogger("logger").log(Level.INFO, "kickPlayer received with " + argument);
+    private void KickPlayer(CommandSender source, String playerToKick){
+        Player kickPlayer = Bukkit.getPlayer(playerToKick);
+        kickPlayer.sendMessage("You have been kicked from PVP.");
+        sendPlayerToMain(kickPlayer);
+        source.sendMessage(playerToKick + " has been kicked.");
     }
     private void BanPlayer(OnlinePlayerArgumentType playername, CommandSender source){
     }
