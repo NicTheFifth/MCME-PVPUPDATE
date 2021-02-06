@@ -46,13 +46,15 @@ public class LockerCommandHandler extends AbstractCommandHandler{
                                     return 0;
                                 })))
                         .then(HelpfulLiteralBuilder.literal("ban")
+                                .then(HelpfulRequiredArgumentBuilder.argument("bannedPlayer", new OnlinePlayerArgumentType())
                                 .executes(command -> {
-                                    BanPlayer(new OnlinePlayerArgumentType(),command.getSource());
+                                    BanPlayer(command.getArgument("bannedPlayer", String.class),command.getSource());
                                     return 0;
                                 }))
                         .then(HelpfulLiteralBuilder.literal("pardon")
+                                .then(HelpfulRequiredArgumentBuilder.argument("pardonedPlayer", new OnlinePlayerArgumentType())
                                 .executes(command -> {
-                                    PardonPlayer( new OnlinePlayerArgumentType(), command.getSource());
+                                    PardonPlayer(command.getArgument("pardonedPlayer", String.class), command.getSource());
                                     return 0;
                                 }))
                 );
@@ -90,9 +92,17 @@ public class LockerCommandHandler extends AbstractCommandHandler{
         sendPlayerToMain(kickPlayer);
         source.sendMessage(playerToKick + " has been kicked.");
     }
-    private void BanPlayer(OnlinePlayerArgumentType playername, CommandSender source){
+    private void BanPlayer(String playerToBan, CommandSender source){
+        Player kickPlayer = Bukkit.getPlayer(playerToBan);
+        kickPlayer.sendMessage("You have been kicked from PVP.");
+        sendPlayerToMain(kickPlayer);
+        source.sendMessage(playerToBan + " has been kicked.");
     }
-    private void PardonPlayer(OnlinePlayerArgumentType playername , CommandSender source){
+    private void PardonPlayer(String playerToPardon , CommandSender source){
+        Player kickPlayer = Bukkit.getPlayer(playerToPardon);
+        kickPlayer.sendMessage("You have been kicked from PVP.");
+        sendPlayerToMain(kickPlayer);
+        source.sendMessage(playerToPardon + " has been kicked.");
     }
     private void sendPlayerToMain(Player player) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
