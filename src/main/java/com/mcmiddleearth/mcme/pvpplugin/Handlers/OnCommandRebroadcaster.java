@@ -11,9 +11,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class OnCommandRebroadcaster implements EventRebroadcaster<PlayerCommandPreprocessEvent>{
-    //TODO: Use a whitelist method for blocking commands (based on permissions and gamestate)
-
-    @Getter
     private final Set<EventListener<PlayerCommandPreprocessEvent>> eventListeners = new HashSet<>();
 
     private final Set<String> whitelist = new HashSet<String>(Lists.newArrayList("pvp", "world"));

@@ -103,13 +103,13 @@ public class PVPPlugin extends JavaPlugin{
         PluginManager pm = this.serverInstance.getPluginManager();
 
         listenerMap.put(ShortEventClass.ARROW_GRAB, new OnArrowPickupRebroadcaster());
-        listenerMap.put(ShortEventClass.SHOOT, new OnArrowShootRebroadcaster());
+        listenerMap.put(ShortEventClass.SHOOT, new OnArrowShootRebroadcaster(this));
         listenerMap.put(ShortEventClass.PLAYER_DEATH, new OnDeathRebroadcaster());
         listenerMap.put(ShortEventClass.PLAYER_INTERACT, new OnPlayerInteractRebroadcaster());
         listenerMap.put(ShortEventClass.BLOCK_DAMAGE, new OnPlayerBlockDamageRebroadcaster());
         listenerMap.put(ShortEventClass.PLAYER_COMMAND, new OnCommandRebroadcaster());
         listenerMap.put(ShortEventClass.PLAYER_MOVE, new OnPlayerMoveRebroadcaster());
-
+        listenerMap.put(ShortEventClass.RESPAWN, new OnRespawnRebroadcaster());
         listenerMap.values().forEach(listener -> pm.registerEvents(listener, this));
         Logger.getLogger("PVPPlugin").log(Level.INFO,"PVPPlugin loaded correctly");
     }

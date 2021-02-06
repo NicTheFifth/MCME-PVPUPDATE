@@ -8,6 +8,7 @@ import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.PVP.Matchmaker;
 import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -50,13 +51,15 @@ public class TeamDeathMatch extends BaseGamemode {
 
     @Override
     public void handleEvent(PlayerDeathEvent event) {
-        if(blue.isInTeam(event.getEntity())) {
-            blue.getDeadMembers().add(event.getEntity());
+        Player player = event.getEntity();
+        if(blue.isInTeam(player)) {
+            blue.getDeadMembers().add(player);
             //TODO: add change gm and such
         } else {
-            red.getDeadMembers().add(event.getEntity());
+            red.getDeadMembers().add(player);
             //TODO: add change gm and such
         }
+        player.setGameMode(GameMode.SPECTATOR);
         if(blue.allDead()) {
             super.setWinners(red.getMembers());
             end();

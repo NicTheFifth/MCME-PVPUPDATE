@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class OnArrowPickupRebroadcaster implements EventRebroadcaster<PlayerPickupArrowEvent>  {
-
-    @Getter
     private final Set<EventListener<PlayerPickupArrowEvent>> eventListeners = new HashSet<>();
 
     @EventHandler
@@ -18,9 +16,6 @@ public class OnArrowPickupRebroadcaster implements EventRebroadcaster<PlayerPick
             event.setCancelled(true);
         }
     }
-//        eventListeners.stream().filter(controlsPlayer(event.player)).foreach();
-//        event.cancel();
-//        eventListener.foreach(listener -> listener.handle(event));
 
     @Override
     public void addListener(EventListener<PlayerPickupArrowEvent> eventListener) {

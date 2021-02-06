@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class OnPlayerInteractRebroadcaster implements EventRebroadcaster<PlayerInteractEvent> {
-
-    @Getter
     private final Set<EventListener<PlayerInteractEvent>> eventListeners = new HashSet<>();
 
     @EventHandler

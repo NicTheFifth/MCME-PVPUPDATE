@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class OnPlayerBlockDamageRebroadcaster implements EventRebroadcaster<EntityDamageByBlockEvent>{
-    @Getter
     private final Set<EventListener<EntityDamageByBlockEvent>> eventListeners = new HashSet<>();
 
     @EventHandler
