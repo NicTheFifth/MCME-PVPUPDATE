@@ -1,5 +1,6 @@
 package com.mcmiddleearth.mcme.pvpplugin.Maps;
 
+import com.google.common.base.Equivalence;
 import com.mcmiddleearth.mcme.pvpplugin.Util.EventLocation;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector2;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Map {
-    //TODO: Make the map system
+    //TODO: Make the map system and add maps
 
     @Getter @Setter
     private String mapTitle;
@@ -42,6 +43,12 @@ public class Map {
             wePoints.add(point);
         }
         region = new Polygonal2DRegion(new BukkitWorld(world), wePoints, 0, 1000);
+    }
+
+    public void setTitle(String title) {
+    }
+
+    public void initializeRegion() {
     }
 
     /*
