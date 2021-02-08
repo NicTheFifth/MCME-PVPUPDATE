@@ -90,7 +90,11 @@ public class MapEditorCommandHandler extends AbstractCommandHandler{
                                                         return 0;
                                                     }))
                                             .then(HelpfulLiteralBuilder.literal("list"))
-                                            .then(HelpfulRequiredArgumentBuilder.argument("set", new SpawnNameArgumentType()))
+                                            .then(HelpfulRequiredArgumentBuilder.argument("set", new SpawnNameArgumentType())
+                                            .executes(command -> {
+                                                setSpawn(command.getArgument("map", String.class), (Player) command.getSource());
+                                                return 0;
+                                            }))
                                     )
                                     .then(HelpfulRequiredArgumentBuilder.argument("setPOI", new POINameArgumentType()))
                             )
@@ -164,7 +168,7 @@ public class MapEditorCommandHandler extends AbstractCommandHandler{
     }
 
     public static void setMaxPlayers(String map, String amount, Player p){
-        Map m = com.mcmiddleearth.mcme.pvp.maps.Map.maps.get(map);
+        Map m = com.mcmiddleearth.mcme.pvpplugin.Maps.Map.maps.get(map);
         m.setMax(Integer.parseInt(amount));
         sendMapMessage(map, m, p);
     }
@@ -192,5 +196,62 @@ public class MapEditorCommandHandler extends AbstractCommandHandler{
             }
     }
 
+    public static void setSpawn(String map, Player p){
+        Map m = Map.maps.get(map);
+        BukkitPlayer bukkitP = new BukkitPlayer(p);//PVPCore.getWorldEditPlugin(), PVPCore.getWorldEditPlugin().getServerInterface(), p);
+        LocalSession session = PVPPlugin.getWorldEditPlugin().getWorldEdit().getSessionManager().get(bukkitP);
+
+        try{
+            Region r = session.getSelection(new BukkitWorld(p.getWorld()));
+            if(r.getHeight() < 250){
+                p.sendMessage(ChatColor.RED + "I think you forgot to do //expand vert!");
+            }
+            else{
+                List<BlockVector2> wePoints = r.polygonize(1000);
+                ArrayList<EventLocation> bPoints = new ArrayList<>();
+
+                for(BlockVector2 point : wePoints){
+                    bPoints.add(new EventLocation(new Location(p.getWorld(), point.getX(), 1, point.getZ())));
+                }
+
+                m.setRegionPoints(bPoints);
+                m.initializeRegion();
+                p.sendMessage(ChatColor.YELLOW + "Area set!");
+            }
+        }
+        catch(IncompleteRegionException e){
+            p.sendMessage(ChatColor.RED + "You don't have a region selected!");
+        }
+    }
+
+    /*public static void sendMapMessage (String map, Map m, Player p){
+        FancyMessage message = new FancyMessage(MessageType.INFO, PVPPlugin.getMessageUtil());
+        message.addFancy("Map name: " + m.getName() + "\n",
+                "/mapeditor "+(map)+" name "+ map,
+                "Click to edit. Don't change the leading '/mapEditor <map> name'.");
+        message.addFancy("Map title: " + m.getTitle() + "\n",
+                "/mapeditor "+(map)+" title "+ m.getTitle(),
+                "Click to edit. Don't change the leading '/mapEditor <map> title'.");
+        message.addFancy("Map gamemode: " + m.getGmType() + "\n",
+                "/mapeditor "+(map)+" gm "+ m.getGmType(),
+                "Click to edit. Don't change the leading '/mapEditor <map> gm'.");
+        message.addFancy("Map max players: " + m.getMax() + "\n",
+                "/mapeditor "+(map)+" max "+ m.getMax(),
+                "Click to edit. Don't change the leading '/mapEditor <map> max'.");
+        message.addFancy("Map rp: " + m.getResourcePackURL() + "\n",
+                "/mapeditor "+(map)+" rp ",
+                "Click to edit. Don't change the leading '/mapEditor <map> rp'.");
+        message.addFancy("Map area set: " + !m.getRegionPoints().isEmpty() + "\n",
+                "/mapeditor "+(map)+" setarea",
+                "Click to edit. Don't change the command.");
+        message.addFancy("Map spawns: " + m.getImportantPoints().size() + "\n",
+                "/mapeditor "+(map)+" listspawns",
+                "Click to view spawns. Don't change the leading '/mapEditor <map> listspawns'.\n");
+        if(m.getGm() != null)
+            message.addSimple("Map has all spawns: " + m.getImportantPoints().keySet().containsAll(m.getGm().getNeededPoints()) + "\n");
+        else
+            message.addSimple("Map has all spawns: false \n");
+        message.send(p);
+    }*///TODO:Make this work
 
 }

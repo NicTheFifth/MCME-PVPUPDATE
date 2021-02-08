@@ -8,12 +8,15 @@ import java.util.logging.Logger;
 import com.mcmiddleearth.mcme.pvpplugin.Util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mojang.brigadier.CommandDispatcher;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import lombok.Getter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PVPPlugin extends JavaPlugin{
@@ -31,6 +34,15 @@ public class PVPPlugin extends JavaPlugin{
     //Hashmap of <abbreviation map, map>
     @Getter
     private static HashMap<String, Map> maps = new HashMap<>();
+
+    public static WorldEditPlugin getWorldEditPlugin() {
+        Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
+
+        if(p == null){
+            return null;
+        }
+        return (WorldEditPlugin) p;
+    }
     //if static causes a problem remove it
 
 
