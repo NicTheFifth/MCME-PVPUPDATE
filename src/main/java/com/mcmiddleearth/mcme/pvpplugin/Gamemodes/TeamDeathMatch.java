@@ -6,14 +6,18 @@ import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mcmiddleearth.mcme.pvpplugin.PVP.Team;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.PVP.Matchmaker;
+import com.mcmiddleearth.mcme.pvpplugin.Util.EventLocation;
+import com.mcmiddleearth.mcme.pvpplugin.Util.ShortEventClass;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -22,19 +26,23 @@ public class TeamDeathMatch extends BaseGamemode {
     public enum gameState { IDLE, COUNTDOWN, RUNNING}
     @Getter
     private final List<String> neededPoints = new ArrayList<>(Lists.newArrayList("BlueSpawn", "RedSpawn"));
+    private final HashMap<String, EventLocation> spawns = new HashMap<>();
     private PVPPlugin pvpPlugin;
     private final Team blue = new Team("Blue", ChatColor.BLUE);
     private final Team red = new Team("Red", ChatColor.RED);
     private gameState gState;
     private Matchmaker matchmaker;
+    private Map map;
 
     @Override
     public void start(Map m, PVPPlugin plugin){
         matchmaker = new Matchmaker(plugin);
+        map = m;
         ArrayList<Set<Player>> teams = matchmaker.makeTeams(2, super.getPlayers());
         blue.setMembers(teams.get(0));
         red.setMembers(teams.get(1));
         pvpPlugin = plugin;
+        super.getImportantEvents().add(ShortEventClass.RESPAWN);
         super.getImportantEvents().forEach(event -> pvpPlugin.addEventListener(event, this));
         gState = gameState.RUNNING;
         super.start(m, plugin);
@@ -59,7 +67,6 @@ public class TeamDeathMatch extends BaseGamemode {
             red.getDeadMembers().add(player);
             //TODO: add change gm and such
         }
-        player.setGameMode(GameMode.SPECTATOR);
         if(blue.allDead()) {
             super.setWinners(red.getMembers());
             end();
@@ -80,12 +87,14 @@ public class TeamDeathMatch extends BaseGamemode {
         }
     }
 
-    @Override
-    public void handleEvent(Object event) {
-
+    public void handleEvent(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        player.setGameMode(GameMode.SPECTATOR);
+        event.setRespawnLocation(map.getSpawn().toBukkitLoc());
     }
 
-    public void respawnPlayer(Player player){
+    @Override
+    public void handleEvent(Object event) {
 
     }
 
@@ -98,7 +107,12 @@ public class TeamDeathMatch extends BaseGamemode {
                 super.getPlayers().add(player);
                 if(gState!=gameState.IDLE){
                     matchmaker.addPlayer(Lists.newArrayList(blue, red), player).getMembers().add(player);
-                    respawnPlayer(player);
+                    if(blue.isInTeam(player)){
+                        player.teleport(spawns.get("BlueSpawn").toBukkitLoc());
+                    } else{
+                        player.teleport(spawns.get("RedSpawn").toBukkitLoc());
+                    }
+
                 }
             }else{
                 player.sendMessage(ChatColor.YELLOW + "You can't rejoin this game.");

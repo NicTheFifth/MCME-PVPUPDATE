@@ -45,7 +45,6 @@ public abstract class BaseGamemode implements Gamemode {
     public void start(Map m, PVPPlugin plugin) {
         pvpPlugin = plugin;
         mapRegion = m.getRegion();
-        //importantEvents.forEach(event -> PVPPlugin.addEventListener(event, this));
     }
 
     @Override

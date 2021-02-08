@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Map {
-    //TODO: Make the map system
-
-
     @Getter @Setter
     private String mapTitle;
     @Getter @Setter

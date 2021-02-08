@@ -9,19 +9,16 @@ import java.util.HashMap;
 
 public class GmType {
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private Gamemode gm;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private int maxPlayers;
 
-    @Getter @Setter
-    private HashMap<String, EventLocation> spawnPoints = new HashMap<>();
-
-    @Getter @Setter
-    private HashMap<String, EventLocation> goals = new HashMap<>();
-
-    @Getter @Setter
+    @Getter
+    @Setter
     private HashMap<String, Event> events = new HashMap<>();
     /*
     GmTypes 		(list of gamemodes on map)
