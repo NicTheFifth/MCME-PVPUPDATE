@@ -66,26 +66,6 @@ public class Map {
         region = new Polygonal2DRegion(new BukkitWorld(world), wePoints, 0, 1000);
     }
 
-    public void setTitle(String title) {
-    }
-
-    public void initializeRegion() {
-    }
-
-    public void bindGamemode(){
-        try {
-            Class<?> gamemodeClass = Class.forName("com.mcmiddleearth.mcme.pvp.Gamemode." + gmType.replace(" ", ""));
-            Constructor<?> ctor = gamemodeClass.getConstructor();
-            gm = (Gamemode) ctor.newInstance();
-        } catch (ClassNotFoundException | NoSuchMethodException |
-                SecurityException | InstantiationException |
-                IllegalAccessException | IllegalArgumentException |
-                InvocationTargetException ex) {
-            Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
     /*
     ShortName 		(abbreviation used to start map)
     Title 			(shown when starting)

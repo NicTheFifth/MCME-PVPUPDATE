@@ -132,7 +132,7 @@ public class MapEditorCommandHandler extends AbstractCommandHandler{
 
     public static void setMapTitle(String map, String title, Player p){
         Map m = com.mcmiddleearth.mcme.pvpplugin.Maps.Map.maps.get(map);
-        m.setTitle(title);
+        m.setMapTitle(title);
         sendMapMessage(map, m, p);
     }
     public static void setRP(String map, String rp, Player p){
@@ -163,7 +163,6 @@ public class MapEditorCommandHandler extends AbstractCommandHandler{
     public static void setGamemode(String map, String gamemode, Player p){
         Map m = Map.maps.get(map);
         m.setGmType(gamemode);
-        m.bindGamemode();
         sendMapMessage(map, m, p);
     }
 
@@ -215,7 +214,6 @@ public class MapEditorCommandHandler extends AbstractCommandHandler{
                 }
 
                 m.setRegionPoints(bPoints);
-                m.initializeRegion();
                 p.sendMessage(ChatColor.YELLOW + "Area set!");
             }
         }
