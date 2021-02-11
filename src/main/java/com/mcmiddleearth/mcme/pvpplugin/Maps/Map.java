@@ -30,6 +30,9 @@ public class Map {
     private Gamemode gm;
 
     @Getter@Setter
+    private String name;
+
+    @Getter@Setter
     private String gmType;
 
     @Getter @Setter
