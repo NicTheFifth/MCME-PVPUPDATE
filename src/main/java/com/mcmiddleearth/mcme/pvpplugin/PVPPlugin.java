@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import com.mcmiddleearth.mcme.pvpplugin.Handlers.*;
 import com.mcmiddleearth.mcme.pvpplugin.PVP.PlayerStat;
+import com.mcmiddleearth.mcme.pvpplugin.Util.JSON.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.Util.ShortEventClass;
 import com.mcmiddleearth.mcme.pvpplugin.Util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
@@ -43,7 +44,7 @@ public class PVPPlugin extends JavaPlugin{
     private static Location Spawn;
     //Hashmap of <abbreviation map, map>
     @Getter
-    private HashMap<String, Map> maps;
+    private HashMap<String, JSONMap> maps;
     @Getter
     private Integer bc_min;
     @Getter

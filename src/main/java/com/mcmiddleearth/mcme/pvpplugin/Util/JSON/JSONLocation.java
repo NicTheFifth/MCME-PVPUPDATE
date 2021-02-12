@@ -1,4 +1,4 @@
-package com.mcmiddleearth.mcme.pvpplugin.Util;
+package com.mcmiddleearth.mcme.pvpplugin.Util.JSON;
 
 /*
  * This file is part of MCME-pvp.
@@ -28,30 +28,32 @@ import org.bukkit.Location;
  *
  * @author Donovan <dallen@dallen.xyz>
  */
-public class EventLocation {
+public class JSONLocation {
 
     @Getter @Setter
-    private int X;
+    private int x;
 
     @Getter @Setter
-    private int Y;
+    private int y;
 
     @Getter @Setter
-    private int Z;
+    private int z;
 
     @Getter @Setter
-    private String World;
+    private String world;
 
-    public EventLocation(){}
+    public JSONLocation(){}
 
-    public EventLocation(Location l){
-        this.X = l.getBlockX();
-        this.Y = l.getBlockY();
-        this.Z = l.getBlockZ();
-        this.World = l.getWorld().getName();
+    public JSONLocation toJSONLocation(Location location){
+        JSONLocation returnLoc = new JSONLocation();
+        returnLoc.x = location.getBlockX();
+        returnLoc.y = location.getBlockY();
+        returnLoc.z = location.getBlockZ();
+        returnLoc.world = location.getWorld().getName();
+        return returnLoc;
     }
 
     public Location toBukkitLoc(){
-        return new Location(Bukkit.getWorld(World), X, Y, Z);
+        return new Location(Bukkit.getWorld(world), x, y, z);
     }
 }

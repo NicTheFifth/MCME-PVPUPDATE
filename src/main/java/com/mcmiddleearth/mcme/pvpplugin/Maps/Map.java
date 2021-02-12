@@ -1,6 +1,6 @@
 package com.mcmiddleearth.mcme.pvpplugin.Maps;
 
-import com.mcmiddleearth.mcme.pvpplugin.Util.EventLocation;
+import com.mcmiddleearth.mcme.pvpplugin.Util.JSON.JSONLocation;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
@@ -17,13 +17,13 @@ public class Map {
     @Getter @Setter
     private String mapTitle;
     @Getter @Setter
-    private EventLocation spawn;
+    private JSONLocation spawn;
     @Getter @Setter
     private Boolean running;
     @Getter @Setter
     private String rp;
     @Getter @Setter
-    private ArrayList<EventLocation> regionPoints = new ArrayList<>();
+    private ArrayList<JSONLocation> regionPoints = new ArrayList<>();
     @Getter
     private Region region;
     @Getter @Setter
@@ -34,7 +34,7 @@ public class Map {
     public void setRegion(){
         ArrayList<BlockVector2> wePoints = new ArrayList<>();
         World world = Bukkit.getWorld("world");
-        for(EventLocation e : regionPoints){
+        for(JSONLocation e : regionPoints){
             BlockVector2 point = BlockVector2.at(e.getX(), e.getZ());
             wePoints.add(point);
         }
