@@ -35,7 +35,7 @@ public class GamemodeTeamDeathMatch extends BaseGamemodeRunner {
     }
 
     @Override
-    void prepareStart() {
+    protected void prepareStart() {
         this.makeTeams();
     }
 
@@ -50,12 +50,7 @@ public class GamemodeTeamDeathMatch extends BaseGamemodeRunner {
     }
 
     @Override
-    public boolean handlePlayerMoveEvent(PlayerMoveEvent event) {
-        if (getGamemodeState() == GamemodeState.COUNTDOWN) {
-            event.setCancelled(true);
-            return false;
-        } else {
-            return true;
-        }
+    protected boolean handlePlayerMoveEvent(PlayerMoveEvent playerMoveEvent) {
+        return true;
     }
 }

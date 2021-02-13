@@ -34,6 +34,14 @@ public abstract class BaseGamemodeRunner implements Listener {
 
     private final Cache<Player, Object> playerOutOfBounds = CacheBuilder.newBuilder().expireAfterWrite(3, TimeUnit.SECONDS).build();
 
+    // Abstract Methods
+    protected abstract void prepareStart();
+    protected abstract void start();
+    protected abstract void end();
+
+    protected abstract boolean handlePlayerMoveEvent(PlayerMoveEvent playerMoveEvent);
+
+    // Base Code
     protected BaseGamemodeRunner(JSONMap map, PVPPlugin plugin) {
         this.plugin = plugin;
         this.region = MapManager.convertMapToRegion(map);
@@ -66,14 +74,10 @@ public abstract class BaseGamemodeRunner implements Listener {
         }.runTaskLater(plugin,5);
     }
 
-    abstract void prepareStart();
-
     private void transitionToRunning() {
         this.gamemodeState = GamemodeState.RUNNING;
         start();
     }
-
-    protected abstract void start();
 
     private void transitionToEnding() {
         this.gamemodeState = GamemodeState.ENDING;
@@ -81,8 +85,6 @@ public abstract class BaseGamemodeRunner implements Listener {
 
         this.end();
     }
-
-    protected abstract void end();
 
     private void registerListeners() {
         plugin.getPluginManager().registerEvents(this,plugin);
@@ -94,7 +96,12 @@ public abstract class BaseGamemodeRunner implements Listener {
 
     @EventHandler
     public void handleEvent(PlayerMoveEvent event) {
-        if (handlePlayerMoveEvent(event)) {
+        if (getGamemodeState() == GamemodeState.LOBBY) {
+            return;
+        }
+        if (getGamemodeState() == GamemodeState.COUNTDOWN) {
+            event.setCancelled(true);
+        } else if (handlePlayerMoveEvent(event)) {
             Location newLocation = event.getTo();
 
             if (newLocation != null && !region.contains(BlockVector3.at(newLocation.getX(), newLocation.getY(), newLocation.getZ()))) {
@@ -106,8 +113,5 @@ public abstract class BaseGamemodeRunner implements Listener {
                 }
             }
         }
-    }
-    protected boolean handlePlayerMoveEvent(PlayerMoveEvent playerMoveEvent) {
-        return true;
     }
 }
