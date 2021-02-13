@@ -14,6 +14,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <jackson.version>2.10.3</jackson.version>
         <bungeecord.version>1.16-R0.4-SNAPSHOT</bungeecord.version>
+        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
     </properties>
 
     <build>
@@ -47,10 +48,10 @@
                             <minimizeJar>false</minimizeJar>
                             <artifactSet>
                                 <includes>
-                                    <include> com.fasterxml.jackson.core:jackson-core </include>
-                                    <include> com.fasterxml.jackson.core:jackson-databind </include>
-                                    <include> com.fasterxml.jackson.core:jackson-annotations </include>
-                                    <include> org.json:json </include>
+                                    <include>com.fasterxml.jackson.core:jackson-core</include>
+                                    <include>com.fasterxml.jackson.core:jackson-databind</include>
+                                    <include>com.fasterxml.jackson.core:jackson-annotations</include>
+                                    <include>org.json:json</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -61,9 +62,9 @@
     </build>
     <repositories>
         <repository>
-        <id>minecraft-libraries</id>
-        <name>Minecraft Libraries</name>
-        <url>https://libraries.minecraft.net</url>
+            <id>minecraft-libraries</id>
+            <name>Minecraft Libraries</name>
+            <url>https://libraries.minecraft.net</url>
         </repository>
         <repository>
             <id>bungeecord-repo</id>
@@ -76,6 +77,22 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.12.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>

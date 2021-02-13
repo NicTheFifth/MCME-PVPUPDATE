@@ -1,12 +1,12 @@
 package com.mcmiddleearth.mcme.pvpplugin.Maps;
 
-import com.mcmiddleearth.mcme.pvpplugin.Util.JSON.JSONLocation;
+import com.mcmiddleearth.mcme.pvpplugin.json.JSONLocation;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
-import lombok.Setter;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -14,9 +14,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Map {
-    @Getter @Setter
+    @Getter
+    @Setter
     private String mapTitle;
-    @Getter @Setter
+    @Getter
+    @Setter
     private JSONLocation spawn;
     @Getter @Setter
     private Boolean running;

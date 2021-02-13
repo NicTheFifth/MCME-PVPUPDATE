@@ -1,6 +1,6 @@
 package com.mcmiddleearth.mcme.pvpplugin.Maps;
 
-import com.mcmiddleearth.mcme.pvpplugin.Gamemodes.Gamemode;
+import com.mcmiddleearth.mcme.pvpplugin.gamemodes.Gamemode;
 import lombok.Getter;
 import lombok.Setter;
 
