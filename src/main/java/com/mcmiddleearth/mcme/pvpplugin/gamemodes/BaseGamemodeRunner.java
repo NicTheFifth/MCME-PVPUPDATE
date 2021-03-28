@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -38,8 +39,6 @@ public abstract class BaseGamemodeRunner implements Listener {
     protected abstract void prepareStart();
     protected abstract void start();
     protected abstract void end();
-
-    protected abstract boolean handlePlayerMoveEvent(PlayerMoveEvent playerMoveEvent);
 
     // Base Code
     protected BaseGamemodeRunner(JSONMap map, PVPPlugin plugin) {
@@ -113,5 +112,22 @@ public abstract class BaseGamemodeRunner implements Listener {
                 }
             }
         }
+    }
+
+    protected boolean handlePlayerMoveEvent(PlayerMoveEvent playerMoveEvent) {
+        return true;
+    }
+
+    @EventHandler
+    public void handleEvent(PlayerJoinEvent playerJoinEvent) {
+        if (getGamemodeState() == GamemodeState.LOBBY) {
+            players.add(playerJoinEvent.getPlayer());
+        } else {
+            handlePlayerJoinEvent(playerJoinEvent);
+        }
+    }
+
+    protected boolean handlePlayerJoinEvent(PlayerJoinEvent playerJoinEvent) {
+
     }
 }

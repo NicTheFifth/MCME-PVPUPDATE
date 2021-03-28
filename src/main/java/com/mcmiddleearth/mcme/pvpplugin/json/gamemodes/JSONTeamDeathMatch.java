@@ -4,9 +4,11 @@ import com.mcmiddleearth.mcme.pvpplugin.json.JSONLocation;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 public class JSONTeamDeathMatch extends JSONBaseGamemode {
-    private JSONLocation blueSpawn;
-    private JSONLocation redSpawn;
+    private Set<JSONLocation> blueSpawn;
+    private Set<JSONLocation> redSpawn;
 }

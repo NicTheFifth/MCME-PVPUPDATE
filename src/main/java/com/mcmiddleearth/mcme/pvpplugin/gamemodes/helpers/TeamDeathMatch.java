@@ -1,4 +1,4 @@
-package com.mcmiddleearth.mcme.pvpplugin.gamemodes;
+package com.mcmiddleearth.mcme.pvpplugin.gamemodes.helpers;
 
 import com.google.common.collect.Lists;
 import com.mcmiddleearth.mcme.pvpplugin.gamemodes.helpers.BaseGamemode;

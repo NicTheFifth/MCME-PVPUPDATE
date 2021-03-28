@@ -9,17 +9,22 @@ import java.util.Set;
 
 public class Matchmaker {
 
+    public enum ADDITION_TYPE {
+        SPAWN,
+        NONE
+    }
+
     private PVPPlugin pvpPlugin;
 
     public Matchmaker(PVPPlugin plugin){
         pvpPlugin = plugin;
     }
 
-    public ArrayList<Set<Player>> makeTeams(Integer teamAmounts, Set<Player> players){
+    public ArrayList<Set<Player>> makeTeams(Set<Player> players, Team... teams){
         return null;
     }
 
-    public Team addPlayer (ArrayList<Team> teams, Player player){
+    public Team addPlayer (ADDITION_TYPE addition_type, Player player, Team... teams){
         return null;
     }
     //matchmaker could go in here

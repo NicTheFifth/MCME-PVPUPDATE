@@ -11,6 +11,7 @@ import com.mcmiddleearth.mcme.pvpplugin.Maps.MapManager;
 import com.mcmiddleearth.mcme.pvpplugin.PVP.PlayerStat;
 import com.mcmiddleearth.mcme.pvpplugin.Util.ShortEventClass;
 import com.mcmiddleearth.mcme.pvpplugin.Util.Style;
+import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommand;
 import com.mojang.brigadier.CommandDispatcher;
 import lombok.Getter;
 import net.md_5.bungee.api.CommandSender;
@@ -65,7 +66,9 @@ public class PVPPlugin extends JavaPlugin {
         loadConfig();
         loadListeners();
 
-        mapManager = new MapManager(mapDirectory);
+        this.mapManager = new MapManager(mapDirectory);
+
+        this.commandDispatcher = new PVPCommand(this)
 
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
     }

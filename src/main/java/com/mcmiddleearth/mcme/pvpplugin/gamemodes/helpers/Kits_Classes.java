@@ -1,4 +1,4 @@
-package com.mcmiddleearth.mcme.pvpplugin.gamemodes.gamemode_helpers;
+package com.mcmiddleearth.mcme.pvpplugin.gamemodes.helpers;
 
 
 import lombok.Getter;

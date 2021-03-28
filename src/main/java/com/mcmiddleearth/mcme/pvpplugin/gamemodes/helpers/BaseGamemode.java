@@ -1,7 +1,6 @@
 package com.mcmiddleearth.mcme.pvpplugin.gamemodes.helpers;
 
 import com.google.common.collect.Lists;
-import com.mcmiddleearth.mcme.pvpplugin.gamemodes.Gamemode;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.Util.ShortEventClass;
