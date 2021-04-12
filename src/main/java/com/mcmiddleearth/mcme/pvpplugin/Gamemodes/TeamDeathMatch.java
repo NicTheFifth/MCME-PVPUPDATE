@@ -7,6 +7,7 @@ import com.mcmiddleearth.mcme.pvpplugin.PVP.Team;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.PVP.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.Util.JSON.JSONLocation;
+import com.mcmiddleearth.mcme.pvpplugin.Util.JSON.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.Util.ShortEventClass;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -24,19 +25,17 @@ import java.util.Set;
 
 public class TeamDeathMatch extends BaseGamemode {
     //TODO: Check functionality and start bugfixing
-    public enum gameState { IDLE, COUNTDOWN, RUNNING}
-    @Getter
-    private final List<String> neededPoints = new ArrayList<>(Lists.newArrayList("BlueSpawn", "RedSpawn"));
-    private final HashMap<String, Location> spawns = new HashMap<>();
+    private Location blueSpawn;
+    private Location redSpawn;
     private PVPPlugin pvpPlugin;
     private final Team blue = new Team("Blue", ChatColor.BLUE);
     private final Team red = new Team("Red", ChatColor.RED);
     private gameState gState;
     private Matchmaker matchmaker;
-    private Map map;
+    private JSONMap map;
 
     @Override
-    public void start(Map m, PVPPlugin plugin){
+    public void start(JSONMap m, PVPPlugin plugin){
         matchmaker = new Matchmaker(plugin);
         map = m;
         ArrayList<Set<Player>> teams = matchmaker.makeTeams(2, super.getPlayers());
@@ -109,9 +108,9 @@ public class TeamDeathMatch extends BaseGamemode {
                 if(gState!=gameState.IDLE){
                     matchmaker.addPlayer(Lists.newArrayList(blue, red), player).getMembers().add(player);
                     if(blue.isInTeam(player)){
-                        player.teleport(spawns.get("BlueSpawn"));
+                        player.teleport(blueSpawn);
                     } else{
-                        player.teleport(spawns.get("RedSpawn"));
+                        player.teleport(redSpawn);
                     }
 
                 }

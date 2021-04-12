@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mcmiddleearth.mcme.pvpplugin.Gamemodes.Gamemode;
 import com.mcmiddleearth.mcme.pvpplugin.Maps.Map;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.mcme.pvpplugin.Util.JSON.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.Util.ShortEventClass;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class BaseGamemode implements Gamemode {
+    public enum gameState {IDLE, COUNTDOWN, RUNNING}
     @Getter
     private final Set<Player> spectators = new HashSet<>();
     @Getter
@@ -42,9 +44,9 @@ public abstract class BaseGamemode implements Gamemode {
     private PVPPlugin pvpPlugin;
 
     @Override
-    public void start(Map m, PVPPlugin plugin) {
+    public void start(JSONMap m, PVPPlugin plugin) {
         pvpPlugin = plugin;
-        mapRegion = m.getRegion();
+        //mapRegion = m.getRegion();
     }
 
     @Override
