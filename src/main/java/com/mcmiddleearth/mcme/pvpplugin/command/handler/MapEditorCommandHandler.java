@@ -7,10 +7,10 @@ import net.md_5.bungee.api.CommandSender;
 
 public class MapEditorCommandHandler extends AbstractCommandHandler{
     //TODO: Make the full command tree
-    public MapEditorCommandHandler (String name, CommandDispatcher<CommandSender> dispatcher){
-        super(name);
+    public MapEditorCommandHandler (String commandName, CommandDispatcher<CommandSender> dispatcher){
+        super(commandName);
         dispatcher
-            .register(HelpfulLiteralBuilder.literal(name)
+            .register(HelpfulLiteralBuilder.literal(commandName)
                 .withHelpText("Use this to create/edit new maps!")
                 .withTooltip("Usage is to create new maps or edit existing maps!")
                 .requires(commandSender -> commandSender.hasPermission(Permission.MAP_EDITOR))
