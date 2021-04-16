@@ -1,8 +1,0 @@
-worlds:
-  - world
-noHunger:
-  - world
-PVP:
-  Enabled: true
-  Broadcast_minutes: 2
-  Spawn: 344.47 39 521.58 0.3F -24.15F
