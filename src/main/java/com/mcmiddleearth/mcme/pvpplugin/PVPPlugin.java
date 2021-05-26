@@ -5,8 +5,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.mcmiddleearth.mcme.pvpplugin.jsonData.MapData;
-import com.mcmiddleearth.mcme.pvpplugin.jsonData.Playerstat;
+import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
+import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import lombok.Getter;
 import net.md_5.bungee.api.CommandSender;
@@ -16,7 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class PVPPlugin extends JavaPlugin {
 
     @Getter
-    HashMap<String, MapData> maps;
+    HashMap<String, JSONMap> maps;
 
     @Getter
     HashMap<UUID, Playerstat> playerstats;
@@ -33,6 +33,9 @@ public class PVPPlugin extends JavaPlugin {
 
     }
 
+    private void loadConfig() {
+    }
+
     public static void sendInfo(CommandSender recipient, ComponentBuilder message) {
         ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.MOD).append(" ").color(Style.INFO);
         result.append(message.create());
@@ -43,8 +46,5 @@ public class PVPPlugin extends JavaPlugin {
         ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.MOD).append(" ").color(Style.ERROR);
         result.append(message.create());
         recipient.sendMessage(result.create());
-    }
-
-    private void loadConfig() {
     }
 }

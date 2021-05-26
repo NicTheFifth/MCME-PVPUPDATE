@@ -1,4 +1,4 @@
-package com.mcmiddleearth.mcme.pvpplugin.jsonData;
+package com.mcmiddleearth.mcme.pvpplugin.json.jsonData;
 
 import lombok.Getter;
 import lombok.Setter;

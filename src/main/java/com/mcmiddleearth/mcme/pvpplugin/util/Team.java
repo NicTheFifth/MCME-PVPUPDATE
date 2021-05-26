@@ -6,15 +6,16 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 public class Team {
     @Getter@Setter
-    Set<Player> members;
+    Set<Player> members = Collections.emptySet();
 
     @Getter@Setter
-    Set<Player> deadMembers;
+    Set<Player> deadMembers = Collections.emptySet();
 
     @Getter@Setter
     Color teamColour;

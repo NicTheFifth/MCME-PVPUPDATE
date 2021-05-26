@@ -1,10 +1,10 @@
-package com.mcmiddleearth.mcme.pvpplugin.jsonData.jsonGamemodes;
+package com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes;
 
-import com.mcmiddleearth.mcme.pvpplugin.jsonData.JSONLocation;
+import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONLocation;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Infected {
+public class JSONInfected {
     @Getter@Setter
     JSONLocation infectedSpawn;
 

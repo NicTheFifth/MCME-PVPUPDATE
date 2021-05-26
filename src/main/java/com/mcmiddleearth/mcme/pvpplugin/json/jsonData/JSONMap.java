@@ -1,12 +1,12 @@
-package com.mcmiddleearth.mcme.pvpplugin.jsonData;
+package com.mcmiddleearth.mcme.pvpplugin.json.jsonData;
 
-import com.mcmiddleearth.mcme.pvpplugin.jsonData.jsonGamemodes.*;
+import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
-public class MapData {
+public class JSONMap {
     @Getter@Setter
     List<JSONLocation> regionPoints;
 
@@ -23,23 +23,23 @@ public class MapData {
     String abbreviation;
 
     @Getter@Setter
-    CaptureTheFlag captureTheFlag;
+    JSONCaptureTheFlag JSONCaptureTheFlag;
 
     @Getter@Setter
-    DeathRun deathRun;
+    JSONDeathRun JSONDeathRun;
 
     @Getter@Setter
-    FreeForAll freeForAll;
+    JSONFreeForAll JSONFreeForAll;
 
     @Getter@Setter
-    Infected infected;
+    JSONInfected JSONInfected;
 
     @Getter@Setter
-    TeamConquest teamConquest;
+    JSONTeamConquest JSONTeamConquest;
 
     @Getter@Setter
-    TeamDeathMatch teamDeathMatch;
+    JSONTeamDeathMatch JSONTeamDeathMatch;
 
     @Getter@Setter
-    TeamSlayer teamSlayer;
+    JSONTeamSlayer JSONTeamSlayer;
 }
