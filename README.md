@@ -1,4 +1,11 @@
-Base plugin
+PVP Plugin version 2
 ===========
-## To start
-* change BasePlugin in each file name to your plugin's name and in the POM, BasePlugin files change BasePlugin to the correct name.
+## To be Implemented
+* Private tag to game (boolean)
+* Mechanism for doing private games
+* FBT tag whilst in lobby  
+* Save and Load
+* Multi spawns for every gamemode
+
+##Implemented
+* JSON structure

@@ -6,7 +6,9 @@ import com.mcmiddleearth.mcme.pvpplugin.json.transcribers.InfectedTranscriber;
 import com.mcmiddleearth.mcme.pvpplugin.util.Kit;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Color;
+import org.bukkit.entity.Player;
 
 public class InfectedRunner extends BaseRunner {
 
@@ -14,7 +16,8 @@ public class InfectedRunner extends BaseRunner {
     Team infected = new Team();
     @Getter
     Team survivors = new Team();
-
+    @Getter@Setter
+    Integer timeMin;
     public InfectedRunner(JSONMap map, PVPPlugin pvpplugin){
         this.pvpPlugin = pvpplugin;
         InfectedTranscriber transcriber = new InfectedTranscriber();
@@ -23,12 +26,42 @@ public class InfectedRunner extends BaseRunner {
         InitialiseSurvivors();
     }
 
+    @Override
+    public void Start(){
+
+    }
+
+    @Override
+    public boolean CanStart(){
+        return timeMin != null && super.CanStart();
+    }
+
+    @Override
+    public void End(){
+
+    }
+
+    @Override
+    public boolean CanJoin(Player player){
+        return false;
+    }
+
+    @Override
+    public void Join(Player player){
+
+    }
+
+    @Override
+    public void Leave(Player player){
+
+    }
+
     private void InitialiseInfected() {
         infected.setPrefix("Infected");
         infected.setTeamColour(Color.RED);
         infected.setKit(InfectedKit());
     }
-
+    //TODO: Create infected Kit
     private Kit InfectedKit() {
         return null;
     }
@@ -38,7 +71,7 @@ public class InfectedRunner extends BaseRunner {
         survivors.setTeamColour(Color.BLUE);
         survivors.setKit(SurvivorKit());
     }
-
+    //TODO: Create survivor Kit
     private Kit SurvivorKit() {
         return null;
     }

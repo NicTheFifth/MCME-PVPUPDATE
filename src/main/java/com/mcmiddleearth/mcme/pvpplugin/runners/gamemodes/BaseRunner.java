@@ -11,13 +11,19 @@ import java.util.Set;
 
 public abstract class BaseRunner implements GamemodeRunner {
 
+    PVPPlugin pvpPlugin;
+
     @Getter@Setter
     Set<Player> players;
 
     @Getter@Setter
     Integer maxPlayers;
 
-    PVPPlugin pvpPlugin;
+    @Getter@Setter
+    boolean privateGame;
+
+    @Getter@Setter
+    Set<Player> whitelistedPlayers;
 
     @Override
     public boolean CanStart() {
