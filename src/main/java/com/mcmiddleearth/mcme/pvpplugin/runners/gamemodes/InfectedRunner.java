@@ -23,14 +23,21 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 public class InfectedRunner extends BaseRunner {
 
     @Getter
     Team infected = new Team();
+
     @Getter
     Team survivors = new Team();
+
     @Getter@Setter
     Integer timeMin;
+
     public InfectedRunner(JSONMap map, PVPPlugin pvpplugin, boolean privateGame){
         this.pvpPlugin = pvpplugin;
         this.privateGame = privateGame;
@@ -38,6 +45,7 @@ public class InfectedRunner extends BaseRunner {
         transcriber.Transcribe(map, this);
         InitialiseInfected();
         InitialiseSurvivors();
+        gameState = State.QUEUED;
     }
 
     @Override
@@ -62,12 +70,19 @@ public class InfectedRunner extends BaseRunner {
 
     @Override
     public boolean CanJoin(Player player){
-        return false;
+        return super.CanJoin(player);
     }
 
     @Override
     public void Join(Player player){
-
+        if(gameState == State.QUEUED){
+            super.Join(player);
+        }else{
+            Set<Team> teams = new HashSet<>();
+            teams.add(infected);
+            teams.add(survivors);
+            matchmaker.addMember(player,teams);
+        }
     }
 
     @Override
@@ -80,6 +95,7 @@ public class InfectedRunner extends BaseRunner {
         infected.setTeamColour(Color.RED);
         infected.setKit(InfectedKit());
     }
+
     //TODO: Create infected Kit
     private Kit InfectedKit() {
         PlayerInventory returnInventory = (PlayerInventory) Bukkit.createInventory(null, InventoryType.PLAYER);
@@ -99,6 +115,7 @@ public class InfectedRunner extends BaseRunner {
         survivors.setTeamColour(Color.BLUE);
         survivors.setKit(SurvivorKit());
     }
+
     //TODO: Create survivor Kit
     private Kit SurvivorKit() {
         PlayerInventory returnInventory = (PlayerInventory) Bukkit.createInventory(null, InventoryType.PLAYER);
