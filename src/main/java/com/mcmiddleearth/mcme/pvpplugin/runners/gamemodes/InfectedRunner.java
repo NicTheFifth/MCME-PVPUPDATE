@@ -78,10 +78,7 @@ public class InfectedRunner extends BaseRunner {
         if(gameState == State.QUEUED){
             super.Join(player);
         }else{
-            Set<Team> teams = new HashSet<>();
-            teams.add(infected);
-            teams.add(survivors);
-            matchmaker.addMember(player,teams);
+            matchmaker.addMember(player, infected, survivors);
         }
     }
 
