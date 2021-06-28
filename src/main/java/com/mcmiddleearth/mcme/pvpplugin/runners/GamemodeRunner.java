@@ -9,7 +9,7 @@ public interface GamemodeRunner extends Runnable {
 
     void Start();
 
-    void End();
+    void End(boolean stopped);
 
     boolean CanJoin(Player player);
 

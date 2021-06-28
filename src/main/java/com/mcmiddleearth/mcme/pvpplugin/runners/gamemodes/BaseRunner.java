@@ -6,7 +6,9 @@ import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.Set;
 
@@ -32,7 +34,8 @@ public abstract class BaseRunner implements GamemodeRunner {
     @Getter@Setter
     Set<Player> whitelistedPlayers;
 
-    Matchmaker matchmaker = new Matchmaker();
+    Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+
     @Override
     public boolean CanStart() {
         return !players.isEmpty();
@@ -44,7 +47,7 @@ public abstract class BaseRunner implements GamemodeRunner {
     }
 
     @Override
-    public void End() {
+    public void End(boolean stopped) {
 
     }
 

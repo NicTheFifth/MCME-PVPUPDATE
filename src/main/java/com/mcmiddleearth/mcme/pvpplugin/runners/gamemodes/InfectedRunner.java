@@ -3,29 +3,20 @@ package com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.transcribers.InfectedTranscriber;
+import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.mcme.pvpplugin.util.Kit;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
+import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.KitEditor;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.block.Banner;
-import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import static com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker.addMember;
 
 public class InfectedRunner extends BaseRunner {
 
@@ -36,13 +27,12 @@ public class InfectedRunner extends BaseRunner {
     Team survivors = new Team();
 
     @Getter@Setter
-    Integer timeMin;
+    Integer timeSec;
 
     public InfectedRunner(JSONMap map, PVPPlugin pvpplugin, boolean privateGame){
         this.pvpPlugin = pvpplugin;
         this.privateGame = privateGame;
-        InfectedTranscriber transcriber = new InfectedTranscriber();
-        transcriber.Transcribe(map, this);
+        InfectedTranscriber.Transcribe(map, this);
         InitialiseInfected();
         InitialiseSurvivors();
         gameState = State.QUEUED;
@@ -50,22 +40,39 @@ public class InfectedRunner extends BaseRunner {
 
     @Override
     public void Start(){
-
+        if(CanStart()){
+            ScoreboardEditor.InitInfected(scoreboard,infected,survivors,timeSec);
+            //TODO: Setup when starting
+            run();
+        }
     }
 
     @Override
     public void run() {
-
+        timeSec--;
+        if (timeSec == 0) {
+            End(false);
+        }
+        if (timeSec == 1) {
+            players.forEach(player -> player.sendMessage(ChatColor.GREEN + "1 second remaining!"));
+        }
+        if (timeSec >= 2 && timeSec <= 5) {
+            players.forEach(player -> player.sendMessage(ChatColor.GREEN + "" + timeSec + "seconds remaining!"));
+        }
+        if (timeSec == 30) {
+            players.forEach(player -> player.sendMessage(ChatColor.GREEN + "30 seconds remaining!"));
+        }
+        ScoreboardEditor.updateTime(scoreboard, timeSec);
     }
 
     @Override
     public boolean CanStart(){
-        return timeMin != null && super.CanStart();
+        return timeSec != null && super.CanStart();
     }
 
     @Override
-    public void End(){
-
+    public void End(boolean stopped){
+        super.End(stopped);
     }
 
     @Override
@@ -78,7 +85,7 @@ public class InfectedRunner extends BaseRunner {
         if(gameState == State.QUEUED){
             super.Join(player);
         }else{
-            matchmaker.addMember(player, infected, survivors);
+            addMember(player, infected, survivors);
         }
     }
 
@@ -93,7 +100,6 @@ public class InfectedRunner extends BaseRunner {
         infected.setKit(InfectedKit());
     }
 
-    //TODO: Create infected Kit
     private Kit InfectedKit() {
         PlayerInventory returnInventory = (PlayerInventory) Bukkit.createInventory(null, InventoryType.PLAYER);
         returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
@@ -103,7 +109,7 @@ public class InfectedRunner extends BaseRunner {
         bow.addEnchantment(Enchantment.ARROW_INFINITE,1);
         returnInventory.setItem(1, bow);
         returnInventory.setItem(2, new ItemStack(Material.ARROW));
-         returnInventory.forEach(item -> SetItemColour(item, infected.getTeamColour()));
+        returnInventory.forEach(item -> KitEditor.setItemColour(item, infected.getTeamColour()));
         return new Kit(returnInventory);
     }
 
@@ -113,7 +119,6 @@ public class InfectedRunner extends BaseRunner {
         survivors.setKit(SurvivorKit());
     }
 
-    //TODO: Create survivor Kit
     private Kit SurvivorKit() {
         PlayerInventory returnInventory = (PlayerInventory) Bukkit.createInventory(null, InventoryType.PLAYER);
         returnInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
@@ -126,23 +131,9 @@ public class InfectedRunner extends BaseRunner {
         bow.addEnchantment(Enchantment.ARROW_INFINITE,1);
         returnInventory.setItem(1, bow);
         returnInventory.setItem(2, new ItemStack(Material.ARROW));
-        returnInventory.forEach(item -> SetItemColour(item, survivors.getTeamColour()));
+        returnInventory.forEach(item -> KitEditor.setItemColour(item, survivors.getTeamColour()));
         return new Kit(returnInventory);
     }
     //TODO: Move to Util???
-    private void SetItemColour(ItemStack item, Color teamColour) {
-        if(item instanceof LeatherArmorMeta){
-            LeatherArmorMeta newColour = (LeatherArmorMeta) item;
-            newColour.setColor(teamColour);
-            item.setItemMeta(newColour);
-        }
-        if(item.getType().equals(Material.SHIELD)){
-            ItemMeta meta = item.getItemMeta();
-            BlockStateMeta bmeta = (BlockStateMeta) meta;
-            Banner banner = (Banner) bmeta.getBlockState();
-            banner.setBaseColor(DyeColor.getByColor(teamColour));
-            bmeta.setBlockState(banner);
-            item.setItemMeta(bmeta);
-        }
-    }
+
 }

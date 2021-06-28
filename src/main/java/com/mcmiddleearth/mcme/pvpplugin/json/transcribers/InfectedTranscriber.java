@@ -11,7 +11,7 @@ import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import java.util.Collections;
 
 public class InfectedTranscriber{
-    public void Transcribe(JSONMap jsonMap, InfectedRunner runner) {
+    public static void Transcribe(JSONMap jsonMap, InfectedRunner runner) {
         JSONInfected gamemodeData = jsonMap.getJSONInfected();
         if (gamemodeData.getMaximumPlayers() == null) {
             throw new BadMaxPlayerException(jsonMap.getTitle() + " has null for max players for infected");
@@ -22,7 +22,7 @@ public class InfectedTranscriber{
 
     }
 
-    private void setSpawnLocation(String title, String teamType, Team team, JSONLocation spawn) {
+    private static void setSpawnLocation(String title, String teamType, Team team, JSONLocation spawn) {
         try {
             team.setSpawnLocations(Collections.singletonList(LocationTranscriber.TranscribeFromJSON(spawn)));
         } catch (Exception e) {
