@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 public class KitEditor {
-    public static ItemStack setItemColour(ItemStack item, Color teamColour) {
+    public static void setItemColour(ItemStack item, Color teamColour) {
         if(item instanceof LeatherArmorMeta){
             LeatherArmorMeta newColour = (LeatherArmorMeta) item;
             newColour.setColor(teamColour);
@@ -24,6 +24,5 @@ public class KitEditor {
             bmeta.setBlockState(banner);
             item.setItemMeta(bmeta);
         }
-        return item;
     }
 }

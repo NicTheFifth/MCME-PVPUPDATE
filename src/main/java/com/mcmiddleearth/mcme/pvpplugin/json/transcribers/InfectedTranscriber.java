@@ -21,7 +21,7 @@ public class InfectedTranscriber{
         setSpawnLocation(jsonMap.getTitle(), "survivor", runner.getSurvivors(), gamemodeData.getSurvivorSpawn());
 
     }
-
+    //TODO: Initialise area
     private static void setSpawnLocation(String title, String teamType, Team team, JSONLocation spawn) {
         try {
             team.setSpawnLocations(Collections.singletonList(LocationTranscriber.TranscribeFromJSON(spawn)));

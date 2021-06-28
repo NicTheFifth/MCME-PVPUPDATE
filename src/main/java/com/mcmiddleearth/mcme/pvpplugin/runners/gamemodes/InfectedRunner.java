@@ -43,6 +43,7 @@ public class InfectedRunner extends BaseRunner {
         if(CanStart()){
             ScoreboardEditor.InitInfected(scoreboard,infected,survivors,timeSec);
             //TODO: Setup when starting
+            super.Start();
             run();
         }
     }
@@ -81,10 +82,9 @@ public class InfectedRunner extends BaseRunner {
     }
 
     @Override
-    public void Join(Player player){
-        if(gameState == State.QUEUED){
-            super.Join(player);
-        }else{
+    public void Join(Player player) {
+        super.Join(player);
+        if (gameState != State.QUEUED) {
             addMember(player, infected, survivors);
         }
     }
@@ -134,6 +134,4 @@ public class InfectedRunner extends BaseRunner {
         returnInventory.forEach(item -> KitEditor.setItemColour(item, survivors.getTeamColour()));
         return new Kit(returnInventory);
     }
-    //TODO: Move to Util???
-
 }

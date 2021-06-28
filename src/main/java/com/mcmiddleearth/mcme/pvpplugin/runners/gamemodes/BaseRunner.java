@@ -4,6 +4,7 @@ import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
+import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -26,6 +27,9 @@ public abstract class BaseRunner implements GamemodeRunner {
     Set<Player> players;
 
     @Getter@Setter
+    Team spectator;
+
+    @Getter@Setter
     Integer maxPlayers;
 
     @Getter@Setter
@@ -43,7 +47,7 @@ public abstract class BaseRunner implements GamemodeRunner {
 
     @Override
     public void Start() {
-
+        gameState = State.RUNNING;
     }
 
     @Override
