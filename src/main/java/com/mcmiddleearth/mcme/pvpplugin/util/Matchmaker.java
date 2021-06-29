@@ -5,6 +5,10 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 
 public class Matchmaker {
+    public static void infectedMatchMake(Set<Player> players, Team infected, Team survivors){
+
+    }
+
     public static void addMember(Player player, Team... teams){
         addMember(player, Set.of(teams));
     }

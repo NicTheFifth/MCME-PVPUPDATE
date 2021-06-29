@@ -28,4 +28,12 @@ public class Team {
 
     @Getter@Setter
     List<Location> spawnLocations;
+
+    public void spawnAll(){
+        int spawnNum = 0;
+        for (Player player: members) {
+            player.teleport(spawnLocations.get(spawnNum%spawnLocations.size()));
+            spawnNum++;
+        }
+    }
 }

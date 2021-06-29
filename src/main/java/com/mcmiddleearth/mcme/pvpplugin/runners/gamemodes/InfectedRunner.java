@@ -5,6 +5,7 @@ import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.transcribers.InfectedTranscriber;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.mcme.pvpplugin.util.Kit;
+import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.KitEditor;
 import lombok.Getter;
@@ -42,7 +43,9 @@ public class InfectedRunner extends BaseRunner {
     public void Start(){
         if(CanStart()){
             ScoreboardEditor.InitInfected(scoreboard,infected,survivors,timeSec);
-            //TODO: Setup when starting
+            Matchmaker.infectedMatchMake(players, infected, survivors);
+            infected.spawnAll();
+            survivors.spawnAll();
             super.Start();
             run();
         }
@@ -96,51 +99,6 @@ public class InfectedRunner extends BaseRunner {
         }
         infected.getMembers().remove(player);
         super.Leave(player);
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     }
 
     private void InitialiseInfected() {

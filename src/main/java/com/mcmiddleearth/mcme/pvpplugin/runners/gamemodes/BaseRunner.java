@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.Set;
@@ -47,11 +48,14 @@ public abstract class BaseRunner implements GamemodeRunner {
 
     @Override
     public void Start() {
+        gameState = State.COUNTDOWN;
+
         gameState = State.RUNNING;
     }
 
     @Override
     public void End(boolean stopped) {
+        players.forEach(player-> player.getInventory().clear());
 
     }
 
