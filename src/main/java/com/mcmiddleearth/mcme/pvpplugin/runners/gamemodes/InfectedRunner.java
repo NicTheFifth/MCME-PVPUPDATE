@@ -91,7 +91,56 @@ public class InfectedRunner extends BaseRunner {
 
     @Override
     public void Leave(Player player){
-
+        if(survivors.getMembers().contains(player)){
+            survivors.getDeadMembers().add(player);
+        }
+        infected.getMembers().remove(player);
+        super.Leave(player);
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
 
     private void InitialiseInfected() {
