@@ -7,13 +7,19 @@ import java.util.logging.Logger;
 
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
+import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PVPPlugin extends JavaPlugin {
+
+    @Getter
+    PluginManager pluginManager;
 
     @Getter
     HashMap<String, JSONMap> maps;
@@ -21,9 +27,13 @@ public class PVPPlugin extends JavaPlugin {
     @Getter
     HashMap<UUID, Playerstat> playerstats;
 
+    @Getter@Setter
+    GamemodeRunner activeGame;
+
     @Override
     public void onEnable() {
         loadConfig();
+        pluginManager = this.getServer().getPluginManager();
 
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
     }

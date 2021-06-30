@@ -3,6 +3,7 @@ package com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.ScoreboardEditor;
+import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
@@ -13,6 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -56,6 +58,7 @@ public abstract class BaseRunner implements GamemodeRunner {
     public void Start() {
         gameState = State.COUNTDOWN;
         spectator.getMembers().forEach(player -> player.teleport(spectator.getSpawnLocations().get(0)));
+        TeamHandler.setGamemode(GameMode.SPECTATOR, spectator);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -91,5 +94,9 @@ public abstract class BaseRunner implements GamemodeRunner {
         if(players.remove(player)){
             player.sendMessage(Style.INFO + "You have left the game.");
         }
+    }
+
+    public void HandleKill(PlayerDeathEvent playerDeath){
+
     }
 }

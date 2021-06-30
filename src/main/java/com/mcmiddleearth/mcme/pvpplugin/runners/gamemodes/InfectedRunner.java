@@ -15,6 +15,9 @@ import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -43,15 +46,15 @@ public class InfectedRunner extends BaseRunner {
     }
 
     @Override
-    public void Start(){
-        if(CanStart()){
-            ScoreboardEditor.InitInfected(scoreboard,infected,survivors,timeSec);
-            Matchmaker.infectedMatchMake(players, infected, survivors);
-            TeamHandler.spawnAll(infected, survivors);
-            super.Start();
+    public void Start() {
+        ScoreboardEditor.InitInfected(scoreboard, infected, survivors, timeSec);
+        pvpPlugin.getPluginManager().registerEvents(this, pvpPlugin);
+        Matchmaker.infectedMatchMake(players, infected, survivors);
+        TeamHandler.spawnAll(infected, survivors);
+        TeamHandler.setGamemode(GameMode.SURVIVAL, infected, survivors);
+        super.Start();
 
-            Run();
-        }
+        Run();
     }
 
     public void Run(){
@@ -96,6 +99,7 @@ public class InfectedRunner extends BaseRunner {
                 playerstat.addPlayed();
             });
         }
+        HandlerList.unregisterAll(this);
         super.End(stopped);
     }
 
@@ -115,6 +119,7 @@ public class InfectedRunner extends BaseRunner {
     @Override
     public void Leave(Player player){
         if(survivors.getMembers().contains(player)){
+            survivors.getMembers().remove(player);
             survivors.getDeadMembers().add(player);
         }
         infected.getMembers().remove(player);
@@ -172,5 +177,10 @@ public class InfectedRunner extends BaseRunner {
             return survivors;
         }
         return infected;
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent playerDeath){
+
     }
 }
