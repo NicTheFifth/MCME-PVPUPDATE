@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -181,6 +182,22 @@ public class InfectedRunner extends BaseRunner {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent playerDeath){
+        Player player = playerDeath.getEntity();
+        if(players.contains(player)) {
+            if (survivors.getMembers().remove(player)) {
+                survivors.getDeadMembers().add(player);
+                infected.getMembers().add(player);
+            }
+            ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
+            HandleDeath(playerDeath);
+        }
+    }
 
+    @EventHandler
+    public void onPlayerSpawn(PlayerRespawnEvent playerRespawn){
+        Player player = playerRespawn.getPlayer();
+        if(players.contains(player)){
+
+        }
     }
 }

@@ -96,7 +96,11 @@ public abstract class BaseRunner implements GamemodeRunner {
         }
     }
 
-    public void HandleKill(PlayerDeathEvent playerDeath){
-
+    public void HandleDeath(PlayerDeathEvent playerDeath){
+        Player player = playerDeath.getEntity();
+        pvpPlugin.getPlayerstats().get(player.getUniqueId()).addDeath();
+        if(player.getKiller() != null){
+            pvpPlugin.getPlayerstats().get(player.getKiller().getUniqueId()).addKill();
+        }
     }
 }

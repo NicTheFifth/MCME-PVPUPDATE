@@ -32,4 +32,9 @@ public class TeamHandler {
     public static void setGamemode(GameMode gamemode, Team team){
         team.getMembers().forEach(player -> player.setGameMode(gamemode));
     }
+    public static void spawnPlayer(Player player, Team...teams){
+        spawnPlayer(player, Set.of(teams));
+    }
+    public static void spawnPlayer(Player player, Set<Team> teams){
+    }
 }

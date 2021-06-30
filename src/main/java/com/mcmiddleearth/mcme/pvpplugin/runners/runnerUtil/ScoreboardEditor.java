@@ -20,4 +20,8 @@ public class ScoreboardEditor {
         int timeSec = time % 60;
         scoreboard.getObjective("Remaining").setDisplayName("Time: " + timeMin + "m " + timeSec + "s");
     }
+    public static void updateValueInfected(Scoreboard scoreboard, Team infected, Team survivors){
+        scoreboard.getObjective("Remaining").getScore(ChatColor.BLUE + "Survivors:").setScore(survivors.getMembers().size());
+        scoreboard.getObjective("Remaining").getScore(ChatColor.BLUE + "Survivors:").setScore(infected.getMembers().size());
+    }
 }
