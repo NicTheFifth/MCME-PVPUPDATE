@@ -3,11 +3,13 @@ package com.mcmiddleearth.mcme.pvpplugin.runners;
 import org.bukkit.entity.Player;
 
 
-public interface GamemodeRunner extends Runnable {
+public interface GamemodeRunner {
 
     boolean CanStart();
 
     void Start();
+
+    void Run();
 
     void End(boolean stopped);
 

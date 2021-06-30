@@ -2,8 +2,10 @@ package com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes;
 
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
+import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.mcme.pvpplugin.json.transcribers.InfectedTranscriber;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.ScoreboardEditor;
+import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.mcme.pvpplugin.util.Kit;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
@@ -16,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker.addMember;
 
@@ -44,29 +47,34 @@ public class InfectedRunner extends BaseRunner {
         if(CanStart()){
             ScoreboardEditor.InitInfected(scoreboard,infected,survivors,timeSec);
             Matchmaker.infectedMatchMake(players, infected, survivors);
-            infected.spawnAll();
-            survivors.spawnAll();
+            TeamHandler.spawnAll(infected, survivors);
             super.Start();
-            run();
+
+            Run();
         }
     }
 
-    @Override
-    public void run() {
-        timeSec--;
-        if (timeSec == 0) {
-            End(false);
-        }
-        if (timeSec == 1) {
-            players.forEach(player -> player.sendMessage(ChatColor.GREEN + "1 second remaining!"));
-        }
-        if (timeSec >= 2 && timeSec <= 5) {
-            players.forEach(player -> player.sendMessage(ChatColor.GREEN + "" + timeSec + "seconds remaining!"));
-        }
-        if (timeSec == 30) {
-            players.forEach(player -> player.sendMessage(ChatColor.GREEN + "30 seconds remaining!"));
-        }
-        ScoreboardEditor.updateTime(scoreboard, timeSec);
+    public void Run(){
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                timeSec--;
+                if (timeSec == 0) {
+                    End(false);
+                }
+                if (timeSec == 1) {
+                    players.forEach(player -> player.sendMessage(ChatColor.GREEN + "1 second remaining!"));
+                }
+                if (timeSec >= 2 && timeSec <= 5) {
+                    players.forEach(player -> player.sendMessage(ChatColor.GREEN + "" + timeSec + "seconds remaining!"));
+                }
+                if (timeSec == 30) {
+                    players.forEach(player -> player.sendMessage(ChatColor.GREEN + "30 seconds remaining!"));
+                }
+                ScoreboardEditor.updateTime(scoreboard, timeSec);
+
+            }
+        }.runTaskTimer(pvpPlugin, 20, 20L *timeSec);
     }
 
     @Override
@@ -76,6 +84,18 @@ public class InfectedRunner extends BaseRunner {
 
     @Override
     public void End(boolean stopped){
+        if(!stopped) {
+            GetWinningTeam().getMembers().forEach(player -> {
+                Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
+                playerstat.addWon();
+                playerstat.addPlayed();
+            });
+            GetLosingTeam().getMembers().forEach(player -> {
+                Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
+                playerstat.addLost();
+                playerstat.addPlayed();
+            });
+        }
         super.End(stopped);
     }
 
@@ -140,5 +160,17 @@ public class InfectedRunner extends BaseRunner {
         returnInventory.setItem(2, new ItemStack(Material.ARROW));
         returnInventory.forEach(item -> KitEditor.setItemColour(item, survivors.getTeamColour()));
         return new Kit(returnInventory);
+    }
+    private Team GetWinningTeam(){
+        if(survivors.getMembers().isEmpty()){
+            return infected;
+        }
+        return survivors;
+    }
+    private Team GetLosingTeam() {
+        if(survivors.getMembers().isEmpty()){
+            return survivors;
+        }
+        return infected;
     }
 }

@@ -2,12 +2,16 @@ package com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes;
 
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
+import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
@@ -39,6 +43,8 @@ public abstract class BaseRunner implements GamemodeRunner {
     @Getter@Setter
     Set<Player> whitelistedPlayers;
 
+    private long countDowntimer = 5;
+
     Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
 
     @Override
@@ -49,14 +55,25 @@ public abstract class BaseRunner implements GamemodeRunner {
     @Override
     public void Start() {
         gameState = State.COUNTDOWN;
-
+        spectator.getMembers().forEach(player -> player.teleport(spectator.getSpawnLocations().get(0)));
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                players.forEach(player -> player.sendMessage(ChatColor.GREEN + "Game starts in " + countDowntimer));
+                countDowntimer--;
+            }
+        }.runTaskTimer(pvpPlugin, 0, 20L * countDowntimer + 20);
         gameState = State.RUNNING;
     }
 
     @Override
     public void End(boolean stopped) {
-        players.forEach(player-> player.getInventory().clear());
-
+        players.forEach(player-> {
+            player.getInventory().clear();
+            player.getActivePotionEffects().clear();
+            player.setGameMode(GameMode.ADVENTURE);
+        });
+        spectator.getMembers().forEach(player -> pvpPlugin.getPlayerstats().get(player.getUniqueId()).addSpectate());
     }
 
     @Override

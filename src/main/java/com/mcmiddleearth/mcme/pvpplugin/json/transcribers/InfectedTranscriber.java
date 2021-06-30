@@ -19,7 +19,7 @@ public class InfectedTranscriber{
         runner.setMaxPlayers(gamemodeData.getMaximumPlayers());
         setSpawnLocation(jsonMap.getTitle(), "infected", runner.getInfected(), gamemodeData.getInfectedSpawn());
         setSpawnLocation(jsonMap.getTitle(), "survivor", runner.getSurvivors(), gamemodeData.getSurvivorSpawn());
-
+        setSpawnLocation(jsonMap.getTitle(), "spectators", runner.getSpectator(),jsonMap.getSpawn());
     }
     //TODO: Initialise area
     private static void setSpawnLocation(String title, String teamType, Team team, JSONLocation spawn) {
