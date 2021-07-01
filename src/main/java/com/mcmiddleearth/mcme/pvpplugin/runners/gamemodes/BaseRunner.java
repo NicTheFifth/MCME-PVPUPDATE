@@ -15,7 +15,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -106,5 +108,10 @@ public abstract class BaseRunner implements GamemodeRunner {
         if(player.getKiller() != null){
             pvpPlugin.getPlayerstats().get(player.getKiller().getUniqueId()).addKill();
         }
+    }
+
+    @EventHandler
+    public void stayInBorder(PlayerMoveEvent playerMove){
+
     }
 }
