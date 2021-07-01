@@ -23,18 +23,15 @@ public class TeamHandler {
             spawnNum++;
         }
     }
+
     public static void setGamemode(GameMode gamemode, Team...teams){
         setGamemode(gamemode, Set.of(teams));
     }
+
     public static void setGamemode(GameMode gamemode, Set<Team> teams){
         teams.forEach(team -> setGamemode(gamemode, team));
     }
     public static void setGamemode(GameMode gamemode, Team team){
         team.getMembers().forEach(player -> player.setGameMode(gamemode));
-    }
-    public static void spawnPlayer(Player player, Team...teams){
-        spawnPlayer(player, Set.of(teams));
-    }
-    public static void spawnPlayer(Player player, Set<Team> teams){
     }
 }

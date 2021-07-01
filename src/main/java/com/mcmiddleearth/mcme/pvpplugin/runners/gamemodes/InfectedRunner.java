@@ -51,7 +51,7 @@ public class InfectedRunner extends BaseRunner {
         ScoreboardEditor.InitInfected(scoreboard, infected, survivors, timeSec);
         pvpPlugin.getPluginManager().registerEvents(this, pvpPlugin);
         Matchmaker.infectedMatchMake(players, infected, survivors);
-        TeamHandler.spawnAll(infected, survivors);
+        TeamHandler.spawnAll(infected, survivors, spectator);
         TeamHandler.setGamemode(GameMode.SURVIVAL, infected, survivors);
         super.Start();
 
@@ -76,7 +76,6 @@ public class InfectedRunner extends BaseRunner {
                     players.forEach(player -> player.sendMessage(ChatColor.GREEN + "30 seconds remaining!"));
                 }
                 ScoreboardEditor.updateTime(scoreboard, timeSec);
-
             }
         }.runTaskTimer(pvpPlugin, 20, 20L *timeSec);
     }
@@ -197,7 +196,11 @@ public class InfectedRunner extends BaseRunner {
     public void onPlayerSpawn(PlayerRespawnEvent playerRespawn){
         Player player = playerRespawn.getPlayer();
         if(players.contains(player)){
-
+            if(infected.getMembers().contains(player)){
+                playerRespawn.setRespawnLocation(infected.getSpawnLocations().get(0));
+            }if(survivors.getMembers().contains(player)){
+                playerRespawn.setRespawnLocation(infected.getSpawnLocations().get(0));
+            }
         }
     }
 }

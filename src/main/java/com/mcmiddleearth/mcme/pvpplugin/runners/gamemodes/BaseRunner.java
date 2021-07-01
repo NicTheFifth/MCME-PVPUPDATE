@@ -7,6 +7,7 @@ import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
+import com.sk89q.worldedit.regions.Region;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -38,6 +39,9 @@ public abstract class BaseRunner implements GamemodeRunner {
 
     @Getter@Setter
     Integer maxPlayers;
+
+    @Getter@Setter
+    Region region;
 
     @Getter@Setter
     boolean privateGame;
