@@ -78,6 +78,7 @@ public class InfectedRunner extends BaseRunner {
                 ScoreboardEditor.updateTime(scoreboard, timeSec);
             }
         }.runTaskTimer(pvpPlugin, 20, 20L *timeSec);
+        End(false);
     }
 
     @Override
