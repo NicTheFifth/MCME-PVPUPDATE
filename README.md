@@ -1,7 +1,7 @@
 PVP Plugin version 2
 ===========
 ## To be Implemented
-* Private tag to game (boolean)
+* Infected assign the infected
 * Mechanism for doing private games
 * FBT tag whilst in lobby  
 * Save and Load
@@ -9,3 +9,4 @@ PVP Plugin version 2
 
 ##Implemented
 * JSON structure
+* Whitelist

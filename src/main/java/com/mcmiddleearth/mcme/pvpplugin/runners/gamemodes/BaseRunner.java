@@ -91,7 +91,10 @@ public abstract class BaseRunner implements GamemodeRunner {
 
     @Override
     public boolean CanJoin(Player player) {
-        return maxPlayers > players.size() && !players.contains((player)) && gameState != State.COUNTDOWN;
+        return  maxPlayers > players.size() &&
+                !players.contains((player)) &&
+                gameState != State.COUNTDOWN &&
+                (!privateGame || whitelistedPlayers.contains(player));
     }
 
     @Override
@@ -116,11 +119,13 @@ public abstract class BaseRunner implements GamemodeRunner {
 
     @EventHandler
     public void PlayerMove(PlayerMoveEvent playerMove){
-        if(gameState==State.COUNTDOWN){
-            playerMove.setCancelled(true);
-            return;
+        if(players.contains(playerMove.getPlayer())) {
+            if (gameState == State.COUNTDOWN) {
+                playerMove.setCancelled(true);
+                return;
+            }
+            StayInBorder(playerMove);
         }
-        StayInBorder(playerMove);
     }
 
     private void StayInBorder(@NotNull PlayerMoveEvent playerMove){

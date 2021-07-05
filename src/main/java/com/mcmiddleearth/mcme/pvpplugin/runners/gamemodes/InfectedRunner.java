@@ -12,6 +12,7 @@ import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.KitEditor;
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -77,7 +79,7 @@ public class InfectedRunner extends BaseRunner {
                 }
                 ScoreboardEditor.updateTime(scoreboard, timeSec);
             }
-        }.runTaskTimer(pvpPlugin, 20, 20L *timeSec);
+        }.runTaskTimer(pvpPlugin, 20, 20L * timeSec);
         End(false);
     }
 
@@ -113,8 +115,12 @@ public class InfectedRunner extends BaseRunner {
     public void Join(Player player) {
         super.Join(player);
         if (gameState != State.QUEUED) {
-            addMember(player, infected, survivors);
+            if(survivors.getDeadMembers().contains(player))
+                addMember(player, infected);
+            else
+                addMember(player, survivors);
         }
+        ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
     }
 
     @Override
@@ -124,6 +130,7 @@ public class InfectedRunner extends BaseRunner {
             survivors.getDeadMembers().add(player);
         }
         infected.getMembers().remove(player);
+        ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
         super.Leave(player);
     }
 
@@ -181,6 +188,15 @@ public class InfectedRunner extends BaseRunner {
     }
 
     @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent playerLeave){
+        Player player = playerLeave.getPlayer();
+        Leave(player);
+        if(infected.getMembers().isEmpty()){
+            End(true);
+        }
+    }
+
+    @EventHandler
     public void onPlayerDeath(PlayerDeathEvent playerDeath){
         Player player = playerDeath.getEntity();
         if(players.contains(player)) {
@@ -190,6 +206,9 @@ public class InfectedRunner extends BaseRunner {
             }
             ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
             HandleDeath(playerDeath);
+        }
+        if(survivors.getMembers().isEmpty()){
+            End(false);
         }
     }
 
