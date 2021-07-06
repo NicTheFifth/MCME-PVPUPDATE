@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
+import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,15 +28,24 @@ public class PVPPlugin extends JavaPlugin {
     @Getter
     HashMap<UUID, Playerstat> playerstats;
 
+    @Getter
+    Matchmaker matchmaker;
+
     @Getter@Setter
     GamemodeRunner activeGame;
 
     @Override
     public void onEnable() {
         loadConfig();
-        pluginManager = this.getServer().getPluginManager();
+        setup();
+
 
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
+    }
+
+    private void setup() {
+        pluginManager = this.getServer().getPluginManager();
+        matchmaker = new Matchmaker(this);
     }
 
     @Override

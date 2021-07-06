@@ -7,7 +7,11 @@ import java.util.Set;
 
 public class Matchmaker {
     PVPPlugin pvpPlugin;
-    public static void infectedMatchMake(Set<Player> players, Team infected, Team survivors){
+
+    public Matchmaker(PVPPlugin pvpPlugin){
+        this.pvpPlugin = pvpPlugin;
+    }
+    public void infectedMatchMake(Set<Player> players, Team infected, Team survivors){
         while(players.size() != infected.getMembers().size() + survivors.getMembers().size()){
 
         }

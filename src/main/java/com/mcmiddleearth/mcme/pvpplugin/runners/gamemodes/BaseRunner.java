@@ -86,7 +86,8 @@ public abstract class BaseRunner implements GamemodeRunner {
             player.getActivePotionEffects().clear();
             player.setGameMode(GameMode.ADVENTURE);
         });
-        spectator.getMembers().forEach(player -> pvpPlugin.getPlayerstats().get(player.getUniqueId()).addSpectate());
+        if(!stopped)
+            spectator.getMembers().forEach(player -> pvpPlugin.getPlayerstats().get(player.getUniqueId()).addSpectate());
     }
 
     @Override

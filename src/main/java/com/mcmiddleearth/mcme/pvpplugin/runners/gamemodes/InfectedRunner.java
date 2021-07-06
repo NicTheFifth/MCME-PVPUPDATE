@@ -52,7 +52,7 @@ public class InfectedRunner extends BaseRunner {
     public void Start() {
         ScoreboardEditor.InitInfected(scoreboard, infected, survivors, timeSec);
         pvpPlugin.getPluginManager().registerEvents(this, pvpPlugin);
-        Matchmaker.infectedMatchMake(players, infected, survivors);
+        pvpPlugin.getMatchmaker().infectedMatchMake(players, infected, survivors);
         TeamHandler.spawnAll(infected, survivors, spectator);
         TeamHandler.setGamemode(GameMode.SURVIVAL, infected, survivors);
         super.Start();
