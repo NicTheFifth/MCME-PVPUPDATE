@@ -26,7 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker.addMember;
+import static com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker.*;
 
 public class InfectedRunner extends BaseRunner {
 

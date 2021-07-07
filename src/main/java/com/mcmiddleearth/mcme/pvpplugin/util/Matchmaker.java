@@ -12,9 +12,18 @@ public class Matchmaker {
         this.pvpPlugin = pvpPlugin;
     }
     public void infectedMatchMake(Set<Player> players, Team infected, Team survivors){
-        while(players.size() != infected.getMembers().size() + survivors.getMembers().size()){
+        players.forEach(player -> {
+            if(!(infected.getMembers().contains(player) || survivors.getMembers().contains(player))){
+                addMember(player, infectedAdder(infected, survivors));
+            }
+        });
+    }
 
+    public Team infectedAdder(Team infected, Team survivors){
+        if(5*getTotalELO(infected) > getTotalELO(survivors)){
+            return survivors;
         }
+        return infected;
     }
 
     public static void addMember(Player player, Team... teams){
@@ -22,8 +31,18 @@ public class Matchmaker {
     }
 
     public static void addMember(Player player, Set<Team> teams){
-
+        //TODO: make the general add member
     }
+
+    public static void addMember(Player player, Team team){
+        team.getMembers().add(player);
+        player.getInventory().setContents(team.getKit().inventory.getContents());
+    }
+
+    public Double avgELO(Team team){
+        return (double)(getTotalELO(team))/(double)(team.getMembers().size());
+    }
+
     public Long getTotalELO(Team team){
         long retELO = 0L;
         for (Player player : team.getMembers()) {
