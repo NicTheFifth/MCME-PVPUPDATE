@@ -16,8 +16,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.WorldCreator;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,42 +37,42 @@ public class PVPPlugin extends JavaPlugin {
     GamemodeRunner activeGame;
 
     private File mapDirectory;
+    private File statDirectory;
 
     @Override
     public void onLoad(){
         this.saveDefaultConfig();
         this.reloadConfig();
-        if(this.getConfig().contains("noHunger")){
+        /*if(this.getConfig().contains("noHunger")){
             noHunger.addAll(this.getConfig().getStringList("noHunger"));
-        }
-        CLog.println(getDataFolder().getPath());
-        if (!getDataFolder().exists()){
-            getDataFolder().mkdir();
+        }*/
+
+        if (!getDataFolder().mkdir()){
+            if(!getDataFolder().exists()){
+                Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Data folder doesn't exist and wasn't able to be created");
+            }
         }
         mapDirectory = new File(getDataFolder() + System.getProperty("file.separator") + "maps");
-        if (!mapDirectory.exists()){
-            mapDirectory.mkdir();
+        if (!mapDirectory.mkdir()){
+            if(!mapDirectory.exists()){
+                Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Map directory doesn't exist and wasn't able to be created");
+            }
         }
-        this.statDirectory = new File(getDataFolder() + System.getProperty("file.separator") + "stats");
-        if (!statDirectory.exists()){
-            statDirectory.mkdir();
+        statDirectory = new File(getDataFolder() + System.getProperty("file.separator") + "stats");
+        if (!statDirectory.mkdir()){
+            if(!statDirectory.exists()){
+                Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Stat directory doesn't exist and wasn't able to be created");
+            }
         }
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            //PlaceholderAPI.registerPlaceholderExpansion("mcmePvP", new com.mcmiddleearth.mcme.pvp.Handlers.ChatHandler());
-            new com.mcmiddleearth.mcme.pvp.Handlers.ChatHandler().register();
-        } else {
-            Logger.getGlobal().warning("PlaceholderAPI not enabled");
-        }
-        HashMap<String, Object> maps = new HashMap<>();
-        try{
+        //TODO: Load maps and load stats
+        /*try{
             maps = DBmanager.loadAllObj(Map.class, this.mapDirectory);
         }
         catch(Exception ex){
-        }
-        if(maps == null){
+            Logger.getLogger("PVPPlugin").log(Level.INFO, "Error with loading maps");
             maps = new HashMap<>();
-        }
+        }*/
         //Spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
 
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
