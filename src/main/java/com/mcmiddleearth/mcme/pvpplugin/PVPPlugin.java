@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
+import com.mcmiddleearth.mcme.pvpplugin.util.MapLoader;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import lombok.Getter;
@@ -35,7 +36,10 @@ public class PVPPlugin extends JavaPlugin {
 
     @Getter@Setter
     GamemodeRunner activeGame;
+    @Getter
+    MapLoader mapLoader;
 
+    @Getter
     private File mapDirectory;
     private File statDirectory;
 
@@ -43,6 +47,7 @@ public class PVPPlugin extends JavaPlugin {
     public void onLoad(){
         this.saveDefaultConfig();
         this.reloadConfig();
+        mapLoader = new MapLoader(this);
         /*if(this.getConfig().contains("noHunger")){
             noHunger.addAll(this.getConfig().getStringList("noHunger"));
         }*/
@@ -66,13 +71,7 @@ public class PVPPlugin extends JavaPlugin {
         }
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         //TODO: Load maps and load stats
-        /*try{
-            maps = DBmanager.loadAllObj(Map.class, this.mapDirectory);
-        }
-        catch(Exception ex){
-            Logger.getLogger("PVPPlugin").log(Level.INFO, "Error with loading maps");
-            maps = new HashMap<>();
-        }*/
+        mapLoader.loadMaps();
         //Spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
 
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
@@ -92,7 +91,7 @@ public class PVPPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        mapLoader.saveMaps();
     }
 
     public static void sendInfo(CommandSender recipient, ComponentBuilder message) {
