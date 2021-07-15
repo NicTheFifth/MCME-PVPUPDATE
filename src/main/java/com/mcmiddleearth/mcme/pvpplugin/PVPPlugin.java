@@ -41,6 +41,7 @@ public class PVPPlugin extends JavaPlugin {
 
     @Getter
     private File mapDirectory;
+    @Getter
     private File statDirectory;
 
     @Override
