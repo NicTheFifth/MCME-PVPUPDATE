@@ -7,7 +7,6 @@ import com.mcmiddleearth.mcme.pvpplugin.json.transcribers.InfectedTranscriber;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.mcme.pvpplugin.util.Kit;
-import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.KitEditor;
 import lombok.Getter;

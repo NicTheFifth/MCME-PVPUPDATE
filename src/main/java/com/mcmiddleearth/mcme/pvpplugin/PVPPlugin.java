@@ -2,7 +2,6 @@ package com.mcmiddleearth.mcme.pvpplugin;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,7 +74,6 @@ public class PVPPlugin extends JavaPlugin {
             }
         }
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        //TODO: Load maps and load stats
         mapLoader.loadMaps();
         statLoader.loadStats();
         //Spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
