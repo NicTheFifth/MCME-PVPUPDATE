@@ -12,6 +12,7 @@ import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
 import com.mcmiddleearth.mcme.pvpplugin.util.MapLoader;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
+import com.mcmiddleearth.mcme.pvpplugin.util.StatLoader;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,6 +39,8 @@ public class PVPPlugin extends JavaPlugin {
     GamemodeRunner activeGame;
     @Getter
     MapLoader mapLoader;
+    @Getter
+    StatLoader statLoader;
 
     @Getter
     private File mapDirectory;
@@ -49,6 +52,7 @@ public class PVPPlugin extends JavaPlugin {
         this.saveDefaultConfig();
         this.reloadConfig();
         mapLoader = new MapLoader(this);
+        statLoader = new StatLoader(this);
         /*if(this.getConfig().contains("noHunger")){
             noHunger.addAll(this.getConfig().getStringList("noHunger"));
         }*/
@@ -73,6 +77,7 @@ public class PVPPlugin extends JavaPlugin {
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         //TODO: Load maps and load stats
         mapLoader.loadMaps();
+        statLoader.loadStats();
         //Spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
 
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
@@ -93,6 +98,7 @@ public class PVPPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         mapLoader.saveMaps();
+        statLoader.saveStats();
     }
 
     public static void sendInfo(CommandSender recipient, ComponentBuilder message) {
