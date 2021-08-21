@@ -26,7 +26,7 @@ public class StatLoader {
                 Playerstat stat = objectMapper.readValue(mapFile, Playerstat.class);
                 pvpPlugin.getPlayerstats().put(UUID.fromString(mapFile.getName()), stat);
             } catch (Exception e) {
-                throw new MapLoadException(e);
+                throw new StatLoadException(e);
             }
         });
     }
@@ -39,7 +39,7 @@ public class StatLoader {
                 File saveFile = new File(statDirectory + System.getProperty("file.separator") + uuid.toString());
                 objectMapper.writeValue(saveFile, stat);
             } catch (Exception e) {
-                throw new MapLoadException(e);
+                throw new StatLoadException(e);
             }
         });
     }
