@@ -15,6 +15,12 @@ public class ScoreboardEditor {
         Points.getScore(ChatColor.DARK_RED + "Infected:").setScore(infected.getMembers().size());
         Points.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
+    public static void InitTeamDeathmatch(Scoreboard scoreboard, Team red, Team blue, Integer time){
+        Objective Points = scoreboard.registerNewObjective("Remaining", "dummy");
+        Points.getScore(ChatColor.BLUE + "Blue:").setScore(blue.getMembers().size());
+        Points.getScore(ChatColor.DARK_RED + "Red:").setScore(red.getMembers().size());
+        Points.setDisplaySlot(DisplaySlot.SIDEBAR);
+    }
     public static void updateTime(Scoreboard scoreboard, Integer time){
         int timeMin = time / 60;
         int timeSec = time % 60;
@@ -23,5 +29,8 @@ public class ScoreboardEditor {
     public static void updateValueInfected(Scoreboard scoreboard, Team infected, Team survivors){
         scoreboard.getObjective("Remaining").getScore(ChatColor.BLUE + "Survivors:").setScore(survivors.getMembers().size());
         scoreboard.getObjective("Remaining").getScore(ChatColor.BLUE + "Survivors:").setScore(infected.getMembers().size());
+    }
+
+    public static void InitInfected(Scoreboard scoreboard, Team red, Team blue) {
     }
 }

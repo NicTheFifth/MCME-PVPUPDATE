@@ -8,6 +8,9 @@ public class Matchmaker {
     public static void infectedMatchMake(Set<Player> players, Team infected, Team survivors){
 
     }
+    public static void teamDeathmatchMatchMake(Set<Player> players, Team red, Team blue){
+
+    }
 
     public static void addMember(Player player, Team... teams){
         addMember(player, Set.of(teams));
