@@ -2,7 +2,6 @@ package com.mcmiddleearth.mcme.pvpplugin.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
-import com.mcmiddleearth.mcme.pvpplugin.exceptions.MapLoadException;
 import com.mcmiddleearth.mcme.pvpplugin.exceptions.StatLoadException;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
 
