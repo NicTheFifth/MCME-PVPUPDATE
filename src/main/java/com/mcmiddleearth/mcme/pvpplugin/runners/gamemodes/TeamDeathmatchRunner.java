@@ -47,7 +47,7 @@ public class TeamDeathmatchRunner extends BaseRunner {
 
     @Override
     public void Start() {
-        ScoreboardEditor.InitInfected(scoreboard, red, blue);
+        ScoreboardEditor.InitTeamDeathmatch(scoreboard, red, blue);
         pvpPlugin.getPluginManager().registerEvents(this, pvpPlugin);
         Matchmaker.infectedMatchMake(players, red, blue);
         TeamHandler.spawnAll(red, blue);
@@ -97,6 +97,7 @@ public class TeamDeathmatchRunner extends BaseRunner {
         super.Join(player);
         if (gameState != State.QUEUED) {
             addMember(player, red, blue);
+            ScoreboardEditor.updateValueTeamDeathmatch(scoreboard,red,blue);
         }
     }
 
@@ -108,6 +109,7 @@ public class TeamDeathmatchRunner extends BaseRunner {
 
         }
         red.getMembers().remove(player);
+        ScoreboardEditor.updateValueTeamDeathmatch(scoreboard,red,blue);
         super.Leave(player);
     }
 
@@ -179,8 +181,9 @@ public class TeamDeathmatchRunner extends BaseRunner {
                 red.getDeadMembers().add(player);
             }
             spectator.getMembers().add(player);
-            ScoreboardEditor.updateValueInfected(scoreboard, red, blue);
+            ScoreboardEditor.updateValueTeamDeathmatch(scoreboard,red,blue);
             HandleDeath(playerDeath);
+            CheckWinCondition();
         }
     }
 
@@ -190,6 +193,7 @@ public class TeamDeathmatchRunner extends BaseRunner {
         if (players.contains(player)) {
 
         }
+        //TODO: Finish player respawn
     }
 
     public void CheckWinCondition() {
