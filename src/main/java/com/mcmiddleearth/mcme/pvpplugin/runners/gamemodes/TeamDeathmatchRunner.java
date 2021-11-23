@@ -190,10 +190,15 @@ public class TeamDeathmatchRunner extends BaseRunner {
     @EventHandler
     public void onPlayerSpawn(PlayerRespawnEvent playerRespawn) {
         Player player = playerRespawn.getPlayer();
-        if (players.contains(player)) {
-
+        if (spectator.getMembers().contains(player)) {
+            playerRespawn.setRespawnLocation(spectator.getSpawnLocations().get(0));
         }
-        //TODO: Finish player respawn
+        if(red.getMembers().contains(player)){
+            playerRespawn.setRespawnLocation(red.getSpawnLocations().get(0));
+        }
+        if(red.getMembers().contains(player)){
+            playerRespawn.setRespawnLocation(red.getSpawnLocations().get(0));
+        }
     }
 
     public void CheckWinCondition() {
