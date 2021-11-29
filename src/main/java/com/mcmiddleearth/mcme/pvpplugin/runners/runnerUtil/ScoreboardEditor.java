@@ -34,4 +34,10 @@ public class ScoreboardEditor {
         scoreboard.getObjective("Remaining").getScore(ChatColor.BLUE + "Blue:").setScore(blue.getMembers().size());
         scoreboard.getObjective("Remaining").getScore(ChatColor.DARK_RED + "Red:").setScore(red.getMembers().size());
     }
+
+    public static void InitTeamSlayer(Scoreboard scoreboard, Team red, Team blue, Integer pointLimit) {
+    }
+
+    public static void updateValueTeamSlayer(Scoreboard scoreboard, Team red, Team blue) {
+    }
 }

@@ -4,15 +4,13 @@ import com.mcmiddleearth.mcme.pvpplugin.exceptions.BadMaxPlayerException;
 import com.mcmiddleearth.mcme.pvpplugin.exceptions.JSONLocationException;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
-import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes.JSONInfected;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamDeathMatch;
-import com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes.InfectedRunner;
 import com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes.TeamDeathmatchRunner;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 
 import java.util.Collections;
 
-public class TeamDeathMatchTranscriber {
+public class TeamDeathMatchTranscriber{
     public static void Transcribe(JSONMap jsonMap, TeamDeathmatchRunner runner) {
         JSONTeamDeathMatch gamemodeData = jsonMap.getJSONTeamDeathMatch();
         if (gamemodeData.getMaximumPlayers() == null) {

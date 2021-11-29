@@ -19,4 +19,7 @@ public class Matchmaker {
     public static void addMember(Player player, Set<Team> teams){
 
     }
+
+    public static void TeamSlayerMatchMake(Set<Player> players, Team red, Team blue) {
+    }
 }

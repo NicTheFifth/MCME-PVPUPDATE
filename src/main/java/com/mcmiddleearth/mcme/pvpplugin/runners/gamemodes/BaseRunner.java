@@ -19,7 +19,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -123,7 +122,7 @@ public abstract class BaseRunner implements GamemodeRunner {
         StayInBorder(playerMove);
     }
 
-    private void StayInBorder(@NotNull PlayerMoveEvent playerMove){
+    private void StayInBorder(PlayerMoveEvent playerMove){
         Location newLoc = playerMove.getTo();
         if (!region.contains(BlockVector3.at(newLoc.getX(), newLoc.getY(), newLoc.getZ()))){
             playerMove.setCancelled(true);
@@ -131,7 +130,7 @@ public abstract class BaseRunner implements GamemodeRunner {
         }
     }
 
-    private void SendOutOfBoundsWarning(@NotNull Player player) {
+    private void SendOutOfBoundsWarning(Player player) {
         if(!lastOutOfBounds.containsKey(player.getUniqueId())){
             player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
             lastOutOfBounds.put(player.getUniqueId(), System.currentTimeMillis());
