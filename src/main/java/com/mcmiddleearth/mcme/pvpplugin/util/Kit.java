@@ -7,6 +7,7 @@ import org.bukkit.inventory.PlayerInventory;
 public class Kit {
     @Getter @Setter
     PlayerInventory inventory;
+
     public Kit(PlayerInventory inventory){
         this.inventory = inventory;
     }

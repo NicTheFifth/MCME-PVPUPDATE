@@ -12,8 +12,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <jackson.version>2.10.5.1</jackson.version>
-        <bungeecord.version>1.16-R0.4-SNAPSHOT</bungeecord.version>
+        <jackson.version>2.13.0</jackson.version>
+        <bungeecord.version>1.16-R0.4</bungeecord.version>
     </properties>
 
     <build>
@@ -77,6 +77,14 @@
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>commons-lang3</id>
+            <url>https://mvnrepository.com/artifact/org.apache.commons/commons-lang3</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -95,7 +103,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.0</version>
+            <version>1.18.22</version>
         </dependency>
         <dependency>
             <groupId>com.mojang</groupId>
@@ -124,7 +132,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>16.0.2</version>
+            <version>22.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.mcmiddleearth</groupId>
@@ -136,6 +144,16 @@
             <artifactId>adventure-api</artifactId>
             <version>4.9.1</version>
             <scope>provided</scope>
+        </dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
         </dependency>
     </dependencies>
 </project>
