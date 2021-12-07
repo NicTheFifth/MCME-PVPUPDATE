@@ -27,6 +27,9 @@ public class Matchmaker {
         }
         return infected;
     }
+    public static void teamDeathmatchMatchMake(Set<Player> players, Team red, Team blue){
+
+    }
 
     public void addMember(Player player, Team... teams){
         addMember(player, Set.of(teams));
@@ -54,5 +57,8 @@ public class Matchmaker {
             retELO += pvpPlugin.getPlayerstats().get(player.getUniqueId()).getElo();
         }
         return retELO;
+    }
+
+    public static void TeamSlayerMatchMake(Set<Player> players, Team red, Team blue) {
     }
 }
