@@ -1,6 +1,7 @@
 package com.mcmiddleearth.mcme.pvpplugin;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +27,9 @@ public class PVPPlugin extends JavaPlugin {
 
     @Getter
     HashMap<UUID, Playerstat> playerstats;
+
+    @Getter
+    HashSet<String> availableGamemodes;
 
     @Getter@Setter
     GamemodeRunner activeGame;
