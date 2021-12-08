@@ -92,8 +92,9 @@ public class TeamSlayerRunner extends BaseRunner {
     public void Join(Player player) {
         super.Join(player);
         if (gameState != State.QUEUED) {
-            addMember(player, red, blue);
+            pvpPlugin.getMatchmaker().addMember(player, red, blue);
         }
+        //TODO: handle update
     }
 
     @Override

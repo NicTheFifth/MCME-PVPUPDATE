@@ -6,7 +6,9 @@ import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 
 public class MapEditCommand extends AbstractCommandHandler {
+
     PVPPlugin pvpPlugin;
+
     public MapEditCommand(String command, PVPPlugin pvpPlugin) {
         super(command);
         this.pvpPlugin = pvpPlugin;

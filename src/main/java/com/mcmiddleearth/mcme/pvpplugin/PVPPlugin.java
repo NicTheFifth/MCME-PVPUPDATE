@@ -34,7 +34,8 @@ public class PVPPlugin extends JavaPlugin {
 
     @Getter
     HashSet<String> availableGamemodes;
-  
+
+    @Getter
     Matchmaker matchmaker;
 
     @Getter@Setter

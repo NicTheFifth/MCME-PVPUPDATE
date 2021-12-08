@@ -86,12 +86,12 @@ public class TeamDeathmatchRunner extends BaseRunner {
     public boolean CanJoin(Player player) {
         return super.CanJoin(player);
     }
-
+    //FIXME: Fix join shit
     @Override
     public void Join(Player player) {
         super.Join(player);
         if (gameState != State.QUEUED) {
-            addMember(player, red, blue);
+            pvpPlugin.getMatchmaker().addMember(player, red, blue);
             ScoreboardEditor.updateValueTeamDeathmatch(scoreboard,red,blue);
         }
     }
