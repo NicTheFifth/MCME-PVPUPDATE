@@ -1,11 +1,23 @@
 package com.mcmiddleearth.mcme.pvpplugin.command.commandParser;
 
+import com.google.common.base.Joiner;
 import com.mcmiddleearth.command.AbstractCommandHandler;
+import com.mcmiddleearth.command.SimpleTabCompleteRequest;
+import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommandSender;
+import com.mcmiddleearth.mcme.pvpplugin.command.argumentTypes.CommandStringArgument;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class MapEditCommand extends AbstractCommandHandler {
+import java.util.List;
+
+public class MapEditCommand extends AbstractCommandHandler implements TabExecutor {
 
     PVPPlugin pvpPlugin;
 
@@ -17,27 +29,32 @@ public class MapEditCommand extends AbstractCommandHandler {
     @Override
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
-                .then(HelpfulRequiredArgumentBuilder.argument("map", Arguments.Maps(pvpPlugin))
+                .then(Arguments.getMap(pvpPlugin)
                         .then(HelpfulLiteralBuilder.literal("delete"))
-                        .then(HelpfulLiteralBuilder.literal("gamemode")
-                                .then(HelpfulRequiredArgumentBuilder.argument("gamemode", Arguments.Gamemodes(pvpPlugin))))
-                        .then(HelpfulLiteralBuilder.literal("max")
-                                .then(HelpfulLiteralBuilder.literal("Integer")))
-                        .then(HelpfulLiteralBuilder.literal("name")
-                                .then(HelpfulLiteralBuilder.literal("Name")))
-                        .then(HelpfulLiteralBuilder.literal("rp")
-                                .then(HelpfulLiteralBuilder.literal("RP")))
+                        .then(HelpfulLiteralBuilder.literal("setspawn"))
+                        .then(HelpfulLiteralBuilder.literal("setrp"))
                         .then(HelpfulLiteralBuilder.literal("setarea"))
-                        .then(HelpfulLiteralBuilder.literal("spawn")
-                                .then(HelpfulLiteralBuilder.literal("list"))
-                                .then(HelpfulLiteralBuilder.literal("show"))
-                                .then(HelpfulLiteralBuilder.literal("hide"))
-                                .then(HelpfulLiteralBuilder.literal("SpawnName")
-                                        .then(HelpfulLiteralBuilder.literal("delete"))
-                                        .then(HelpfulLiteralBuilder.literal("create"))
-                                        .then(HelpfulLiteralBuilder.literal("setloc"))))
-                        .then(HelpfulLiteralBuilder.literal("title")
-                                .then(HelpfulLiteralBuilder.literal("Title"))));
+                        .then(HelpfulLiteralBuilder.literal("settitle")
+                                .then(HelpfulRequiredArgumentBuilder.argument("title", new CommandStringArgument())))
+                        .then(Arguments.nonExistingGamemode(pvpPlugin)
+                                .then(HelpfulLiteralBuilder.literal("create")))
+                        //TODO: Get rest of tree up and running
+                );
         return commandNodeBuilder;
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        PVPCommandSender wrappedSender = new PVPCommandSender(sender, pvpPlugin);
+        execute(wrappedSender, args);
+        return true;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        TabCompleteRequest request = new SimpleTabCompleteRequest(new PVPCommandSender(sender, pvpPlugin),
+                String.format("/%s %s", alias, Joiner.on(' ').join(args)).trim());
+        onTabComplete(request);
+        return request.getSuggestions();
     }
 }

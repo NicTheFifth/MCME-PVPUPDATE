@@ -7,6 +7,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.mcmiddleearth.mcme.pvpplugin.command.commandParser.GameCommand;
+import com.mcmiddleearth.mcme.pvpplugin.command.commandParser.MapEditCommand;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
@@ -18,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -95,6 +98,13 @@ public class PVPPlugin extends JavaPlugin {
     private void setup() {
         pluginManager = this.getServer().getPluginManager();
         matchmaker = new Matchmaker(this);
+        MapEditCommand mapEditCommand = new MapEditCommand("mapedit", this);
+        Bukkit.getServer().getPluginCommand("mapedit").setExecutor(mapEditCommand);
+        Bukkit.getServer().getPluginCommand("mapedit").setTabCompleter(mapEditCommand);
+        GameCommand gameCommand = new GameCommand("pvp", this);
+        Bukkit.getServer().getPluginCommand("pvp").setExecutor(gameCommand);
+        Bukkit.getServer().getPluginCommand("pvp").setTabCompleter(gameCommand);
+
     }
 
     @Override

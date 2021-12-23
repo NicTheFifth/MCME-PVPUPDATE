@@ -8,7 +8,7 @@ api-version: 1.16
 commands:
   MapEditor:
     description: edit/create new pvp maps
-    usage: /mapeditor <arguments>
+    usage: /mapedit <arguments>
   Locker:
     description: lock/unlock pvp server and/or kick people
     usage: /locker <arguments>
