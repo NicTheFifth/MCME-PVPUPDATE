@@ -28,12 +28,15 @@ public class Arguments {
     static ExistingGamemodeArgument ExistingGamemode(PVPPlugin pvpPlugin){
         return new ExistingGamemodeArgument(pvpPlugin);
     }
+    static HelpfulRequiredArgumentBuilder<String> existingGamemode(PVPPlugin pvpPlugin) {
+        return HelpfulRequiredArgumentBuilder.argument("gamemode", NonExistingGamemode(pvpPlugin));
+    }
 
     static NonExistingGamemodeArgument NonExistingGamemode(PVPPlugin pvpPlugin){
         return new NonExistingGamemodeArgument(pvpPlugin);
     }
 
     static HelpfulRequiredArgumentBuilder<String> nonExistingGamemode(PVPPlugin pvpPlugin) {
-        return HelpfulRequiredArgumentBuilder.argument("new", NonExistingGamemode(pvpPlugin));
+        return HelpfulRequiredArgumentBuilder.argument("gamemode", NonExistingGamemode(pvpPlugin));
     }
 }
