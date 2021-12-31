@@ -43,10 +43,6 @@ public class PVPPlugin extends JavaPlugin {
 
     @Getter@Setter
     GamemodeRunner activeGame;
-    @Getter
-    MapLoader mapLoader;
-    @Getter
-    StatLoader statLoader;
 
     @Getter
     private File mapDirectory;
@@ -57,8 +53,6 @@ public class PVPPlugin extends JavaPlugin {
     public void onLoad(){
         this.saveDefaultConfig();
         this.reloadConfig();
-        mapLoader = new MapLoader(this);
-        statLoader = new StatLoader(this);
         /*if(this.getConfig().contains("noHunger")){
             noHunger.addAll(this.getConfig().getStringList("noHunger"));
         }*/
@@ -81,8 +75,8 @@ public class PVPPlugin extends JavaPlugin {
             }
         }
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        mapLoader.loadMaps();
-        statLoader.loadStats();
+        MapLoader.loadMaps(this);
+        StatLoader.loadStats(this);
         //Spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
 
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
@@ -109,8 +103,8 @@ public class PVPPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        mapLoader.saveMaps();
-        statLoader.saveStats();
+        MapLoader.saveMaps(this);
+        StatLoader.saveStats(this);
     }
 
     public static void sendInfo(CommandSender recipient, ComponentBuilder message) {

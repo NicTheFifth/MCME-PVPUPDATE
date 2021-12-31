@@ -8,7 +8,6 @@ import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommandSender;
-import com.mcmiddleearth.mcme.pvpplugin.command.argumentTypes.CommandStringArgument;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import org.bukkit.command.Command;
@@ -31,21 +30,27 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
     @Override
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
-                .then(Arguments.getMap(pvpPlugin)
-                        .then(HelpfulLiteralBuilder.literal("delete"))
-                        .then(HelpfulLiteralBuilder.literal("setspawn"))
-                        .then(HelpfulLiteralBuilder.literal("setrp"))
-                        .then(HelpfulLiteralBuilder.literal("setarea"))
-                        .then(HelpfulLiteralBuilder.literal("settitle")
-                                .then(HelpfulRequiredArgumentBuilder.argument("title", StringArgumentType.greedyString())))
-                        .then(Arguments.nonExistingGamemode(pvpPlugin)
-                                .then(HelpfulLiteralBuilder.literal("create")))
-                        .then(Arguments.existingGamemode(pvpPlugin)
-                                .then(HelpfulLiteralBuilder.literal("setMax")
-                                        .then(HelpfulRequiredArgumentBuilder.argument("max", IntegerArgumentType.integer())))
-                                )
+            .requires(Requirements::isMapEditor)
+            .then(Arguments.getMap(pvpPlugin)
+                .then(HelpfulLiteralBuilder.literal("delete")
+                    .requires(Requirements::isAdmin))
+                .then(HelpfulLiteralBuilder.literal("setspawn"))
+                .then(HelpfulLiteralBuilder.literal("setrp")
+                    .then(Arguments.rpArgument()))
+                .then(HelpfulLiteralBuilder.literal("setarea"))
+                .then(HelpfulLiteralBuilder.literal("settitle")
+                    .then(HelpfulRequiredArgumentBuilder.argument("title", StringArgumentType.greedyString())))
+                .then(Arguments.nonExistingGamemode(pvpPlugin)
+                    .then(HelpfulLiteralBuilder.literal("create")))
+                .then(Arguments.existingGamemode(pvpPlugin)
+                    .then(HelpfulLiteralBuilder.literal("setMax")
+                        .then(HelpfulRequiredArgumentBuilder.argument("max", IntegerArgumentType.integer())))
+                    .then(HelpfulLiteralBuilder.literal("addSpawn")
+                            .then(Arguments.spawnArgument(pvpPlugin))
+                    )
+                )
                         //TODO: Get rest of tree up and running
-                );
+            );
         return commandNodeBuilder;
     }
 

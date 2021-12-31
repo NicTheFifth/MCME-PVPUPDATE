@@ -20,6 +20,7 @@ public class ExistingGamemodeArgument implements ArgumentType<String> {
     public ExistingGamemodeArgument(PVPPlugin pvpPlugin){
         this.pvpPlugin = pvpPlugin;
     }
+
     @Override
     public String parse(StringReader reader) throws CommandSyntaxException {
         return reader.readUnquotedString();

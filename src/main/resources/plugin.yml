@@ -20,12 +20,6 @@ commands:
     usage: /t <message>
 
   permissions:
-    pvp.join:
-      description: Can join even when server is locked.
-      default: op
-    pvp.gameKick:
-      description: Can kick players from pvp server.
-      default: op
     pvp.gameCanRun:
       description: Can run games on pvp server.
       default: op
@@ -35,21 +29,11 @@ commands:
     pvp.adminPermission:
       description: Can do everything with the pvp plugin.
       default: op
-    pvp.builder:
-      children:
-        pvp.join: true
-    pvp.moderator:
-      children:
-        pvp.gameKick: true
     pvp.manager:
       children:
         pvp.gameCanRun: true
-        pvp.join: true
-        pvp.moderator: true
     pvp.admin:
       children:
-        pvp.builder: true
         pvp.mapEditor: true
         pvp.manager: true
-        pvp.moderator: true
         pvp.adminPermission: true

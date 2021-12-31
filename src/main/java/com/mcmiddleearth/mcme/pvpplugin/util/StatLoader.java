@@ -11,13 +11,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class StatLoader {
-    PVPPlugin pvpPlugin;
-    public StatLoader(PVPPlugin pvpPlugin)
-    {
-        this.pvpPlugin = pvpPlugin;
-    }
 
-    public void loadStats() throws StatLoadException {
+    public static void loadStats(PVPPlugin pvpPlugin) throws StatLoadException {
         ObjectMapper objectMapper = new ObjectMapper();
         File statDirectory  = pvpPlugin.getStatDirectory();
         Arrays.stream(Objects.requireNonNull(statDirectory.listFiles())).forEach(mapFile -> {
@@ -30,7 +25,7 @@ public class StatLoader {
         });
     }
 
-    public void saveStats(){
+    public static void saveStats(PVPPlugin pvpPlugin){
         ObjectMapper objectMapper = new ObjectMapper();
         File statDirectory  = pvpPlugin.getStatDirectory();
         pvpPlugin.getPlayerstats().forEach((uuid,stat) ->{
