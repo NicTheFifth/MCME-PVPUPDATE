@@ -7,8 +7,6 @@ import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -19,43 +17,26 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
-
 import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
 public abstract class BaseRunner implements GamemodeRunner {
 
-    enum State
-        {QUEUED, COUNTDOWN, RUNNING};
+    enum State {
+        QUEUED, COUNTDOWN, RUNNING
+    }
 
     PVPPlugin pvpPlugin;
-
-    @Getter@Setter
     State gameState;
-
-    @Getter@Setter
     Set<Player> players;
-
-    @Getter@Setter
     Team spectator;
-
-    @Getter@Setter
     Integer maxPlayers;
-
-    @Getter@Setter
     Region region;
-
     HashMap<UUID, Long> lastOutOfBounds = new HashMap<>();
-
     private long countDownTimer = 5;
-
     Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-
-    @Getter@Setter
     boolean privateGame;
-
-    @Getter@Setter
     Set<Player> whitelistedPlayers;
 
     @Override
@@ -80,21 +61,17 @@ public abstract class BaseRunner implements GamemodeRunner {
 
     @Override
     public void End(boolean stopped) {
-        players.forEach(player-> {
+        players.forEach(player -> {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
             player.setGameMode(GameMode.ADVENTURE);
         });
-        if(!stopped)
-            spectator.getMembers().forEach(player -> pvpPlugin.getPlayerstats().get(player.getUniqueId()).addSpectate());
+        if (!stopped) spectator.getMembers().forEach(player -> pvpPlugin.getPlayerstats().get(player.getUniqueId()).addSpectate());
     }
 
     @Override
     public boolean CanJoin(Player player) {
-        return  maxPlayers > players.size() &&
-                !players.contains((player)) &&
-                gameState != State.COUNTDOWN &&
-                (!privateGame || whitelistedPlayers.contains(player));
+        return maxPlayers > players.size() && !players.contains((player)) && gameState != State.COUNTDOWN && (!privateGame || whitelistedPlayers.contains(player));
     }
 
     @Override
@@ -103,23 +80,23 @@ public abstract class BaseRunner implements GamemodeRunner {
     }
 
     @Override
-    public void Leave(Player player){
-        if(players.remove(player)){
+    public void Leave(Player player) {
+        if (players.remove(player)) {
             player.sendMessage(Style.INFO + "You have left the game.");
         }
     }
 
-    public void HandleDeath(PlayerDeathEvent playerDeath){
+    public void HandleDeath(PlayerDeathEvent playerDeath) {
         Player player = playerDeath.getEntity();
         pvpPlugin.getPlayerstats().get(player.getUniqueId()).addDeath();
-        if(player.getKiller() != null){
+        if (player.getKiller() != null) {
             pvpPlugin.getPlayerstats().get(player.getKiller().getUniqueId()).addKill();
         }
     }
 
     @EventHandler
-    public void PlayerMove(PlayerMoveEvent playerMove){
-        if(players.contains(playerMove.getPlayer())) {
+    public void PlayerMove(PlayerMoveEvent playerMove) {
+        if (players.contains(playerMove.getPlayer())) {
             if (gameState == State.COUNTDOWN) {
                 playerMove.setCancelled(true);
                 return;
@@ -128,21 +105,93 @@ public abstract class BaseRunner implements GamemodeRunner {
         }
     }
 
-    private void StayInBorder(PlayerMoveEvent playerMove){
+    private void StayInBorder(PlayerMoveEvent playerMove) {
         Location newLoc = playerMove.getTo();
-        if (!region.contains(BlockVector3.at(newLoc.getX(), newLoc.getY(), newLoc.getZ()))){
+        if (!region.contains(BlockVector3.at(newLoc.getX(), newLoc.getY(), newLoc.getZ()))) {
             playerMove.setCancelled(true);
             SendOutOfBoundsWarning(playerMove.getPlayer());
         }
     }
 
     private void SendOutOfBoundsWarning(Player player) {
-        if(!lastOutOfBounds.containsKey(player.getUniqueId())){
+        if (!lastOutOfBounds.containsKey(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
             lastOutOfBounds.put(player.getUniqueId(), System.currentTimeMillis());
-        }else if(System.currentTimeMillis() - lastOutOfBounds.get(player.getUniqueId()) > 3000){
+        } else if (System.currentTimeMillis() - lastOutOfBounds.get(player.getUniqueId()) > 3000) {
             player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
             lastOutOfBounds.put(player.getUniqueId(), System.currentTimeMillis());
         }
     }
+
+    //<editor-fold defaultstate="collapsed" desc="delombok">
+    @SuppressWarnings("all")
+    public State getGameState() {
+        return this.gameState;
+    }
+
+    @SuppressWarnings("all")
+    public void setGameState(final State gameState) {
+        this.gameState = gameState;
+    }
+
+    @SuppressWarnings("all")
+    public Set<Player> getPlayers() {
+        return this.players;
+    }
+
+    @SuppressWarnings("all")
+    public void setPlayers(final Set<Player> players) {
+        this.players = players;
+    }
+
+    @SuppressWarnings("all")
+    public Team getSpectator() {
+        return this.spectator;
+    }
+
+    @SuppressWarnings("all")
+    public void setSpectator(final Team spectator) {
+        this.spectator = spectator;
+    }
+
+    @SuppressWarnings("all")
+    public Integer getMaxPlayers() {
+        return this.maxPlayers;
+    }
+
+    @SuppressWarnings("all")
+    public void setMaxPlayers(final Integer maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    @SuppressWarnings("all")
+    public Region getRegion() {
+        return this.region;
+    }
+
+    @SuppressWarnings("all")
+    public void setRegion(final Region region) {
+        this.region = region;
+    }
+
+    @SuppressWarnings("all")
+    public boolean isPrivateGame() {
+        return this.privateGame;
+    }
+
+    @SuppressWarnings("all")
+    public void setPrivateGame(final boolean privateGame) {
+        this.privateGame = privateGame;
+    }
+
+    @SuppressWarnings("all")
+    public Set<Player> getWhitelistedPlayers() {
+        return this.whitelistedPlayers;
+    }
+
+    @SuppressWarnings("all")
+    public void setWhitelistedPlayers(final Set<Player> whitelistedPlayers) {
+        this.whitelistedPlayers = whitelistedPlayers;
+    }
+    //</editor-fold>
 }

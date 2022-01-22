@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.mcmiddleearth.mcme.pvpplugin.command.commandParser.GameCommand;
 import com.mcmiddleearth.mcme.pvpplugin.command.commandParser.MapEditCommand;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
@@ -16,8 +15,6 @@ import com.mcmiddleearth.mcme.pvpplugin.util.MapLoader;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.StatLoader;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
-import lombok.Getter;
-import lombok.Setter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
@@ -25,52 +22,36 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PVPPlugin extends JavaPlugin {
-
-    @Getter
     PluginManager pluginManager;
-
-    @Getter
     HashMap<String, JSONMap> maps;
-
-    @Getter
     HashMap<UUID, Playerstat> playerstats;
-
-    @Getter
     HashSet<String> availableGamemodes;
-
-    @Getter
     Matchmaker matchmaker;
-
-    @Getter@Setter
     GamemodeRunner activeGame;
-
-    @Getter
     private File mapDirectory;
-    @Getter
     private File statDirectory;
 
     @Override
-    public void onLoad(){
+    public void onLoad() {
         this.saveDefaultConfig();
         this.reloadConfig();
         /*if(this.getConfig().contains("noHunger")){
             noHunger.addAll(this.getConfig().getStringList("noHunger"));
         }*/
-
-        if (!getDataFolder().mkdir()){
-            if(!getDataFolder().exists()){
+        if (!getDataFolder().mkdir()) {
+            if (!getDataFolder().exists()) {
                 Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Data folder doesn't exist and wasn't able to be created");
             }
         }
         mapDirectory = new File(getDataFolder() + System.getProperty("file.separator") + "maps");
-        if (!mapDirectory.mkdir()){
-            if(!mapDirectory.exists()){
+        if (!mapDirectory.mkdir()) {
+            if (!mapDirectory.exists()) {
                 Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Map directory doesn't exist and wasn't able to be created");
             }
         }
         statDirectory = new File(getDataFolder() + System.getProperty("file.separator") + "stats");
-        if (!statDirectory.mkdir()){
-            if(!statDirectory.exists()){
+        if (!statDirectory.mkdir()) {
+            if (!statDirectory.exists()) {
                 Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Stat directory doesn't exist and wasn't able to be created");
             }
         }
@@ -78,14 +59,12 @@ public class PVPPlugin extends JavaPlugin {
         MapLoader.loadMaps(this);
         StatLoader.loadStats(this);
         //Spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
-
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
     }
 
     @Override
     public void onEnable() {
         setup();
-
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin enabled correctly");
     }
 
@@ -98,7 +77,6 @@ public class PVPPlugin extends JavaPlugin {
         GameCommand gameCommand = new GameCommand("pvp", this);
         Bukkit.getServer().getPluginCommand("pvp").setExecutor(gameCommand);
         Bukkit.getServer().getPluginCommand("pvp").setTabCompleter(gameCommand);
-
     }
 
     @Override
@@ -118,4 +96,51 @@ public class PVPPlugin extends JavaPlugin {
         result.append(message.create());
         recipient.sendMessage(result.create());
     }
+
+    //<editor-fold defaultstate="collapsed" desc="delombok">
+    @SuppressWarnings("all")
+    public PluginManager getPluginManager() {
+        return this.pluginManager;
+    }
+
+    @SuppressWarnings("all")
+    public HashMap<String, JSONMap> getMaps() {
+        return this.maps;
+    }
+
+    @SuppressWarnings("all")
+    public HashMap<UUID, Playerstat> getPlayerstats() {
+        return this.playerstats;
+    }
+
+    @SuppressWarnings("all")
+    public HashSet<String> getAvailableGamemodes() {
+        return this.availableGamemodes;
+    }
+
+    @SuppressWarnings("all")
+    public Matchmaker getMatchmaker() {
+        return this.matchmaker;
+    }
+
+    @SuppressWarnings("all")
+    public GamemodeRunner getActiveGame() {
+        return this.activeGame;
+    }
+
+    @SuppressWarnings("all")
+    public void setActiveGame(final GamemodeRunner activeGame) {
+        this.activeGame = activeGame;
+    }
+
+    @SuppressWarnings("all")
+    public File getMapDirectory() {
+        return this.mapDirectory;
+    }
+
+    @SuppressWarnings("all")
+    public File getStatDirectory() {
+        return this.statDirectory;
+    }
+    //</editor-fold>
 }

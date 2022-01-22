@@ -10,7 +10,6 @@ import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.mcme.pvpplugin.util.Kit;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
-import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -21,17 +20,11 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-
 import static com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker.addMember;
 
 public class TeamDeathmatchRunner extends BaseRunner {
-
-    @Getter
     Team red = new Team();
-
-    @Getter
     Team blue = new Team();
-
 
     public TeamDeathmatchRunner(JSONMap map, PVPPlugin pvpplugin, boolean privateGame) {
         this.pvpPlugin = pvpplugin;
@@ -54,9 +47,7 @@ public class TeamDeathmatchRunner extends BaseRunner {
 
     @Override
     public void Run() {
-
     }
-
 
     @Override
     public boolean CanStart() {
@@ -70,7 +61,7 @@ public class TeamDeathmatchRunner extends BaseRunner {
                 Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
                 playerstat.addWon();
                 playerstat.addPlayed();
-                player.sendMessage((GetWinningTeam())+" Team won the Game!");
+                player.sendMessage((GetWinningTeam()) + " Team won the Game!");
             });
             GetLosingTeam().getMembers().forEach(player -> {
                 Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
@@ -86,13 +77,16 @@ public class TeamDeathmatchRunner extends BaseRunner {
     public boolean CanJoin(Player player) {
         return super.CanJoin(player);
     }
+
+//<editor-fold defaultstate="collapsed" desc="delombok">
+//</editor-fold>
     //FIXME: Fix join shit
     @Override
     public void Join(Player player) {
         super.Join(player);
         if (gameState != State.QUEUED) {
             pvpPlugin.getMatchmaker().addMember(player, red, blue);
-            ScoreboardEditor.updateValueTeamDeathmatch(scoreboard,red,blue);
+            ScoreboardEditor.updateValueTeamDeathmatch(scoreboard, red, blue);
         }
     }
 
@@ -101,10 +95,9 @@ public class TeamDeathmatchRunner extends BaseRunner {
         if (blue.getMembers().contains(player)) {
             blue.getMembers().remove(player);
             blue.getDeadMembers().add(player);
-
         }
         red.getMembers().remove(player);
-        ScoreboardEditor.updateValueTeamDeathmatch(scoreboard,red,blue);
+        ScoreboardEditor.updateValueTeamDeathmatch(scoreboard, red, blue);
         super.Leave(player);
     }
 
@@ -176,7 +169,7 @@ public class TeamDeathmatchRunner extends BaseRunner {
                 red.getDeadMembers().add(player);
             }
             spectator.getMembers().add(player);
-            ScoreboardEditor.updateValueTeamDeathmatch(scoreboard,red,blue);
+            ScoreboardEditor.updateValueTeamDeathmatch(scoreboard, red, blue);
             HandleDeath(playerDeath);
             CheckWinCondition();
         }
@@ -188,10 +181,10 @@ public class TeamDeathmatchRunner extends BaseRunner {
         if (spectator.getMembers().contains(player)) {
             playerRespawn.setRespawnLocation(spectator.getSpawnLocations().get(0));
         }
-        if(red.getMembers().contains(player)){
+        if (red.getMembers().contains(player)) {
             playerRespawn.setRespawnLocation(red.getSpawnLocations().get(0));
         }
-        if(red.getMembers().contains(player)){
+        if (red.getMembers().contains(player)) {
             playerRespawn.setRespawnLocation(red.getSpawnLocations().get(0));
         }
     }
@@ -204,4 +197,16 @@ public class TeamDeathmatchRunner extends BaseRunner {
             End(false);
         }
     }
+
+    //<editor-fold defaultstate="collapsed" desc="delombok">
+    @SuppressWarnings("all")
+    public Team getRed() {
+        return this.red;
+    }
+
+    @SuppressWarnings("all")
+    public Team getBlue() {
+        return this.blue;
+    }
+    //</editor-fold>
 }

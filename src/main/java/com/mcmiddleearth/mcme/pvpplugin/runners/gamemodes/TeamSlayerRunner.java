@@ -10,8 +10,6 @@ import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.mcme.pvpplugin.util.Kit;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -22,21 +20,14 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-
 import static com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker.addMember;
 
 public class TeamSlayerRunner extends BaseRunner {
-
-    @Getter
     Team red = new Team();
-
-    @Getter
     Team blue = new Team();
-
-    @Getter@Setter
     Integer pointLimit;
 
-    public TeamSlayerRunner(JSONMap map, PVPPlugin pvpplugin, boolean privateGame){
+    public TeamSlayerRunner(JSONMap map, PVPPlugin pvpplugin, boolean privateGame) {
         this.pvpPlugin = pvpplugin;
         this.privateGame = privateGame;
         TeamSlayerTranscriber.Transcribe(map, this);
@@ -53,21 +44,20 @@ public class TeamSlayerRunner extends BaseRunner {
         TeamHandler.spawnAll(red, blue, spectator);
         TeamHandler.setGamemode(GameMode.SURVIVAL, red, blue);
         super.Start();
-
         Run();
     }
 
-    public void Run(){
+    public void Run() {
     }
 
     @Override
-    public boolean CanStart(){
+    public boolean CanStart() {
         return pointLimit != null && super.CanStart();
     }
 
     @Override
-    public void End(boolean stopped){
-        if(!stopped) {
+    public void End(boolean stopped) {
+        if (!stopped) {
             GetWinningTeam().getMembers().forEach(player -> {
                 Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
                 playerstat.addWon();
@@ -84,7 +74,7 @@ public class TeamSlayerRunner extends BaseRunner {
     }
 
     @Override
-    public boolean CanJoin(Player player){
+    public boolean CanJoin(Player player) {
         return super.CanJoin(player);
     }
 
@@ -98,8 +88,8 @@ public class TeamSlayerRunner extends BaseRunner {
     }
 
     @Override
-    public void Leave(Player player){
-        if(blue.getMembers().contains(player)){
+    public void Leave(Player player) {
+        if (blue.getMembers().contains(player)) {
             blue.getMembers().remove(player);
             blue.getDeadMembers().add(player);
         }
@@ -122,7 +112,7 @@ public class TeamSlayerRunner extends BaseRunner {
         returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
         returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.ARROW_INFINITE,1);
+        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
         returnInventory.setItem(1, bow);
         returnInventory.setItem(2, new ItemStack(Material.ARROW));
         returnInventory.forEach(item -> KitEditor.setItemColour(item, red.getTeamColour()));
@@ -144,30 +134,36 @@ public class TeamSlayerRunner extends BaseRunner {
         returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
         returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.ARROW_INFINITE,1);
+        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
         returnInventory.setItem(1, bow);
         returnInventory.setItem(2, new ItemStack(Material.ARROW));
         returnInventory.forEach(item -> KitEditor.setItemColour(item, blue.getTeamColour()));
         return new Kit(returnInventory);
     }
+
+//<editor-fold defaultstate="collapsed" desc="delombok">
+//</editor-fold>
     //TODO: Fix everything from here.
-    private Team GetWinningTeam(){
-        if(blue.getMembers().isEmpty()){
+    private Team GetWinningTeam() {
+        if (blue.getMembers().isEmpty()) {
             return red;
         }
         return blue;
     }
+
+//<editor-fold defaultstate="collapsed" desc="delombok">
+//</editor-fold>
     private Team GetLosingTeam() {
-        if(blue.getMembers().isEmpty()){
+        if (blue.getMembers().isEmpty()) {
             return blue;
         }
         return red;
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent playerDeath){
+    public void onPlayerDeath(PlayerDeathEvent playerDeath) {
         Player player = playerDeath.getEntity();
-        if(players.contains(player)) {
+        if (players.contains(player)) {
             if (blue.getMembers().remove(player)) {
                 blue.getDeadMembers().add(player);
                 red.getMembers().add(player);
@@ -178,14 +174,37 @@ public class TeamSlayerRunner extends BaseRunner {
     }
 
     @EventHandler
-    public void onPlayerSpawn(PlayerRespawnEvent playerRespawn){
+    public void onPlayerSpawn(PlayerRespawnEvent playerRespawn) {
         Player player = playerRespawn.getPlayer();
-        if(players.contains(player)){
-            if(red.getMembers().contains(player)){
+        if (players.contains(player)) {
+            if (red.getMembers().contains(player)) {
                 playerRespawn.setRespawnLocation(red.getSpawnLocations().get(0));
-            }if(blue.getMembers().contains(player)){
+            }
+            if (blue.getMembers().contains(player)) {
                 playerRespawn.setRespawnLocation(red.getSpawnLocations().get(0));
             }
         }
     }
+
+    //<editor-fold defaultstate="collapsed" desc="delombok">
+    @SuppressWarnings("all")
+    public Team getRed() {
+        return this.red;
+    }
+
+    @SuppressWarnings("all")
+    public Team getBlue() {
+        return this.blue;
+    }
+
+    @SuppressWarnings("all")
+    public Integer getPointLimit() {
+        return this.pointLimit;
+    }
+
+    @SuppressWarnings("all")
+    public void setPointLimit(final Integer pointLimit) {
+        this.pointLimit = pointLimit;
+    }
+    //</editor-fold>
 }
