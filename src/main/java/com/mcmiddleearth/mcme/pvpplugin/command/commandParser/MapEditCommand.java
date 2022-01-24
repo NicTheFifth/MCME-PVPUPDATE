@@ -8,6 +8,7 @@ import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommandSender;
+import com.mcmiddleearth.mcme.pvpplugin.command.executor.EditExecutor;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import org.bukkit.command.Command;
@@ -32,18 +33,21 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
         commandNodeBuilder
             .requires(Requirements::isMapEditor)
             .then(HelpfulLiteralBuilder.literal("edit")
-                .then(Arguments.getMap(pvpPlugin)))
+                .then(Arguments.getMap(pvpPlugin)
+                        .executes(c->EditExecutor.NewMapEditor(pvpPlugin,c))))
             .then(HelpfulLiteralBuilder.literal("create")
-                .then(HelpfulRequiredArgumentBuilder.argument("map", StringArgumentType.string())))
+                .then(HelpfulRequiredArgumentBuilder.argument("map", StringArgumentType.string())
+                        .executes(c -> EditExecutor.CreateMapEditor(pvpPlugin, c))))
             .then(HelpfulLiteralBuilder.literal("setarea"))
             .then(HelpfulLiteralBuilder.literal("title"))
-            .then(HelpfulLiteralBuilder.literal("setrp"))
+            .then(HelpfulLiteralBuilder.literal("setrp")
+                .then(Arguments.rpArgument()))
             .then(HelpfulLiteralBuilder.literal("setSpawn")
-                .then(Arguments.spawnArgumentRB(pvpPlugin)
+                .then(Arguments.spawnArgumentRB()
                         .requires(c -> Requirements.hasRB(c,pvpPlugin)))
-                .then(Arguments.spawnArgumentIS(pvpPlugin)
+                .then(Arguments.spawnArgumentIS()
                         .requires(c -> Requirements.hasIS(c,pvpPlugin)))
-                .then(Arguments.spawnArgumentDR(pvpPlugin)
+                .then(Arguments.spawnArgumentDR()
                         .requires(c->Requirements.hasDR(c,pvpPlugin))))
             .then(HelpfulLiteralBuilder.literal("gamemode")
                 .then(Arguments.getGamemodes(pvpPlugin)))

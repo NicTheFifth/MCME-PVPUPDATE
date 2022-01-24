@@ -27,6 +27,10 @@ public class JSONMap {
 
     JSONTeamSlayer JSONTeamSlayer;
 
+    public JSONMap(String title) {
+        this.title = title;
+    }
+
     public List<JSONLocation> getRegionPoints() {
         return this.regionPoints;
     }

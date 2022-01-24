@@ -1,9 +1,22 @@
 package com.mcmiddleearth.mcme.pvpplugin.util;
 
+import com.mcmiddleearth.command.Style;
+import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.transcribers.LocationTranscriber;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.bukkit.BukkitPlayer;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.regions.Region;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class MapEditor {
 
@@ -24,6 +37,31 @@ public class MapEditor {
     public MapEditor(JSONMap map){
         this.map = map;
         state = EditorState.MAP;
+    }
+    public void setArea(PVPPlugin pvpPlugin, Player source) {
+        BukkitPlayer bukkitP = new BukkitPlayer(source);
+        LocalSession session = pvpPlugin.getWorldEditPlugin().getWorldEdit().getSessionManager().get(bukkitP);
+
+        try{
+            Region r = session.getSelection(new BukkitWorld(source.getWorld()));
+            if(r.getHeight() < 250){
+                source.sendMessage(Style.INFO + "I think you forgot to do //expand vert!");
+            }
+            else{
+                List<BlockVector2> wePoints = r.polygonize(1000);
+                ArrayList<JSONLocation> bPoints = new ArrayList<>();
+
+                for(BlockVector2 point : wePoints){
+                    bPoints.add(LocationTranscriber.TranscribeToJSON(new Location(source.getWorld(), point.getX(), 1, point.getZ())));
+                }
+
+                map.setRegionPoints(bPoints);
+                source.sendMessage(Style.INFO + "Area set!");
+            }
+        }
+        catch(IncompleteRegionException e){
+            source.sendMessage(Style.ERROR + "You don't have a region selected!");
+        }
     }
 
     public void setBlueSpawn(Location loc){

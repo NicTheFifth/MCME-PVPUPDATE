@@ -52,7 +52,7 @@ public class Arguments {
         return new CommandStringArgument("dwarven", "eriador","rohan","paths","human");
     }
 
-    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentRB(PVPPlugin pvpPlugin) {
+    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentRB() {
         return HelpfulRequiredArgumentBuilder.argument("spawn", SpawnsRB());
     }
 
@@ -60,7 +60,7 @@ public class Arguments {
         return new CommandStringArgument("red","blue");
     }
 
-    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentDR(PVPPlugin pvpPlugin) {
+    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentDR() {
         return HelpfulRequiredArgumentBuilder.argument("spawn", SpawnsDR());
     }
 
@@ -68,7 +68,7 @@ public class Arguments {
         return new CommandStringArgument("death, runner");
     }
 
-    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentIS(PVPPlugin pvpPlugin) {
+    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentIS() {
         return HelpfulRequiredArgumentBuilder.argument("spawn", SpawnsIS());
     }
 

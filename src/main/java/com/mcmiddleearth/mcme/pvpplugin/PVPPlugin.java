@@ -6,15 +6,22 @@ import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.mcme.pvpplugin.command.commandParser.GameCommand;
 import com.mcmiddleearth.mcme.pvpplugin.command.commandParser.MapEditCommand;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
-import com.mcmiddleearth.mcme.pvpplugin.util.*;
-import net.md_5.bungee.api.CommandSender;
+import com.mcmiddleearth.mcme.pvpplugin.util.MapEditor;
+import com.mcmiddleearth.mcme.pvpplugin.util.MapLoader;
+import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
+import com.mcmiddleearth.mcme.pvpplugin.util.StatLoader;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -84,15 +91,24 @@ public class PVPPlugin extends JavaPlugin {
     }
 
     public static void sendInfo(CommandSender recipient, ComponentBuilder message) {
-        ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.MOD).append(" ").color(Style.INFO);
+        ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.INFO_STRESSED).append(" ").color(Style.INFO);
         result.append(message.create());
         recipient.sendMessage(result.create());
     }
 
     public static void sendError(CommandSender recipient, ComponentBuilder message) {
-        ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.MOD).append(" ").color(Style.ERROR);
+        ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.INFO_STRESSED).append(" ").color(Style.ERROR);
         result.append(message.create());
         recipient.sendMessage(result.create());
+    }
+
+    public WorldEditPlugin getWorldEditPlugin(){
+        Plugin p = pluginManager.getPlugin("WorldEdit");
+
+        if(p == null){
+            return null;
+        }
+        return (WorldEditPlugin) p;
     }
 
     public PluginManager getPluginManager() {

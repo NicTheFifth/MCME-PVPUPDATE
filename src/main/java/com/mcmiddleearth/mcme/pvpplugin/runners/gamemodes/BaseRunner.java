@@ -3,7 +3,7 @@ package com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.TeamHandler;
-import com.mcmiddleearth.mcme.pvpplugin.util.Style;
+import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
