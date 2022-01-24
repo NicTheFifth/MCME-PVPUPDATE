@@ -1,5 +1,6 @@
 package com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes;
 
+import com.google.common.base.Function;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;

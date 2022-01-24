@@ -8,4 +8,7 @@ public class LocationTranscriber {
     public static Location TranscribeFromJSON(JSONLocation loc){
         return new Location(Bukkit.getWorld(loc.getWorld()), loc.getX(), loc.getY(), loc.getZ());
     }
+    public static JSONLocation TranscribeToJSON(Location loc){
+        return new JSONLocation();
+    }
 }

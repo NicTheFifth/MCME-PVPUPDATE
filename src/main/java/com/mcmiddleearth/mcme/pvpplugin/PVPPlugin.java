@@ -11,10 +11,7 @@ import com.mcmiddleearth.mcme.pvpplugin.command.commandParser.MapEditCommand;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
-import com.mcmiddleearth.mcme.pvpplugin.util.MapLoader;
-import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
-import com.mcmiddleearth.mcme.pvpplugin.util.StatLoader;
-import com.mcmiddleearth.mcme.pvpplugin.util.Style;
+import com.mcmiddleearth.mcme.pvpplugin.util.*;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
@@ -28,6 +25,7 @@ public class PVPPlugin extends JavaPlugin {
     HashSet<String> availableGamemodes;
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
+    HashMap<UUID, MapEditor> mapEditors;
     private File mapDirectory;
     private File statDirectory;
 
@@ -97,50 +95,41 @@ public class PVPPlugin extends JavaPlugin {
         recipient.sendMessage(result.create());
     }
 
-    //<editor-fold defaultstate="collapsed" desc="delombok">
-    @SuppressWarnings("all")
     public PluginManager getPluginManager() {
         return this.pluginManager;
     }
 
-    @SuppressWarnings("all")
     public HashMap<String, JSONMap> getMaps() {
         return this.maps;
     }
 
-    @SuppressWarnings("all")
     public HashMap<UUID, Playerstat> getPlayerstats() {
         return this.playerstats;
     }
 
-    @SuppressWarnings("all")
     public HashSet<String> getAvailableGamemodes() {
         return this.availableGamemodes;
     }
 
-    @SuppressWarnings("all")
     public Matchmaker getMatchmaker() {
         return this.matchmaker;
     }
 
-    @SuppressWarnings("all")
     public GamemodeRunner getActiveGame() {
         return this.activeGame;
     }
 
-    @SuppressWarnings("all")
     public void setActiveGame(final GamemodeRunner activeGame) {
         this.activeGame = activeGame;
     }
 
-    @SuppressWarnings("all")
     public File getMapDirectory() {
         return this.mapDirectory;
     }
 
-    @SuppressWarnings("all")
     public File getStatDirectory() {
         return this.statDirectory;
     }
-    //</editor-fold>
+
+    public HashMap<UUID,MapEditor> getMapEditors(){return this.mapEditors;}
 }
