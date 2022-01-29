@@ -41,6 +41,40 @@ public class EditExecutor {
             Player source = (Player) c.getSource();
             MapEditor me = pvpPlugin.getMapEditors().get(source.getUniqueId());
             me.setArea(pvpPlugin, source);
+            return 1;
+        }
+        return 0;
+    }
+
+    public static int SetTitle(PVPPlugin pvpPlugin, CommandContext<McmeCommandSender> c) {
+        if(c.getSource() instanceof Player){
+            Player source = (Player) c.getSource();
+            String mapName = c.getArgument("map", String.class);
+            MapEditor me = pvpPlugin.getMapEditors().get(source.getUniqueId());
+            me.setTitle(pvpPlugin, mapName);
+            return 1;
+        }
+        return 0;
+    }
+
+    public static int SetRP(PVPPlugin pvpPlugin, CommandContext<McmeCommandSender> c) {
+        if(c.getSource() instanceof Player){
+            Player source = (Player) c.getSource();
+            String rpName = c.getArgument("rp", String.class);
+            MapEditor me = pvpPlugin.getMapEditors().get(source.getUniqueId());
+            me.setRP(pvpPlugin,rpName);
+            return 1;
+        }
+        return 0;
+    }
+
+    public static int SetGamemode(PVPPlugin pvpPlugin, CommandContext<McmeCommandSender> c) {
+        if(c.getSource() instanceof Player){
+            Player source = (Player) c.getSource();
+            String gamemode = c.getArgument("gamemode", String.class);
+            MapEditor me = pvpPlugin.getMapEditors().get(source.getUniqueId());
+            me.setGamemode(gamemode);
+            return 1;
         }
         return 0;
     }

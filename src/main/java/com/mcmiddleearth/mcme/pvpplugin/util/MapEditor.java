@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MapEditor {
 
@@ -61,6 +60,38 @@ public class MapEditor {
         }
         catch(IncompleteRegionException e){
             source.sendMessage(Style.ERROR + "You don't have a region selected!");
+        }
+    }
+
+    public void setTitle(PVPPlugin pvpPlugin, String mapName) {
+        //TODO: Fix this function
+    }
+    public void setRP(PVPPlugin pvpPlugin, String rpName) {
+        //TODO:Fix this function
+    }
+    public void setGamemode(String gamemode) {
+        switch(gamemode){
+            case "capturetheflag":
+                setState(EditorState.CAPTURETHEFLAG);
+                break;
+            case "freeforall":
+                setState(EditorState.FREEFORALL);
+                break;
+            case "infected":
+                setState(EditorState.INFECTED);
+                break;
+            case "teamconquest":
+                setState(EditorState.TEAMCONQUEST);
+                break;
+            case "teamdeathmatch":
+                setState(EditorState.TEAMDEATHMATCH);
+                break;
+            case "teamslayer":
+                setState(EditorState.TEAMSLAYER);
+                break;
+            case "deathrun":
+                setState(EditorState.DEATHRUN);
+                break;
         }
     }
 
@@ -128,6 +159,7 @@ public class MapEditor {
                 break;
         }
     }
+
     public EditorState getState(){return state;}
     public void setState(EditorState state){
         this.state = state;

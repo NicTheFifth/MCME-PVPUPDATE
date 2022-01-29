@@ -35,13 +35,21 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
             .then(HelpfulLiteralBuilder.literal("edit")
                 .then(Arguments.getMap(pvpPlugin)
                         .executes(c->EditExecutor.NewMapEditor(pvpPlugin,c))))
+
             .then(HelpfulLiteralBuilder.literal("create")
                 .then(HelpfulRequiredArgumentBuilder.argument("map", StringArgumentType.string())
                         .executes(c -> EditExecutor.CreateMapEditor(pvpPlugin, c))))
-            .then(HelpfulLiteralBuilder.literal("setarea"))
-            .then(HelpfulLiteralBuilder.literal("title"))
+
+            .then(HelpfulLiteralBuilder.literal("setarea")
+                    .executes(c -> EditExecutor.SetArea(pvpPlugin,c)))
+            .then(HelpfulLiteralBuilder.literal("title")
+                .then(HelpfulRequiredArgumentBuilder.argument("map", StringArgumentType.string())
+                    .executes(c -> EditExecutor.SetTitle(pvpPlugin,c))))
+
             .then(HelpfulLiteralBuilder.literal("setrp")
-                .then(Arguments.rpArgument()))
+                .then(Arguments.rpArgument()
+                    .executes(c->EditExecutor.SetRP(pvpPlugin,c))))
+
             .then(HelpfulLiteralBuilder.literal("setSpawn")
                 .then(Arguments.spawnArgumentRB()
                         .requires(c -> Requirements.hasRB(c,pvpPlugin)))
@@ -50,7 +58,9 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                 .then(Arguments.spawnArgumentDR()
                         .requires(c->Requirements.hasDR(c,pvpPlugin))))
             .then(HelpfulLiteralBuilder.literal("gamemode")
-                .then(Arguments.getGamemodes(pvpPlugin)))
+                .then(Arguments.getGamemodes(pvpPlugin)
+                        .executes(c->EditExecutor.SetGamemode(pvpPlugin,c))))
+
             .then(HelpfulLiteralBuilder.literal("setMax")
                 .requires(c-> Requirements.stageGamemode(c,pvpPlugin))
                 .then(HelpfulRequiredArgumentBuilder.argument("amount",IntegerArgumentType.integer(1))))
