@@ -78,4 +78,29 @@ public class EditExecutor {
         }
         return 0;
     }
+
+    public static int SetMax(PVPPlugin pvpPlugin, CommandContext<McmeCommandSender> c) {
+        //TODO: create SetMax
+        return 0;
+    }
+
+    public static int EditGoal(PVPPlugin pvpPlugin, CommandContext<McmeCommandSender> c) {
+        //TODO:Create EditGoal
+        return 0;
+    }
+
+    public static int CreateCapture(CommandContext<McmeCommandSender> c, PVPPlugin pvpPlugin) {
+        //TODO: Create CreateCapture
+        return 0;
+    }
+
+    public static int DelCapture(CommandContext<McmeCommandSender> c, PVPPlugin pvpPlugin) {
+        //TODO: Create DelCapture
+        return 0;
+    }
+
+    public static int SetSpawn(CommandContext<McmeCommandSender> c, PVPPlugin pvpPlugin) {
+        //TODO:Create SetSpawn
+        return 0;
+    }
 }
