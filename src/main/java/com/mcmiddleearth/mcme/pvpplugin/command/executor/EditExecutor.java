@@ -62,7 +62,7 @@ public class EditExecutor {
             Player source = (Player) c.getSource();
             String rpName = c.getArgument("rp", String.class);
             MapEditor me = pvpPlugin.getMapEditors().get(source.getUniqueId());
-            me.setRP(pvpPlugin,rpName);
+            me.setRP(rpName);
             return 1;
         }
         return 0;
@@ -80,27 +80,76 @@ public class EditExecutor {
     }
 
     public static int SetMax(PVPPlugin pvpPlugin, CommandContext<McmeCommandSender> c) {
-        //TODO: create SetMax
+        if(c.getSource() instanceof Player){
+            Player source = (Player) c.getSource();
+            Integer max = c.getArgument("amount", Integer.class);
+            MapEditor me = pvpPlugin.getMapEditors().get(source.getUniqueId());
+            me.setMax(max);
+            return 1;
+        }
         return 0;
     }
 
     public static int EditGoal(PVPPlugin pvpPlugin, CommandContext<McmeCommandSender> c) {
-        //TODO:Create EditGoal
+        if(c.getSource() instanceof Player){
+            Player source = (Player) c.getSource();
+            MapEditor me = pvpPlugin.getMapEditors().get(source.getUniqueId());
+            me.setGoal(source);
+            return 1;
+        }
         return 0;
     }
 
     public static int CreateCapture(CommandContext<McmeCommandSender> c, PVPPlugin pvpPlugin) {
-        //TODO: Create CreateCapture
+        if(c.getSource() instanceof Player){
+            Player source = (Player) c.getSource();
+            MapEditor me = pvpPlugin.getMapEditors().get(source.getUniqueId());
+            me.createCapturePoint(source);
+            return 1;
+        }
         return 0;
     }
 
     public static int DelCapture(CommandContext<McmeCommandSender> c, PVPPlugin pvpPlugin) {
-        //TODO: Create DelCapture
+        if(c.getSource() instanceof Player){
+            Player source = (Player) c.getSource();
+            Integer point = c.getArgument("pointNum", Integer.class);
+            MapEditor me = pvpPlugin.getMapEditors().get(source.getUniqueId());
+            me.delCapturePoint(point);
+            return 1;
+        }
         return 0;
     }
 
     public static int SetSpawn(CommandContext<McmeCommandSender> c, PVPPlugin pvpPlugin) {
         //TODO:Create SetSpawn
+        if(c.getSource() instanceof Player){
+            Player source = (Player) c.getSource();
+            String spawnType = c.getArgument("spawn", String.class);
+            MapEditor me = pvpPlugin.getMapEditors().get(source.getUniqueId());
+            switch(spawnType){
+                case "red":
+                    me.setRedSpawn(source.getLocation());
+                    break;
+                case "blue":
+                    me.setBlueSpawn(source.getLocation());
+                    break;
+                case"death":
+                    me.setDeathSpawn(source.getLocation());
+                    break;
+                case "runner":
+                    me.setRunnerSpawn(source.getLocation());
+                    break;
+                case "infected":
+                    me.setInfectedSpawn(source.getLocation());
+                    break;
+                case "survivor":
+                    me.setSurvivorSpawn(source.getLocation());
+                    break;
+                default: return 0;
+            }
+            return 1;
+        }
         return 0;
     }
 }

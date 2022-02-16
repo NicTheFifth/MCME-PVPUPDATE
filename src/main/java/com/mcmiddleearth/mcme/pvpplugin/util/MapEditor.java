@@ -64,11 +64,34 @@ public class MapEditor {
     }
 
     public void setTitle(PVPPlugin pvpPlugin, String mapName) {
-        //TODO: Fix this function
+        String oldName = map.getTitle();
+        pvpPlugin.getMaps().remove(oldName);
+        map.setTitle(mapName);
+        pvpPlugin.getMaps().put(mapName, map);
     }
-    public void setRP(PVPPlugin pvpPlugin, String rpName) {
-        //TODO:Fix this function
+
+    public void setRP(String rpName) {
+        map.setResourcePack(rpName);
     }
+
+    public void setGoal(Player source) {
+        JSONLocation point = LocationTranscriber.TranscribeToJSON(source.getLocation().add(0,1,0));
+        if(state == EditorState.DEATHRUN)
+                map.getJSONDeathRun().setGoal(point);
+    }
+
+    public void createCapturePoint(Player source) {
+        JSONLocation point = LocationTranscriber.TranscribeToJSON(source.getLocation().add(0,1,0));
+        if(state == EditorState.TEAMCONQUEST)
+            map.getJSONTeamConquest().getCapturePoints().add(point);
+    }
+
+    public void delCapturePoint(int point) {
+        List<JSONLocation> capturePoints = map.getJSONTeamConquest().getCapturePoints();
+        if(state == EditorState.TEAMCONQUEST && point < capturePoints.size() )
+            capturePoints.remove(point);
+    }
+
     public void setGamemode(String gamemode) {
         switch(gamemode){
             case "capturetheflag":
@@ -133,6 +156,25 @@ public class MapEditor {
             default:
                 break;
         }
+    }
+    public void setDeathSpawn(Location loc) {
+        JSONLocation location = LocationTranscriber.TranscribeToJSON(loc);
+        map.getJSONDeathRun().setDeathSpawn(location);
+    }
+
+    public void setRunnerSpawn(Location loc) {
+        JSONLocation location = LocationTranscriber.TranscribeToJSON(loc);
+        map.getJSONDeathRun().setRunnerSpawn(location);
+    }
+
+    public void setInfectedSpawn(Location loc) {
+        JSONLocation location = LocationTranscriber.TranscribeToJSON(loc);
+        map.getJSONInfected().setInfectedSpawn(location);
+    }
+
+    public void setSurvivorSpawn(Location loc) {
+        JSONLocation location = LocationTranscriber.TranscribeToJSON(loc);
+        map.getJSONInfected().setSurvivorSpawn(location);
     }
 
     public void setMax(Integer max){
