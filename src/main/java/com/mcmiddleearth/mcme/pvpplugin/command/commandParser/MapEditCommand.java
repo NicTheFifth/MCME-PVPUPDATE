@@ -8,6 +8,7 @@ import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommandSender;
+import com.mcmiddleearth.mcme.pvpplugin.command.executor.EditExecutor;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import org.bukkit.command.Command;
@@ -31,26 +32,48 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
             .requires(Requirements::isMapEditor)
-            .then(Arguments.getMap(pvpPlugin)
-                .then(HelpfulLiteralBuilder.literal("delete")
-                    .requires(Requirements::isAdmin))
-                .then(HelpfulLiteralBuilder.literal("setspawn"))
-                .then(HelpfulLiteralBuilder.literal("setrp")
-                    .then(Arguments.rpArgument()))
-                .then(HelpfulLiteralBuilder.literal("setarea"))
-                .then(HelpfulLiteralBuilder.literal("settitle")
-                    .then(HelpfulRequiredArgumentBuilder.argument("title", StringArgumentType.greedyString())))
-                .then(Arguments.nonExistingGamemode(pvpPlugin)
-                    .then(HelpfulLiteralBuilder.literal("create")))
-                .then(Arguments.existingGamemode(pvpPlugin)
-                    .then(HelpfulLiteralBuilder.literal("setMax")
-                        .then(HelpfulRequiredArgumentBuilder.argument("max", IntegerArgumentType.integer())))
-                    .then(HelpfulLiteralBuilder.literal("addSpawn")
-                            .then(Arguments.spawnArgument(pvpPlugin))
-                    )
-                )
-                        //TODO: Get rest of tree up and running
-            );
+            .then(HelpfulLiteralBuilder.literal("edit")
+                .then(Arguments.getMap(pvpPlugin)
+                        .executes(c->EditExecutor.NewMapEditor(pvpPlugin,c))))
+            .then(HelpfulLiteralBuilder.literal("create")
+                .then(HelpfulRequiredArgumentBuilder.argument("map", StringArgumentType.string())
+                        .executes(c -> EditExecutor.CreateMapEditor(pvpPlugin, c))))
+            .then(HelpfulLiteralBuilder.literal("setarea")
+                    .executes(c -> EditExecutor.SetArea(pvpPlugin,c)))
+            .then(HelpfulLiteralBuilder.literal("title")
+                .then(HelpfulRequiredArgumentBuilder.argument("map", StringArgumentType.string())
+                    .executes(c -> EditExecutor.SetTitle(pvpPlugin,c))))
+            .then(HelpfulLiteralBuilder.literal("setrp")
+                .then(Arguments.rpArgument()
+                    .executes(c->EditExecutor.SetRP(pvpPlugin,c))))
+            .then(HelpfulLiteralBuilder.literal("setSpawn")
+                .then(Arguments.spawnArgumentRB()
+                        .requires(c -> Requirements.hasRB(c,pvpPlugin))
+                        .executes(c -> EditExecutor.SetSpawn(c,pvpPlugin)))
+                .then(Arguments.spawnArgumentIS()
+                        .requires(c -> Requirements.hasIS(c,pvpPlugin))
+                        .executes(c -> EditExecutor.SetSpawn(c,pvpPlugin)))
+                .then(Arguments.spawnArgumentDR()
+                        .requires(c->Requirements.hasDR(c,pvpPlugin)))
+                    .executes(c -> EditExecutor.SetSpawn(c,pvpPlugin)))
+            .then(HelpfulLiteralBuilder.literal("gamemode")
+                .then(Arguments.getGamemodes(pvpPlugin)
+                        .executes(c->EditExecutor.SetGamemode(pvpPlugin,c))))
+            .then(HelpfulLiteralBuilder.literal("setMax")
+                .requires(c-> Requirements.stageGamemode(c,pvpPlugin))
+                .then(HelpfulRequiredArgumentBuilder.argument("amount",IntegerArgumentType.integer(1))
+                        .executes(c->EditExecutor.SetMax(pvpPlugin,c))))
+            .then(HelpfulLiteralBuilder.literal("setGoal")
+                .requires(c-> Requirements.canEditGoal(c,pvpPlugin))
+                    .executes(c->EditExecutor.EditGoal(pvpPlugin,c)))
+            .then(HelpfulLiteralBuilder.literal("addCapture")
+                .requires(c -> Requirements.canEditCapture(c,pvpPlugin))
+                    .executes(c -> EditExecutor.CreateCapture(c,pvpPlugin)))
+            .then(HelpfulLiteralBuilder.literal("delCapture")
+                .requires(c -> Requirements.canEditCapture(c,pvpPlugin))
+                .then(HelpfulRequiredArgumentBuilder.argument("pointNum",IntegerArgumentType.integer(0))
+                        .executes(c-> EditExecutor.DelCapture(c,pvpPlugin))))
+            ;
         return commandNodeBuilder;
     }
 

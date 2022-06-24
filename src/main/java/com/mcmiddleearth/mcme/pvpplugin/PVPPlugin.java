@@ -7,18 +7,23 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.mcme.pvpplugin.command.commandParser.GameCommand;
 import com.mcmiddleearth.mcme.pvpplugin.command.commandParser.MapEditCommand;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
+import com.mcmiddleearth.mcme.pvpplugin.util.MapEditor;
 import com.mcmiddleearth.mcme.pvpplugin.util.MapLoader;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.StatLoader;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,32 +35,32 @@ public class PVPPlugin extends JavaPlugin {
     HashSet<String> availableGamemodes;
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
+    HashMap<UUID, MapEditor> mapEditors;
 
     private File mapDirectory;
     private File statDirectory;
 
     @Override
-    public void onLoad(){
+    public void onLoad() {
         this.saveDefaultConfig();
         this.reloadConfig();
         /*if(this.getConfig().contains("noHunger")){
             noHunger.addAll(this.getConfig().getStringList("noHunger"));
         }*/
-
-        if (!getDataFolder().mkdir()){
-            if(!getDataFolder().exists()){
+        if (!getDataFolder().mkdir()) {
+            if (!getDataFolder().exists()) {
                 Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Data folder doesn't exist and wasn't able to be created");
             }
         }
         mapDirectory = new File(getDataFolder() + System.getProperty("file.separator") + "maps");
-        if (!mapDirectory.mkdir()){
-            if(!mapDirectory.exists()){
+        if (!mapDirectory.mkdir()) {
+            if (!mapDirectory.exists()) {
                 Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Map directory doesn't exist and wasn't able to be created");
             }
         }
         statDirectory = new File(getDataFolder() + System.getProperty("file.separator") + "stats");
-        if (!statDirectory.mkdir()){
-            if(!statDirectory.exists()){
+        if (!statDirectory.mkdir()) {
+            if (!statDirectory.exists()) {
                 Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Stat directory doesn't exist and wasn't able to be created");
             }
         }
@@ -63,14 +68,12 @@ public class PVPPlugin extends JavaPlugin {
         MapLoader.loadMaps(this);
         StatLoader.loadStats(this);
         //Spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
-
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
     }
 
     @Override
     public void onEnable() {
         setup();
-
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin enabled correctly");
     }
 
@@ -83,7 +86,6 @@ public class PVPPlugin extends JavaPlugin {
         GameCommand gameCommand = new GameCommand("pvp", this);
         Bukkit.getServer().getPluginCommand("pvp").setExecutor(gameCommand);
         Bukkit.getServer().getPluginCommand("pvp").setTabCompleter(gameCommand);
-
     }
 
     @Override
@@ -93,49 +95,61 @@ public class PVPPlugin extends JavaPlugin {
     }
 
     public static void sendInfo(CommandSender recipient, ComponentBuilder message) {
-        ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.MOD).append(" ").color(Style.INFO);
+        ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.INFO_STRESSED).append(" ").color(Style.INFO);
         result.append(message.create());
         recipient.sendMessage(result.create());
     }
 
     public static void sendError(CommandSender recipient, ComponentBuilder message) {
-        ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.MOD).append(" ").color(Style.ERROR);
+        ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.INFO_STRESSED).append(" ").color(Style.ERROR);
         result.append(message.create());
         recipient.sendMessage(result.create());
     }
 
+    public WorldEditPlugin getWorldEditPlugin(){
+        Plugin p = pluginManager.getPlugin("WorldEdit");
+
+        if(p == null){
+            return null;
+        }
+        return (WorldEditPlugin) p;
+    }
+
     public PluginManager getPluginManager() {
-        return pluginManager;
+        return this.pluginManager;
     }
 
     public HashMap<String, JSONMap> getMaps() {
-        return maps;
+        return this.maps;
     }
 
     public HashMap<UUID, Playerstat> getPlayerstats() {
-        return playerstats;
+        return this.playerstats;
     }
 
     public HashSet<String> getAvailableGamemodes() {
-        return availableGamemodes;
+        return this.availableGamemodes;
     }
 
     public Matchmaker getMatchmaker() {
-        return matchmaker;
+        return this.matchmaker;
     }
 
     public GamemodeRunner getActiveGame() {
-        return activeGame;
+        return this.activeGame;
     }
-    public void setActiveGame(GamemodeRunner activeGame) {
+
+    public void setActiveGame(final GamemodeRunner activeGame) {
         this.activeGame = activeGame;
     }
 
     public File getMapDirectory() {
-        return mapDirectory;
+        return this.mapDirectory;
     }
 
     public File getStatDirectory() {
-        return statDirectory;
+        return this.statDirectory;
     }
+
+    public HashMap<UUID,MapEditor> getMapEditors(){return this.mapEditors;}
 }

@@ -1,16 +1,33 @@
 package com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes;
 
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONLocation;
-import lombok.Getter;
-import lombok.Setter;
 
 public class JSONCaptureTheFlag {
-    @Getter@Setter
     JSONLocation blueSpawn;
-
-    @Getter@Setter
     JSONLocation redSpawn;
-
-    @Getter@Setter
     Integer maximumPlayers;
+
+    public JSONLocation getBlueSpawn() {
+        return this.blueSpawn;
+    }
+
+    public void setBlueSpawn(final JSONLocation blueSpawn) {
+        this.blueSpawn = blueSpawn;
+    }
+
+    public JSONLocation getRedSpawn() {
+        return this.redSpawn;
+    }
+
+    public void setRedSpawn(final JSONLocation redSpawn) {
+        this.redSpawn = redSpawn;
+    }
+
+    public Integer getMaximumPlayers() {
+        return this.maximumPlayers;
+    }
+
+    public void setMaximumPlayers(final Integer maximumPlayers) {
+        this.maximumPlayers = maximumPlayers;
+    }
 }

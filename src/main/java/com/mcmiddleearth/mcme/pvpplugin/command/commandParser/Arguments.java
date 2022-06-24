@@ -48,15 +48,31 @@ public class Arguments {
         return HelpfulRequiredArgumentBuilder.argument("rp", ResourcePacks());
     }
 
-    private static @NotNull CommandStringArgument ResourcePacks() {
+    private static CommandStringArgument ResourcePacks() {
         return new CommandStringArgument("dwarven", "eriador","rohan","paths","human");
     }
 
-    private static SpawnArgument SpawnArgument(PVPPlugin pvpPlugin){
-        return new SpawnArgument(pvpPlugin);
+    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentRB() {
+        return HelpfulRequiredArgumentBuilder.argument("spawn", SpawnsRB());
     }
-    public static HelpfulRequiredArgumentBuilder<String> spawnArgument(PVPPlugin pvpPlugin) {
 
-        return HelpfulRequiredArgumentBuilder.argument("spawn", SpawnArgument(pvpPlugin));
+    private static CommandStringArgument SpawnsRB() {
+        return new CommandStringArgument("red","blue");
+    }
+
+    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentDR() {
+        return HelpfulRequiredArgumentBuilder.argument("spawn", SpawnsDR());
+    }
+
+    private static CommandStringArgument SpawnsDR() {
+        return new CommandStringArgument("death, runner");
+    }
+
+    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentIS() {
+        return HelpfulRequiredArgumentBuilder.argument("spawn", SpawnsIS());
+    }
+
+    private static CommandStringArgument SpawnsIS() {
+        return new CommandStringArgument("infected", "survivor");
     }
 }

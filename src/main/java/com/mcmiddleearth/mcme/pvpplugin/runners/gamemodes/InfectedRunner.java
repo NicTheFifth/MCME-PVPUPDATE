@@ -1,5 +1,6 @@
 package com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes;
 
+import com.google.common.base.Function;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
@@ -9,8 +10,6 @@ import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.mcme.pvpplugin.util.Kit;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.KitEditor;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -23,21 +22,14 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import static com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker.*;
 
 public class InfectedRunner extends BaseRunner {
-
-    @Getter
     Team infected = new Team();
-
-    @Getter
     Team survivors = new Team();
-
-    @Getter@Setter
     Integer timeSec;
 
-    public InfectedRunner(JSONMap map, PVPPlugin pvpplugin, boolean privateGame){
+    public InfectedRunner(JSONMap map, PVPPlugin pvpplugin, boolean privateGame) {
         this.pvpPlugin = pvpplugin;
         this.privateGame = privateGame;
         InfectedTranscriber.Transcribe(map, this);
@@ -54,11 +46,10 @@ public class InfectedRunner extends BaseRunner {
         TeamHandler.spawnAll(infected, survivors, spectator);
         TeamHandler.setGamemode(GameMode.SURVIVAL, infected, survivors);
         super.Start();
-
         Run();
     }
 
-    public void Run(){
+    public void Run() {
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -82,13 +73,13 @@ public class InfectedRunner extends BaseRunner {
     }
 
     @Override
-    public boolean CanStart(){
+    public boolean CanStart() {
         return timeSec != null && super.CanStart();
     }
 
     @Override
-    public void End(boolean stopped){
-        if(!stopped) {
+    public void End(boolean stopped) {
+        if (!stopped) {
             GetWinningTeam().getMembers().forEach(player -> {
                 Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
                 playerstat.addWon();
@@ -105,7 +96,7 @@ public class InfectedRunner extends BaseRunner {
     }
 
     @Override
-    public boolean CanJoin(Player player){
+    public boolean CanJoin(Player player) {
         return super.CanJoin(player);
     }
 
@@ -113,17 +104,15 @@ public class InfectedRunner extends BaseRunner {
     public void Join(Player player) {
         super.Join(player);
         if (gameState != State.QUEUED) {
-            if(survivors.getDeadMembers().contains(player))
-                addMember(player, infected);
-            else
-                addMember(player, survivors);
+            if (survivors.getDeadMembers().contains(player)) addMember(player, infected);
+             else addMember(player, survivors);
         }
         ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
     }
 
     @Override
-    public void Leave(Player player){
-        if(survivors.getMembers().contains(player)){
+    public void Leave(Player player) {
+        if (survivors.getMembers().contains(player)) {
             survivors.getMembers().remove(player);
             survivors.getDeadMembers().add(player);
         }
@@ -144,7 +133,7 @@ public class InfectedRunner extends BaseRunner {
         returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
         returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.ARROW_INFINITE,1);
+        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
         returnInventory.setItem(1, bow);
         returnInventory.setItem(2, new ItemStack(Material.ARROW));
         returnInventory.forEach(item -> KitEditor.setItemColour(item, infected.getTeamColour()));
@@ -166,38 +155,42 @@ public class InfectedRunner extends BaseRunner {
         returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
         returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.ARROW_INFINITE,1);
+        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
         returnInventory.setItem(1, bow);
         returnInventory.setItem(2, new ItemStack(Material.ARROW));
         returnInventory.forEach(item -> KitEditor.setItemColour(item, survivors.getTeamColour()));
         return new Kit(returnInventory);
     }
-    private Team GetWinningTeam(){
-        if(survivors.getMembers().isEmpty()){
+
+    private Team GetWinningTeam() {
+        if (survivors.getMembers().isEmpty()) {
             return infected;
         }
         return survivors;
     }
+
+//<editor-fold defaultstate="collapsed" desc="delombok">
+//</editor-fold>
     private Team GetLosingTeam() {
-        if(survivors.getMembers().isEmpty()){
+        if (survivors.getMembers().isEmpty()) {
             return survivors;
         }
         return infected;
     }
 
     @EventHandler
-    public void onPlayerLeave(PlayerQuitEvent playerLeave){
+    public void onPlayerLeave(PlayerQuitEvent playerLeave) {
         Player player = playerLeave.getPlayer();
         Leave(player);
-        if(infected.getMembers().isEmpty()){
+        if (infected.getMembers().isEmpty()) {
             End(true);
         }
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent playerDeath){
+    public void onPlayerDeath(PlayerDeathEvent playerDeath) {
         Player player = playerDeath.getEntity();
-        if(players.contains(player)) {
+        if (players.contains(player)) {
             if (survivors.getMembers().remove(player)) {
                 survivors.getDeadMembers().add(player);
                 infected.getMembers().add(player);
@@ -205,20 +198,43 @@ public class InfectedRunner extends BaseRunner {
             ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
             HandleDeath(playerDeath);
         }
-        if(survivors.getMembers().isEmpty()){
+        if (survivors.getMembers().isEmpty()) {
             End(false);
         }
     }
 
     @EventHandler
-    public void onPlayerSpawn(PlayerRespawnEvent playerRespawn){
+    public void onPlayerSpawn(PlayerRespawnEvent playerRespawn) {
         Player player = playerRespawn.getPlayer();
-        if(players.contains(player)){
-            if(infected.getMembers().contains(player)){
+        if (players.contains(player)) {
+            if (infected.getMembers().contains(player)) {
                 playerRespawn.setRespawnLocation(infected.getSpawnLocations().get(0));
-            }if(survivors.getMembers().contains(player)){
+            }
+            if (survivors.getMembers().contains(player)) {
                 playerRespawn.setRespawnLocation(infected.getSpawnLocations().get(0));
             }
         }
     }
+
+    //<editor-fold defaultstate="collapsed" desc="delombok">
+    @SuppressWarnings("all")
+    public Team getInfected() {
+        return this.infected;
+    }
+
+    @SuppressWarnings("all")
+    public Team getSurvivors() {
+        return this.survivors;
+    }
+
+    @SuppressWarnings("all")
+    public Integer getTimeSec() {
+        return this.timeSec;
+    }
+
+    @SuppressWarnings("all")
+    public void setTimeSec(final Integer timeSec) {
+        this.timeSec = timeSec;
+    }
+    //</editor-fold>
 }
