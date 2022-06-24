@@ -7,39 +7,12 @@ public class MapEditor {
 
     enum EditorState{
         MAP,
-        CAPTURETHEFLAG{
-            public JSONCaptureTheFlag getGamemode(JSONMap map){
-                return map.getJSONCaptureTheFlag();
-            }
-        },
-        FREEFORALL{
-            public JSONFreeForAll getGamemode(JSONMap map){
-                return map.getJSONFreeForAll();
-            }
-        },
-        INFECTED{
-            public JSONInfected getGamemode(JSONMap map){
-                return map.getJSONInfected();
-            }
-        },
-        TEAMCONQUEST{
-            public JSONTeamConquest getGamemode(JSONMap map){
-                return map.getJSONTeamConquest();
-            }
-        },
-        TEAMDEATHMATCH{
-            public JSONTeamDeathMatch getGamemode(JSONMap map){
-                return map.getJSONTeamDeathMatch();
-            }
-        },
-        TEAMSLAYER{
-            public JSONTeamSlayer getGamemode(JSONMap map){
-                return map.getJSONTeamSlayer();
-            }
-        };
-
-        public void getGamemode(JSONMap map) {
-        }
+        CAPTURETHEFLAG,
+        FREEFORALL,
+        INFECTED,
+        TEAMCONQUEST,
+        TEAMDEATHMATCH,
+        TEAMSLAYER
     }
     EditorState state;
 

@@ -16,8 +16,6 @@ import com.mcmiddleearth.mcme.pvpplugin.util.MapLoader;
 import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.StatLoader;
 import com.mcmiddleearth.mcme.pvpplugin.util.Style;
-import lombok.Getter;
-import lombok.Setter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
@@ -26,27 +24,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class PVPPlugin extends JavaPlugin {
 
-    @Getter
     PluginManager pluginManager;
-
-    @Getter
     HashMap<String, JSONMap> maps;
-
-    @Getter
     HashMap<UUID, Playerstat> playerstats;
-
-    @Getter
     HashSet<String> availableGamemodes;
-
-    @Getter
     Matchmaker matchmaker;
-
-    @Getter@Setter
     GamemodeRunner activeGame;
 
-    @Getter
     private File mapDirectory;
-    @Getter
     private File statDirectory;
 
     @Override
@@ -117,5 +102,40 @@ public class PVPPlugin extends JavaPlugin {
         ComponentBuilder result = new ComponentBuilder("[Mod]").color(Style.MOD).append(" ").color(Style.ERROR);
         result.append(message.create());
         recipient.sendMessage(result.create());
+    }
+
+    public PluginManager getPluginManager() {
+        return pluginManager;
+    }
+
+    public HashMap<String, JSONMap> getMaps() {
+        return maps;
+    }
+
+    public HashMap<UUID, Playerstat> getPlayerstats() {
+        return playerstats;
+    }
+
+    public HashSet<String> getAvailableGamemodes() {
+        return availableGamemodes;
+    }
+
+    public Matchmaker getMatchmaker() {
+        return matchmaker;
+    }
+
+    public GamemodeRunner getActiveGame() {
+        return activeGame;
+    }
+    public void setActiveGame(GamemodeRunner activeGame) {
+        this.activeGame = activeGame;
+    }
+
+    public File getMapDirectory() {
+        return mapDirectory;
+    }
+
+    public File getStatDirectory() {
+        return statDirectory;
     }
 }

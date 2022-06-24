@@ -3,7 +3,7 @@ main: com.mcmiddleearth.mcme.pvpplugin.PVPPlugin
 version: ${project.version}
 authors: [NicoviçTheSixth,Johnyeric]
 depend: [WorldEdit]
-api-version: 1.16
+api-version: 1.19
 
 commands:
   MapEditor:
