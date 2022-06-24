@@ -122,7 +122,6 @@ public class EditExecutor {
     }
 
     public static int SetSpawn(CommandContext<McmeCommandSender> c, PVPPlugin pvpPlugin) {
-        //TODO:Create SetSpawn
         if(c.getSource() instanceof Player){
             Player source = (Player) c.getSource();
             String spawnType = c.getArgument("spawn", String.class);
