@@ -104,6 +104,7 @@ public class PVPPlugin extends JavaPlugin {
         recipient.sendMessage(result.create());
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public WorldEditPlugin getWorldEditPlugin(){
         Plugin p = pluginManager.getPlugin("WorldEdit");
 
@@ -136,7 +137,6 @@ public class PVPPlugin extends JavaPlugin {
     public GamemodeRunner getActiveGame() {
         return this.activeGame;
     }
-
     public void setActiveGame(final GamemodeRunner activeGame) {
         this.activeGame = activeGame;
     }
@@ -150,4 +150,5 @@ public class PVPPlugin extends JavaPlugin {
     }
 
     public HashMap<UUID,MapEditor> getMapEditors(){return this.mapEditors;}
+    //</editor-fold>
 }

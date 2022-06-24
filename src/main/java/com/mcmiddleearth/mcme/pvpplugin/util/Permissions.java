@@ -8,16 +8,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author Eriol_Eandur
- */
 public enum Permissions {
-
     RUN        ("pvp.gameCanRun",      PermissionDefault.OP),
     MAP_EDITOR ("pvp.mapEditor",       PermissionDefault.OP),
     PVP_ADMIN  ("pvp.adminPermission", PermissionDefault.OP);
-
 
     private final String permissionNode;
 
@@ -25,7 +19,7 @@ public enum Permissions {
 
     private final PermissionDefault defaultPerm;
 
-    private Permissions(String permissionNode, PermissionDefault defaultPerm, Permissions... children) {
+    Permissions(String permissionNode, PermissionDefault defaultPerm, Permissions... children) {
         this.permissionNode = permissionNode;
         this.children = children;
         this.defaultPerm = defaultPerm;
@@ -62,6 +56,4 @@ public enum Permissions {
     public PermissionDefault getDefaultPerm() {
         return defaultPerm;
     }
-
-
 }

@@ -29,14 +29,15 @@ public class MapEditor {
         TEAMSLAYER,
         DEATHRUN
     }
-    EditorState state;
 
+    EditorState state;
     JSONMap map;
 
     public MapEditor(JSONMap map){
         this.map = map;
         state = EditorState.MAP;
     }
+
     public void setArea(PVPPlugin pvpPlugin, Player source) {
         BukkitPlayer bukkitP = new BukkitPlayer(source);
         LocalSession session = pvpPlugin.getWorldEditPlugin().getWorldEdit().getSessionManager().get(bukkitP);
@@ -157,6 +158,7 @@ public class MapEditor {
                 break;
         }
     }
+
     public void setDeathSpawn(Location loc) {
         JSONLocation location = LocationTranscriber.TranscribeToJSON(loc);
         map.getJSONDeathRun().setDeathSpawn(location);

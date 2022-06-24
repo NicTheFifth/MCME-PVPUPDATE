@@ -1,6 +1,5 @@
 package com.mcmiddleearth.mcme.pvpplugin.command.commandParser;
 
-import com.google.common.collect.Lists;
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.util.MapEditor;
