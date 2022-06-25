@@ -14,7 +14,7 @@ public class MapLoader {
     public static void loadMaps(PVPPlugin pvpPlugin) throws MapLoadException{
         ObjectMapper objectMapper = new ObjectMapper();
         File mapDirectory  = pvpPlugin.getMapDirectory();
-        Arrays.stream(Objects.requireNonNull(mapDirectory.listFiles())).forEach(mapFile -> {
+        Arrays.stream(mapDirectory.listFiles()).forEach(mapFile -> {
             try {
                 JSONMap map = objectMapper.readValue(mapFile, JSONMap.class);
                 pvpPlugin.getMaps().put(map.getTitle(), map);

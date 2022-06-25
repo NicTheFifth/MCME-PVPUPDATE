@@ -3,6 +3,7 @@ package com.mcmiddleearth.mcme.pvpplugin;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,12 +29,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class PVPPlugin extends JavaPlugin {
 
     PluginManager pluginManager;
-    HashMap<String, JSONMap> maps;
-    HashMap<UUID, Playerstat> playerstats;
-    HashSet<String> availableGamemodes;
+    HashMap<String, JSONMap> maps = new HashMap<>();
+    HashMap<UUID, Playerstat> playerstats = new HashMap<>();
+    HashSet<String> availableGamemodes = new HashSet<>(Set.of("capturetheflag", "deathrun", "infected", "teamconquest", "teamdeathmatch", "teamslayer"));
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
-    HashMap<UUID, MapEditor> mapEditors;
+    HashMap<UUID, MapEditor> mapEditors = new HashMap<>();
 
     private File mapDirectory;
     private File statDirectory;
