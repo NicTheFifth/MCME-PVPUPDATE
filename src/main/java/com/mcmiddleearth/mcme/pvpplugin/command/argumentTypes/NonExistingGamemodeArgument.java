@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class NonExistingGamemodeArgument implements ArgumentType<String> {
     @Override
-    public String parse(StringReader reader) throws CommandSyntaxException {
+    public String parse(StringReader reader) {
         return reader.readUnquotedString();
     }
 
@@ -26,19 +26,19 @@ public class NonExistingGamemodeArgument implements ArgumentType<String> {
         JSONMap map = PVPPlugin.getInstance().getMaps().get(mapString);
         Set<String> options = new java.util.HashSet<>(Collections.emptySet());
 
-        if(map.getJSONCaptureTheFlag() != null)
+        if(map.getJSONCaptureTheFlag() == null)
             options.add("CaptureTheFlag");
-        if(map.getJSONDeathRun() != null)
+        if(map.getJSONDeathRun() == null)
             options.add("DeathRun");
-        if(map.getJSONFreeForAll() != null)
+        if(map.getJSONFreeForAll() == null)
             options.add("FreeForAll");
-        if(map.getJSONInfected() != null)
+        if(map.getJSONInfected() == null)
             options.add("Infected");
-        if(map.getJSONTeamConquest() != null)
+        if(map.getJSONTeamConquest() == null)
             options.add("TeamConquest");
-        if(map.getJSONTeamDeathMatch() != null)
+        if(map.getJSONTeamDeathMatch() == null)
             options.add("TeamDeathMatch");
-        if(map.getJSONTeamSlayer() != null)
+        if(map.getJSONTeamSlayer() == null)
             options.add("TeamSlayer");
 
         for (String option : options) {

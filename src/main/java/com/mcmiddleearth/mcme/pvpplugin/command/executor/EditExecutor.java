@@ -3,6 +3,7 @@ package com.mcmiddleearth.mcme.pvpplugin.command.executor;
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.mcme.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.util.MapEditor;
 import com.mojang.brigadier.context.CommandContext;
@@ -10,8 +11,8 @@ import org.bukkit.entity.Player;
 
 public class EditExecutor {
     public static int CreateMapEditor(CommandContext<McmeCommandSender> c){
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             String mapName = c.getArgument("map", String.class);
             if(!PVPPlugin.getInstance().getMaps().containsKey(mapName)) {
                 JSONMap newMap = new JSONMap(mapName);
@@ -26,8 +27,8 @@ public class EditExecutor {
     }
 
     public static int NewMapEditor(CommandContext<McmeCommandSender> c){
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             String mapName = c.getArgument("map",String.class);
             JSONMap existingMap = PVPPlugin.getInstance().getMaps().get(mapName);
             PVPPlugin.getInstance().getMapEditors().put(source.getUniqueId(),new MapEditor(existingMap));
@@ -37,8 +38,8 @@ public class EditExecutor {
     }
 
     public static int SetArea(CommandContext<McmeCommandSender> c){
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
             me.setArea(PVPPlugin.getInstance(), source);
             return 1;
@@ -47,8 +48,8 @@ public class EditExecutor {
     }
 
     public static int SetTitle(CommandContext<McmeCommandSender> c) {
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             String mapName = c.getArgument("map", String.class);
             MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
             me.setTitle(PVPPlugin.getInstance(), mapName);
@@ -58,8 +59,8 @@ public class EditExecutor {
     }
 
     public static int SetRP(CommandContext<McmeCommandSender> c) {
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             String rpName = c.getArgument("rp", String.class);
             MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
             me.setRP(rpName);
@@ -69,8 +70,8 @@ public class EditExecutor {
     }
 
     public static int SetGamemode(CommandContext<McmeCommandSender> c) {
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             String gamemode = c.getArgument("gamemode", String.class);
             MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
             me.setGamemode(gamemode);
@@ -80,8 +81,8 @@ public class EditExecutor {
     }
 
     public static int SetMax(CommandContext<McmeCommandSender> c) {
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             Integer max = c.getArgument("amount", Integer.class);
             MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
             me.setMax(max);
@@ -91,8 +92,8 @@ public class EditExecutor {
     }
 
     public static int EditGoal(CommandContext<McmeCommandSender> c) {
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
             me.setGoal(source);
             return 1;
@@ -101,8 +102,8 @@ public class EditExecutor {
     }
 
     public static int CreateCapture(CommandContext<McmeCommandSender> c) {
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
             me.createCapturePoint(source);
             return 1;
@@ -111,8 +112,8 @@ public class EditExecutor {
     }
 
     public static int DelCapture(CommandContext<McmeCommandSender> c) {
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             Integer point = c.getArgument("pointNum", Integer.class);
             MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
             me.delCapturePoint(point);
@@ -122,8 +123,8 @@ public class EditExecutor {
     }
 
     public static int SetSpawn(CommandContext<McmeCommandSender> c) {
-        if(c.getSource() instanceof Player){
-            Player source = (Player) c.getSource();
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source != null){
             String spawnType = c.getArgument("spawn", String.class);
             MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
             switch(spawnType){

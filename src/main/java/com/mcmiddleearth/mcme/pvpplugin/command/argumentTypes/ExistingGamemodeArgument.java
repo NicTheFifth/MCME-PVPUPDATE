@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public class ExistingGamemodeArgument implements ArgumentType<String> {
 
     @Override
-    public String parse(StringReader reader) throws CommandSyntaxException {
+    public String parse(StringReader reader) {
         return reader.readUnquotedString();
     }
 
