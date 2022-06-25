@@ -6,18 +6,12 @@ depend: [WorldEdit]
 api-version: 1.19
 
 commands:
-  MapEditor:
+  mapedit:
     description: edit/create new pvp maps
     usage: /mapedit <arguments>
-  Locker:
-    description: lock/unlock pvp server and/or kick people
-    usage: /locker <arguments>
-  PVP:
+  pvp:
     description: main command used for running pvp
     usage: /pvp <arguments>
-  T:
-    description: team chat command
-    usage: /t <message>
 
   permissions:
     pvp.gameCanRun:

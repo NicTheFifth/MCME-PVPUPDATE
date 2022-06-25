@@ -15,11 +15,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class ExistingGamemodeArgument implements ArgumentType<String> {
-    PVPPlugin pvpPlugin;
-
-    public ExistingGamemodeArgument(PVPPlugin pvpPlugin){
-        this.pvpPlugin = pvpPlugin;
-    }
 
     @Override
     public String parse(StringReader reader) throws CommandSyntaxException {
@@ -29,7 +24,7 @@ public class ExistingGamemodeArgument implements ArgumentType<String> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         String mapString = context.getArgument("map", String.class);
-        JSONMap map = pvpPlugin.getMaps().get(mapString);
+        JSONMap map = PVPPlugin.getInstance().getMaps().get(mapString);
         Set<String> options = new java.util.HashSet<>(Collections.emptySet());
 
         if(map.getJSONCaptureTheFlag() != null)

@@ -8,11 +8,6 @@ import java.util.Collections;
 import java.util.Set;
 
 public class Matchmaker {
-    PVPPlugin pvpPlugin;
-
-    public Matchmaker(PVPPlugin pvpPlugin){
-        this.pvpPlugin = pvpPlugin;
-    }
     public void infectedMatchMake(Set<Player> players, Team infected, Team survivors){
         players.forEach(player -> {
             if(!(infected.getMembers().contains(player) || survivors.getMembers().contains(player))){
@@ -55,7 +50,7 @@ public class Matchmaker {
     public Long getTotalELO(Team team){
         long retELO = 0L;
         for (Player player : team.getMembers()) {
-            retELO += pvpPlugin.getPlayerstats().get(player.getUniqueId()).getElo();
+            retELO += PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId()).getElo();
         }
         return retELO;
     }

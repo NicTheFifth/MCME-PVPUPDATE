@@ -12,23 +12,23 @@ import java.util.UUID;
 
 public class StatLoader {
 
-    public static void loadStats(PVPPlugin pvpPlugin) throws StatLoadException {
+    public static void loadStats() throws StatLoadException {
         ObjectMapper objectMapper = new ObjectMapper();
-        File statDirectory  = pvpPlugin.getStatDirectory();
+        File statDirectory  = PVPPlugin.getInstance().getStatDirectory();
         Arrays.stream(Objects.requireNonNull(statDirectory.listFiles())).forEach(mapFile -> {
             try {
                 Playerstat stat = objectMapper.readValue(mapFile, Playerstat.class);
-                pvpPlugin.getPlayerstats().put(UUID.fromString(mapFile.getName()), stat);
+                PVPPlugin.getInstance().getPlayerstats().put(UUID.fromString(mapFile.getName()), stat);
             } catch (Exception e) {
                 throw new StatLoadException(e);
             }
         });
     }
 
-    public static void saveStats(PVPPlugin pvpPlugin){
+    public static void saveStats(){
         ObjectMapper objectMapper = new ObjectMapper();
-        File statDirectory  = pvpPlugin.getStatDirectory();
-        pvpPlugin.getPlayerstats().forEach((uuid,stat) ->{
+        File statDirectory  = PVPPlugin.getInstance().getStatDirectory();
+        PVPPlugin.getInstance().getPlayerstats().forEach((uuid,stat) ->{
             try {
                 File saveFile = new File(statDirectory + System.getProperty("file.separator") + uuid.toString());
                 objectMapper.writeValue(saveFile, stat);

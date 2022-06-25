@@ -17,17 +17,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class GameCommand extends AbstractCommandHandler implements TabExecutor {
-    PVPPlugin pvpPlugin;
-    public GameCommand(String command, PVPPlugin pvpPlugin){
+    public GameCommand(String command){
         super(command);
-        this.pvpPlugin = pvpPlugin;
     }
     @Override
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
                 .then(HelpfulLiteralBuilder.literal("join"))
                 .then(HelpfulLiteralBuilder.literal("rules")
-                        .then(Arguments.getGamemodes(pvpPlugin)))
+                        .then(Arguments.getGamemodes()))
                 .then(HelpfulLiteralBuilder.literal("stats")
                         .then(HelpfulLiteralBuilder.literal("delete")
                                 .then(HelpfulLiteralBuilder.literal("USER"))))
@@ -39,14 +37,14 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        PVPCommandSender wrappedSender = new PVPCommandSender(sender, pvpPlugin);
+        PVPCommandSender wrappedSender = new PVPCommandSender(sender);
         execute(wrappedSender, args);
         return true;
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        TabCompleteRequest request = new SimpleTabCompleteRequest(new PVPCommandSender(sender, pvpPlugin),
+        TabCompleteRequest request = new SimpleTabCompleteRequest(new PVPCommandSender(sender),
                 String.format("/%s %s", alias, Joiner.on(' ').join(args)).trim());
         onTabComplete(request);
         return request.getSuggestions();

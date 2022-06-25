@@ -36,11 +36,15 @@ public class PVPPlugin extends JavaPlugin {
     GamemodeRunner activeGame;
     HashMap<UUID, MapEditor> mapEditors = new HashMap<>();
 
+    private static PVPPlugin instance;
     private File mapDirectory;
     private File statDirectory;
 
     @Override
     public void onLoad() {
+        if(PVPPlugin.instance == null) {
+            PVPPlugin.instance = this;
+        }
         this.saveDefaultConfig();
         this.reloadConfig();
         /*if(this.getConfig().contains("noHunger")){
@@ -64,8 +68,6 @@ public class PVPPlugin extends JavaPlugin {
             }
         }
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        MapLoader.loadMaps(this);
-        StatLoader.loadStats(this);
         //Spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
     }
@@ -77,20 +79,22 @@ public class PVPPlugin extends JavaPlugin {
     }
 
     private void setup() {
+        MapLoader.loadMaps();
+        StatLoader.loadStats();
         pluginManager = this.getServer().getPluginManager();
-        matchmaker = new Matchmaker(this);
-        MapEditCommand mapEditCommand = new MapEditCommand("mapedit", this);
+        matchmaker = new Matchmaker();
+        MapEditCommand mapEditCommand = new MapEditCommand("mapedit");
         Bukkit.getServer().getPluginCommand("mapedit").setExecutor(mapEditCommand);
         Bukkit.getServer().getPluginCommand("mapedit").setTabCompleter(mapEditCommand);
-        GameCommand gameCommand = new GameCommand("pvp", this);
+        GameCommand gameCommand = new GameCommand("pvp");
         Bukkit.getServer().getPluginCommand("pvp").setExecutor(gameCommand);
         Bukkit.getServer().getPluginCommand("pvp").setTabCompleter(gameCommand);
     }
 
     @Override
     public void onDisable() {
-        MapLoader.saveMaps(this);
-        StatLoader.saveStats(this);
+        MapLoader.saveMaps();
+        StatLoader.saveStats();
     }
 
     public static void sendInfo(CommandSender recipient, ComponentBuilder message) {
@@ -113,6 +117,9 @@ public class PVPPlugin extends JavaPlugin {
             return null;
         }
         return (WorldEditPlugin) p;
+    }
+    public static PVPPlugin getInstance() {
+        return instance;
     }
 
     public PluginManager getPluginManager() {

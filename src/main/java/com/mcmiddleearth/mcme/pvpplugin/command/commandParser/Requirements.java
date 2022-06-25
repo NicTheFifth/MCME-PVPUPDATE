@@ -18,8 +18,8 @@ public class Requirements {
         return ((CommandSender)player).hasPermission(Permissions.PVP_ADMIN.getPermissionNode());
     }
 
-    public static boolean isState(Player p, PVPPlugin pvpPlugin, MapEditor.EditorState... eState){
-        MapEditor me = pvpPlugin.getMapEditors().get(p.getUniqueId());
+    public static boolean isState(Player p, MapEditor.EditorState... eState){
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(p.getUniqueId());
         try {
             return Arrays.stream(eState).anyMatch(state -> me.getState() == state);
         } catch (Exception e) {
@@ -27,10 +27,10 @@ public class Requirements {
         }
     }
 
-    public static boolean stageGamemode(McmeCommandSender c, PVPPlugin pvpPlugin) {
+    public static boolean stageGamemode(McmeCommandSender c) {
         if(c instanceof Player){
             Player p = (Player) c;
-            return isState(p,pvpPlugin, MapEditor.EditorState.CAPTURETHEFLAG,
+            return isState(p, MapEditor.EditorState.CAPTURETHEFLAG,
                     MapEditor.EditorState.FREEFORALL,
                     MapEditor.EditorState.INFECTED,
                     MapEditor.EditorState.TEAMCONQUEST,
@@ -40,26 +40,26 @@ public class Requirements {
         }else
             return false;
     }
-    public static boolean canEditGoal(McmeCommandSender c, PVPPlugin pvpPlugin) {
+    public static boolean canEditGoal(McmeCommandSender c) {
         if(c instanceof Player){
             Player p = (Player) c;
-            return isState(p,pvpPlugin, MapEditor.EditorState.DEATHRUN);
+            return isState(p, MapEditor.EditorState.DEATHRUN);
         }else
             return false;
     }
 
-    public static boolean canEditCapture(McmeCommandSender c, PVPPlugin pvpPlugin) {
+    public static boolean canEditCapture(McmeCommandSender c) {
         if(c instanceof Player){
             Player p = (Player) c;
-            return isState(p,pvpPlugin, MapEditor.EditorState.TEAMCONQUEST);
+            return isState(p, MapEditor.EditorState.TEAMCONQUEST);
         }else
             return false;
     }
 
-    public static boolean hasRB(McmeCommandSender c, PVPPlugin pvpPlugin) {
+    public static boolean hasRB(McmeCommandSender c) {
         if(c instanceof Player){
             Player p = (Player) c;
-            return isState(p,pvpPlugin, MapEditor.EditorState.CAPTURETHEFLAG,
+            return isState(p, MapEditor.EditorState.CAPTURETHEFLAG,
                     MapEditor.EditorState.FREEFORALL,
                     MapEditor.EditorState.TEAMCONQUEST,
                     MapEditor.EditorState.TEAMDEATHMATCH,
@@ -68,18 +68,18 @@ public class Requirements {
             return false;
     }
 
-    public static boolean hasIS(McmeCommandSender c, PVPPlugin pvpPlugin) {
+    public static boolean hasIS(McmeCommandSender c) {
         if(c instanceof Player){
             Player p = (Player) c;
-            return isState(p,pvpPlugin, MapEditor.EditorState.INFECTED);
+            return isState(p, MapEditor.EditorState.INFECTED);
         }else
             return false;
     }
 
-    public static boolean hasDR(McmeCommandSender c, PVPPlugin pvpPlugin) {
+    public static boolean hasDR(McmeCommandSender c) {
         if(c instanceof Player){
             Player p = (Player) c;
-            return isState(p,pvpPlugin, MapEditor.EditorState.DEATHRUN);
+            return isState(p, MapEditor.EditorState.DEATHRUN);
         }else
             return false;
     }

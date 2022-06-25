@@ -15,33 +15,33 @@ import java.util.Set;
 
 public class Arguments {
 
-    static CommandStringArgument Gamemodes(PVPPlugin pvpPlugin){
-        return new CommandStringArgument(pvpPlugin.getAvailableGamemodes());
+    static CommandStringArgument Gamemodes(){
+        return new CommandStringArgument(PVPPlugin.getInstance().getAvailableGamemodes());
     }
-    static HelpfulRequiredArgumentBuilder<String> getGamemodes(PVPPlugin pvpPlugin) {
-        return HelpfulRequiredArgumentBuilder.argument("gamemode", Gamemodes(pvpPlugin));
-    }
-
-    static CommandStringArgument Maps(PVPPlugin pvpPlugin){
-        return new CommandStringArgument(new HashSet<>(pvpPlugin.getMaps().keySet()));
-    }
-    static HelpfulRequiredArgumentBuilder<String> getMap(PVPPlugin pvpPlugin) {
-        return HelpfulRequiredArgumentBuilder.argument("map", Maps(pvpPlugin));
+    static HelpfulRequiredArgumentBuilder<String> getGamemodes() {
+        return HelpfulRequiredArgumentBuilder.argument("gamemode", Gamemodes());
     }
 
-    static ExistingGamemodeArgument ExistingGamemode(PVPPlugin pvpPlugin){
-        return new ExistingGamemodeArgument(pvpPlugin);
+    static CommandStringArgument Maps(){
+        return new CommandStringArgument(new HashSet<>(PVPPlugin.getInstance().getMaps().keySet()));
     }
-    static HelpfulRequiredArgumentBuilder<String> existingGamemode(PVPPlugin pvpPlugin) {
-        return HelpfulRequiredArgumentBuilder.argument("gamemode", NonExistingGamemode(pvpPlugin));
-    }
-
-    static NonExistingGamemodeArgument NonExistingGamemode(PVPPlugin pvpPlugin){
-        return new NonExistingGamemodeArgument(pvpPlugin);
+    static HelpfulRequiredArgumentBuilder<String> getMap() {
+        return HelpfulRequiredArgumentBuilder.argument("map", Maps());
     }
 
-    static HelpfulRequiredArgumentBuilder<String> nonExistingGamemode(PVPPlugin pvpPlugin) {
-        return HelpfulRequiredArgumentBuilder.argument("gamemode", NonExistingGamemode(pvpPlugin));
+    static ExistingGamemodeArgument ExistingGamemode(){
+        return new ExistingGamemodeArgument();
+    }
+    static HelpfulRequiredArgumentBuilder<String> existingGamemode() {
+        return HelpfulRequiredArgumentBuilder.argument("gamemode", NonExistingGamemode());
+    }
+
+    static NonExistingGamemodeArgument NonExistingGamemode(){
+        return new NonExistingGamemodeArgument();
+    }
+
+    static HelpfulRequiredArgumentBuilder<String> nonExistingGamemode() {
+        return HelpfulRequiredArgumentBuilder.argument("gamemode", NonExistingGamemode());
     }
 
     public static HelpfulRequiredArgumentBuilder<String> rpArgument() {

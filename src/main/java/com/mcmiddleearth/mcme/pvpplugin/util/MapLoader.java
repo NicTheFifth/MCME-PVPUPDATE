@@ -11,23 +11,23 @@ import java.util.Objects;
 
 public class MapLoader {
 
-    public static void loadMaps(PVPPlugin pvpPlugin) throws MapLoadException{
+    public static void loadMaps() throws MapLoadException{
         ObjectMapper objectMapper = new ObjectMapper();
-        File mapDirectory  = pvpPlugin.getMapDirectory();
+        File mapDirectory  = PVPPlugin.getInstance().getMapDirectory();
         Arrays.stream(mapDirectory.listFiles()).forEach(mapFile -> {
             try {
                 JSONMap map = objectMapper.readValue(mapFile, JSONMap.class);
-                pvpPlugin.getMaps().put(map.getTitle(), map);
+                PVPPlugin.getInstance().getMaps().put(map.getTitle(), map);
             } catch (Exception e) {
                 throw new MapLoadException(e);
             }
         });
     }
 
-    public static void saveMaps(PVPPlugin pvpPlugin){
+    public static void saveMaps(){
         ObjectMapper objectMapper = new ObjectMapper();
-        File mapDirectory  = pvpPlugin.getMapDirectory();
-        pvpPlugin.getMaps().values().forEach(jsonMap -> {
+        File mapDirectory  = PVPPlugin.getInstance().getMapDirectory();
+        PVPPlugin.getInstance().getMaps().values().forEach(jsonMap -> {
             try {
                 File saveFile = new File(mapDirectory + System.getProperty("file.separator") + jsonMap.getTitle());
                 objectMapper.writeValue(saveFile, jsonMap);

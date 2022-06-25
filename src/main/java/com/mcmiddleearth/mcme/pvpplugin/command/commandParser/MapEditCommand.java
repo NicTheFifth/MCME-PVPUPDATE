@@ -2,6 +2,7 @@ package com.mcmiddleearth.mcme.pvpplugin.command.commandParser;
 
 import com.google.common.base.Joiner;
 import com.mcmiddleearth.command.AbstractCommandHandler;
+import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
@@ -18,14 +19,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.logging.Level;
 
 public class MapEditCommand extends AbstractCommandHandler implements TabExecutor {
 
-    PVPPlugin pvpPlugin;
-
-    public MapEditCommand(String command, PVPPlugin pvpPlugin) {
+    public MapEditCommand(String command) {
         super(command);
-        this.pvpPlugin = pvpPlugin;
     }
 
     @Override
@@ -33,60 +32,61 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
         commandNodeBuilder
             .requires(Requirements::isMapEditor)
             .then(HelpfulLiteralBuilder.literal("edit")
-                .then(Arguments.getMap(pvpPlugin)
-                        .executes(c->EditExecutor.NewMapEditor(pvpPlugin,c))))
+                .then(Arguments.getMap()
+                        .executes(EditExecutor::NewMapEditor)))
             .then(HelpfulLiteralBuilder.literal("create")
                 .then(HelpfulRequiredArgumentBuilder.argument("map", StringArgumentType.string())
-                        .executes(c -> EditExecutor.CreateMapEditor(pvpPlugin, c))))
+                        .executes(EditExecutor::CreateMapEditor)))
             .then(HelpfulLiteralBuilder.literal("setarea")
-                    .executes(c -> EditExecutor.SetArea(pvpPlugin,c)))
+                    .executes(EditExecutor::SetArea))
             .then(HelpfulLiteralBuilder.literal("title")
                 .then(HelpfulRequiredArgumentBuilder.argument("map", StringArgumentType.string())
-                    .executes(c -> EditExecutor.SetTitle(pvpPlugin,c))))
+                    .executes(EditExecutor::SetTitle)))
             .then(HelpfulLiteralBuilder.literal("setrp")
                 .then(Arguments.rpArgument()
-                    .executes(c->EditExecutor.SetRP(pvpPlugin,c))))
+                    .executes(EditExecutor::SetRP)))
             .then(HelpfulLiteralBuilder.literal("setSpawn")
                 .then(Arguments.spawnArgumentRB()
-                        .requires(c -> Requirements.hasRB(c,pvpPlugin))
-                        .executes(c -> EditExecutor.SetSpawn(c,pvpPlugin)))
+                        .requires(Requirements::hasRB)
+                        .executes(EditExecutor::SetSpawn))
                 .then(Arguments.spawnArgumentIS()
-                        .requires(c -> Requirements.hasIS(c,pvpPlugin))
-                        .executes(c -> EditExecutor.SetSpawn(c,pvpPlugin)))
+                        .requires(Requirements::hasIS)
+                        .executes(EditExecutor::SetSpawn))
                 .then(Arguments.spawnArgumentDR()
-                        .requires(c->Requirements.hasDR(c,pvpPlugin)))
-                    .executes(c -> EditExecutor.SetSpawn(c,pvpPlugin)))
+                        .requires(Requirements::hasDR)
+                        .executes(EditExecutor::SetSpawn)))
             .then(HelpfulLiteralBuilder.literal("gamemode")
-                .then(Arguments.getGamemodes(pvpPlugin)
-                        .executes(c->EditExecutor.SetGamemode(pvpPlugin,c))))
+                .then(Arguments.getGamemodes()
+                        .executes(EditExecutor::SetGamemode)))
             .then(HelpfulLiteralBuilder.literal("setMax")
-                .requires(c-> Requirements.stageGamemode(c,pvpPlugin))
+                .requires(Requirements::stageGamemode)
                 .then(HelpfulRequiredArgumentBuilder.argument("amount",IntegerArgumentType.integer(1))
-                        .executes(c->EditExecutor.SetMax(pvpPlugin,c))))
+                        .executes(EditExecutor::SetMax)))
             .then(HelpfulLiteralBuilder.literal("setGoal")
-                .requires(c-> Requirements.canEditGoal(c,pvpPlugin))
-                    .executes(c->EditExecutor.EditGoal(pvpPlugin,c)))
+                .requires(Requirements::canEditGoal)
+                    .executes(EditExecutor::EditGoal))
             .then(HelpfulLiteralBuilder.literal("addCapture")
-                .requires(c -> Requirements.canEditCapture(c,pvpPlugin))
-                    .executes(c -> EditExecutor.CreateCapture(c,pvpPlugin)))
+                .requires(Requirements::canEditCapture)
+                    .executes(EditExecutor::CreateCapture))
             .then(HelpfulLiteralBuilder.literal("delCapture")
-                .requires(c -> Requirements.canEditCapture(c,pvpPlugin))
+                .requires(Requirements::canEditCapture)
                 .then(HelpfulRequiredArgumentBuilder.argument("pointNum",IntegerArgumentType.integer(0))
-                        .executes(c-> EditExecutor.DelCapture(c,pvpPlugin))))
+                        .executes(EditExecutor::DelCapture)))
             ;
         return commandNodeBuilder;
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        PVPCommandSender wrappedSender = new PVPCommandSender(sender, pvpPlugin);
+        McmeCommandSender wrappedSender = new PVPCommandSender(sender);
         execute(wrappedSender, args);
         return true;
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        TabCompleteRequest request = new SimpleTabCompleteRequest(new PVPCommandSender(sender, pvpPlugin),
+        PVPPlugin.getInstance().getLogger().log(Level.INFO, "Wrapped sender is " +PVPCommandSender.wrap(sender).getClass().toString());
+        TabCompleteRequest request = new SimpleTabCompleteRequest(PVPCommandSender.wrap(sender),
                 String.format("/%s %s", alias, Joiner.on(' ').join(args)).trim());
         onTabComplete(request);
         return request.getSuggestions();
