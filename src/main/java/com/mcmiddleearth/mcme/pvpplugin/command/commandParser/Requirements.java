@@ -2,20 +2,22 @@ package com.mcmiddleearth.mcme.pvpplugin.command.commandParser;
 
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.mcme.pvpplugin.util.MapEditor;
 import com.mcmiddleearth.mcme.pvpplugin.util.Permissions;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Requirements {
     public static boolean isMapEditor(McmeCommandSender player){
-        return ((CommandSender)player).hasPermission(Permissions.MAP_EDITOR.getPermissionNode());
+        return ((PVPCommandSender) player).getSender().hasPermission(Permissions.MAP_EDITOR.getPermissionNode());
     }
 
     public static boolean isAdmin(McmeCommandSender player){
-        return ((CommandSender)player).hasPermission(Permissions.PVP_ADMIN.getPermissionNode());
+        return ((PVPCommandSender) player).getSender().hasPermission(Permissions.PVP_ADMIN.getPermissionNode());
     }
 
     public static boolean isState(Player p, MapEditor.EditorState... eState){
@@ -28,8 +30,8 @@ public class Requirements {
     }
 
     public static boolean stageGamemode(McmeCommandSender c) {
-        if(c instanceof Player){
-            Player p = (Player) c;
+        if(((PVPCommandSender) c).getSender() instanceof Player){
+            Player p = (Player) ((PVPCommandSender) c).getSender();
             return isState(p, MapEditor.EditorState.CAPTURETHEFLAG,
                     MapEditor.EditorState.FREEFORALL,
                     MapEditor.EditorState.INFECTED,
@@ -41,24 +43,24 @@ public class Requirements {
             return false;
     }
     public static boolean canEditGoal(McmeCommandSender c) {
-        if(c instanceof Player){
-            Player p = (Player) c;
+        if(((PVPCommandSender) c).getSender() instanceof Player){
+            Player p = (Player) ((PVPCommandSender) c).getSender();
             return isState(p, MapEditor.EditorState.DEATHRUN);
         }else
             return false;
     }
 
     public static boolean canEditCapture(McmeCommandSender c) {
-        if(c instanceof Player){
-            Player p = (Player) c;
+        if(((PVPCommandSender) c).getSender() instanceof Player){
+            Player p = (Player) ((PVPCommandSender) c).getSender();
             return isState(p, MapEditor.EditorState.TEAMCONQUEST);
         }else
             return false;
     }
 
     public static boolean hasRB(McmeCommandSender c) {
-        if(c instanceof Player){
-            Player p = (Player) c;
+        if(((PVPCommandSender) c).getSender() instanceof Player){
+            Player p = (Player) ((PVPCommandSender) c).getSender();
             return isState(p, MapEditor.EditorState.CAPTURETHEFLAG,
                     MapEditor.EditorState.FREEFORALL,
                     MapEditor.EditorState.TEAMCONQUEST,
@@ -69,16 +71,16 @@ public class Requirements {
     }
 
     public static boolean hasIS(McmeCommandSender c) {
-        if(c instanceof Player){
-            Player p = (Player) c;
+        if(((PVPCommandSender) c).getSender() instanceof Player){
+            Player p = (Player) ((PVPCommandSender) c).getSender();
             return isState(p, MapEditor.EditorState.INFECTED);
         }else
             return false;
     }
 
     public static boolean hasDR(McmeCommandSender c) {
-        if(c instanceof Player){
-            Player p = (Player) c;
+        if(((PVPCommandSender) c).getSender() instanceof Player){
+            Player p = (Player) ((PVPCommandSender) c).getSender();
             return isState(p, MapEditor.EditorState.DEATHRUN);
         }else
             return false;

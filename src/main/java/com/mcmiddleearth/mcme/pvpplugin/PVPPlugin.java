@@ -31,7 +31,15 @@ public class PVPPlugin extends JavaPlugin {
     PluginManager pluginManager;
     HashMap<String, JSONMap> maps = new HashMap<>();
     HashMap<UUID, Playerstat> playerstats = new HashMap<>();
-    HashSet<String> availableGamemodes = new HashSet<>(Set.of("capturetheflag", "deathrun", "infected", "teamconquest", "teamdeathmatch", "teamslayer"));
+    HashSet<String> availableGamemodes = new HashSet<>(
+            Set.of("capturetheflag",
+                    "deathrun",
+                    "infected",
+                    "teamconquest",
+                    "teamdeathmatch",
+                    "teamslayer",
+                    "oneinthequiver",
+                    "ringbearer"));
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
     HashMap<UUID, MapEditor> mapEditors = new HashMap<>();

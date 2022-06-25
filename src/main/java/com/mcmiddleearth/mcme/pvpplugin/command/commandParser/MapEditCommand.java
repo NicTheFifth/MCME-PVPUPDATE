@@ -85,9 +85,8 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        PVPPlugin.getInstance().getLogger().log(Level.INFO, "Wrapped sender is " +PVPCommandSender.wrap(sender).getClass().toString());
         TabCompleteRequest request = new SimpleTabCompleteRequest(PVPCommandSender.wrap(sender),
-                String.format("/%s %s", alias, Joiner.on(' ').join(args)).trim());
+                String.format("/%s %s", alias, Joiner.on(' ').join(args)));
         onTabComplete(request);
         return request.getSuggestions();
     }

@@ -8,6 +8,7 @@ import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommandSender;
+import com.mcmiddleearth.mcme.pvpplugin.command.executor.GameExecutor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -25,7 +26,8 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
         commandNodeBuilder
                 .then(HelpfulLiteralBuilder.literal("join"))
                 .then(HelpfulLiteralBuilder.literal("rules")
-                        .then(Arguments.getGamemodes()))
+                        .then(Arguments.getGamemodes()
+                                .executes(GameExecutor::GetRule)))
                 .then(HelpfulLiteralBuilder.literal("stats")
                         .then(HelpfulLiteralBuilder.literal("delete")
                                 .then(HelpfulLiteralBuilder.literal("USER"))))
@@ -45,7 +47,7 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         TabCompleteRequest request = new SimpleTabCompleteRequest(new PVPCommandSender(sender),
-                String.format("/%s %s", alias, Joiner.on(' ').join(args)).trim());
+                String.format("/%s %s", alias, Joiner.on(' ').join(args)));
         onTabComplete(request);
         return request.getSuggestions();
     }

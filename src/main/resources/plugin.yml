@@ -13,21 +13,21 @@ commands:
     description: main command used for running pvp
     usage: /pvp <arguments>
 
-  permissions:
-    pvp.gameCanRun:
-      description: Can run games on pvp server.
-      default: op
-    pvp.mapEditor:
-      description: Can create/edit maps on pvp server.
-      default: op
-    pvp.adminPermission:
-      description: Can do everything with the pvp plugin.
-      default: op
-    pvp.manager:
-      children:
-        pvp.gameCanRun: true
-    pvp.admin:
-      children:
-        pvp.mapEditor: true
-        pvp.manager: true
-        pvp.adminPermission: true
+permissions:
+  pvp.gameCanRun:
+    description: Can run games on pvp server.
+    default: op
+  pvp.mapEditor:
+    description: Can create/edit maps on pvp server.
+    default: op
+  pvp.adminPermission:
+    description: Can do everything with the pvp plugin.
+    default: op
+  pvp.manager:
+    children:
+      pvp.gameCanRun: true
+  pvp.admin:
+    children:
+      pvp.mapEditor: true
+      pvp.manager: true
+      pvp.adminPermission: true
