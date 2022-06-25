@@ -1,19 +1,15 @@
 package com.mcmiddleearth.mcme.pvpplugin.command.executor;
 
 import com.mcmiddleearth.command.McmeCommandSender;
-import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mojang.brigadier.context.CommandContext;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class GameExecutor {
     public static int GetRule(CommandContext<McmeCommandSender> c){
-        Logger.getLogger("PVPPlugin").log(Level.INFO, c.getArgument("gamemode", String.class));
         if(c.getSource() instanceof Player) {
             Player source = (Player) c.getSource();
+            source.sendMessage(ChatColor.RED + "Reached within if, before switch");
             switch (c.getArgument("gamemode", String.class)) {
                 case "freeforall":
                     source.sendMessage(ChatColor.GREEN + "Free For All Rules");
