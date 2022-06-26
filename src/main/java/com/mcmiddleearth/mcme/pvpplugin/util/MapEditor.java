@@ -37,7 +37,16 @@ public class MapEditor {
         this.map = map;
         state = EditorState.MAP;
     }
-
+    /*
+    public String[] Action(Player source){
+    if(state == goodState){
+        doAction();
+        return successMessage;
+    }
+    return "Incorrect gamemode set, you need goodState";
+    }
+     */
+    //TODO: refactor using above design
     public void setArea(PVPPlugin pvpPlugin, Player source) {
         BukkitPlayer bukkitP = new BukkitPlayer(source);
         LocalSession session = pvpPlugin.getWorldEditPlugin().getWorldEdit().getSessionManager().get(bukkitP);

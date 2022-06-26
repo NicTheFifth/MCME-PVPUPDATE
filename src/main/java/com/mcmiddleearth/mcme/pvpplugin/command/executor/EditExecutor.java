@@ -10,6 +10,22 @@ import com.mojang.brigadier.context.CommandContext;
 import org.bukkit.entity.Player;
 
 public class EditExecutor {
+    /*
+    public static int Action(CommandContext<McmeCommandSender> c){
+        Player source = CommandUtil.getPlayer(c.getSource());
+        String mapName = c.getArgument("map", String.class);
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUUID());
+        if(source == null)
+            return 0;
+        if(me == null){
+            createMapEditor();
+            return Action(c);
+        }
+        source.sendMessage(me.Action(mapName));
+        return 1;
+    }
+     */
+    //TODO: Refactor with above structure
     public static int CreateMapEditor(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
         if(source != null){
