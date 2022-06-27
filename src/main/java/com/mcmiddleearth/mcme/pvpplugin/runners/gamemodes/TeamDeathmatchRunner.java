@@ -21,6 +21,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.List;
+
 public class TeamDeathmatchRunner extends BaseRunner {
     Team red = new Team();
     Team blue = new Team();
@@ -34,6 +36,11 @@ public class TeamDeathmatchRunner extends BaseRunner {
     }
 
     @Override
+    public boolean canStart() {
+        return !getPlayers().isEmpty() && super.canStart();
+    }
+
+    @Override
     public void start() {
         ScoreboardEditor.InitTeamDeathmatch(scoreboard, red, blue);
         PVPPlugin.getInstance().getPluginManager().registerEvents(this, PVPPlugin.getInstance());
@@ -41,15 +48,6 @@ public class TeamDeathmatchRunner extends BaseRunner {
         TeamHandler.spawnAll(red, blue);
         TeamHandler.setGamemode(GameMode.SURVIVAL, red, blue);
         super.start();
-    }
-
-    @Override
-    public void run() {
-    }
-
-    @Override
-    public boolean canStart() {
-        return getPlayers().size() == 0 || super.canStart();
     }
 
     @Override
@@ -71,15 +69,10 @@ public class TeamDeathmatchRunner extends BaseRunner {
         super.end(stopped);
     }
 
-    @Override
-    protected boolean canJoin(Player player) {
-        return super.canJoin(player);
-    }
-
     //FIXME: Fix join shit
     @Override
-    public String[] join(Player player) {
-        super.join(player);
+    public List<String> tryJoin(Player player) {
+        super.tryJoin(player);
         if (gameState != State.QUEUED) {
             PVPPlugin.getInstance().getMatchmaker().addMember(player, red, blue);
             ScoreboardEditor.updateValueTeamDeathmatch(scoreboard, red, blue);
@@ -88,14 +81,14 @@ public class TeamDeathmatchRunner extends BaseRunner {
     }
 
     @Override
-    public void leave(Player player) {
+    public void leave(Player player, boolean failedJoin) {
         if (blue.getMembers().contains(player)) {
             blue.getMembers().remove(player);
             blue.getDeadMembers().add(player);
         }
         red.getMembers().remove(player);
         ScoreboardEditor.updateValueTeamDeathmatch(scoreboard, red, blue);
-        super.leave(player);
+        super.leave(player, false);
     }
 
     private void InitialiseRed() {

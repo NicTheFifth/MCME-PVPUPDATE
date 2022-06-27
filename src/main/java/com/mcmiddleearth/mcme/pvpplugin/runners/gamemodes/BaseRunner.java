@@ -17,6 +17,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,9 +49,9 @@ public abstract class BaseRunner implements GamemodeRunner {
 
     @Override
     public void start() {
-        gameState = State.COUNTDOWN;
         spectator.getMembers().forEach(player -> player.teleport(spectator.getSpawnLocations().get(0)));
         TeamHandler.setGamemode(GameMode.SPECTATOR, spectator);
+        gameState = State.COUNTDOWN;
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -71,21 +72,22 @@ public abstract class BaseRunner implements GamemodeRunner {
         if (!stopped) spectator.getMembers().forEach(player -> PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId()).addSpectate());
     }
 
-    protected boolean canJoin(Player player) {
-        return maxPlayers > players.size() &&
-                !players.contains((player)) &&
-                gameState != State.COUNTDOWN &&
-                (!privateGame || whitelistedPlayers.contains(player));
-    }
-
     @Override
-    public String[] join(Player player) {
+    public List<String> tryJoin(Player player) {
+        if (players.contains((player)))
+            return List.of(Style.ERROR + "You already are a part of this game.");
+        if (gameState == State.COUNTDOWN)
+            return List.of(Style.ERROR + "Cannot join game, during countdown, please wait before retrying.");
+        if(maxPlayers <= players.size())
+            return List.of(Style.ERROR + "Cannot join game, game is already full.");
+        if(privateGame || !whitelistedPlayers.contains(player))
+            return List.of(Style.ERROR + "Cannot join a private game, ask the one running it to whitelist you.");
         players.add(player);
-        return null;
+        return List.of();
     }
 
     @Override
-    public void leave(Player player) {
+    public void leave(Player player, boolean failedJoin) {
         if (players.remove(player)) {
             player.sendMessage(Style.INFO + "You have left the game.");
         }

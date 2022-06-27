@@ -39,7 +39,7 @@ public class GameExecutor {
             source.sendMessage(Style.ERROR + "No game is running, please join again later.");
             return 0;
         }
-        source.sendMessage(runner.join(source));
+        runner.tryJoin(source).forEach(source::sendMessage);
         return 1;
     }
 }

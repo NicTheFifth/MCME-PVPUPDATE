@@ -22,6 +22,9 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.List;
+
 import static com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker.*;
 
 public class InfectedRunner extends BaseRunner {
@@ -39,7 +42,7 @@ public class InfectedRunner extends BaseRunner {
 
     @Override
     public boolean canStart() {
-        return timeSec == null || super.canStart();
+        return timeSec != null && super.canStart();
     }
 
     @Override
@@ -53,7 +56,7 @@ public class InfectedRunner extends BaseRunner {
         run();
     }
 
-    public void run() {
+    private void run() {
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -95,41 +98,34 @@ public class InfectedRunner extends BaseRunner {
     }
 
     @Override
-    protected boolean canJoin(Player player) {
-        return super.canJoin(player);
-    }
-
-    @Override
-    public String[] join(Player player) {
-        if(canJoin(player)) {
-            super.join(player);
+    public List<String> tryJoin(Player player) {
+        List<String> playerMessage = super.tryJoin(player);
+        if(playerMessage.isEmpty()) {
             if (gameState != State.QUEUED) {
-                String[] retText = new String[1];
                 if (survivors.getDeadMembers().contains(player)) {
                     addMember(player, infected);
-                    retText[0] = Style.INFO + "Joined the infected team!";
+                    playerMessage.add(ChatColor.RED + "Joined the infected team!");
                 }
                 else {
                     addMember(player, survivors);
-                    retText[0] = Style.INFO + "Joined the survivor team!";
+                    playerMessage.add(ChatColor.BLUE + "Joined the survivor team!");
                 }
                 ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
-                return retText;
             }
-            return new String[]{Style.INFO + "Joined the game!"};
+            playerMessage.add(Style.INFO + "Joined the game!");
         }
-        return new String[]{Style.ERROR + "Cannot join the game"};
+        return playerMessage;
     }
 
     @Override
-    public void leave(Player player) {
+    public void leave(Player player, boolean failedJoin) {
         if (survivors.getMembers().contains(player)) {
             survivors.getMembers().remove(player);
             survivors.getDeadMembers().add(player);
         }
         infected.getMembers().remove(player);
         ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
-        super.leave(player);
+        super.leave(player, false);
     }
 
     //<editor-fold desc="Initialising teams">
@@ -179,7 +175,7 @@ public class InfectedRunner extends BaseRunner {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent playerLeave) {
         Player player = playerLeave.getPlayer();
-        leave(player);
+        leave(player, true);
         if (infected.getMembers().isEmpty()) {
             this.end(true);
         }
