@@ -7,16 +7,15 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+
 import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
@@ -37,7 +36,7 @@ public abstract class BaseRunner implements GamemodeRunner {
 
     private long countDownTimer = 5;
 
-    Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+    Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
     boolean privateGame;
     Set<Player> whitelistedPlayers;

@@ -38,6 +38,11 @@ public class InfectedRunner extends BaseRunner {
     }
 
     @Override
+    public boolean canStart() {
+        return timeSec == null || super.canStart();
+    }
+
+    @Override
     public void start() {
         ScoreboardEditor.InitInfected(scoreboard, infected, survivors, timeSec);
         PVPPlugin.getInstance().getPluginManager().registerEvents(this, PVPPlugin.getInstance());
@@ -69,11 +74,6 @@ public class InfectedRunner extends BaseRunner {
             }
         }.runTaskTimer(PVPPlugin.getInstance(), 20, 20L * timeSec);
         this.end(false);
-    }
-
-    @Override
-    public boolean canStart() {
-        return timeSec == null || super.canStart();
     }
 
     @Override
