@@ -20,15 +20,13 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import static com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker.addMember;
 
 public class TeamSlayerRunner extends BaseRunner {
     Team red = new Team();
     Team blue = new Team();
     Integer pointLimit;
 
-    public TeamSlayerRunner(JSONMap map, PVPPlugin pvpplugin, boolean privateGame) {
-        this.pvpPlugin = pvpplugin;
+    public TeamSlayerRunner(JSONMap map, boolean privateGame) {
         this.privateGame = privateGame;
         TeamSlayerTranscriber.Transcribe(map, this);
         InitialiseRed();
@@ -37,64 +35,65 @@ public class TeamSlayerRunner extends BaseRunner {
     }
 
     @Override
-    public void Start() {
+    public void start() {
         ScoreboardEditor.InitTeamSlayer(scoreboard, red, blue, pointLimit);
-        pvpPlugin.getPluginManager().registerEvents(this, pvpPlugin);
+        PVPPlugin.getInstance().getPluginManager().registerEvents(this, PVPPlugin.getInstance());
         Matchmaker.TeamSlayerMatchMake(players, red, blue);
         TeamHandler.spawnAll(red, blue, spectator);
         TeamHandler.setGamemode(GameMode.SURVIVAL, red, blue);
-        super.Start();
-        Run();
+        super.start();
+        run();
     }
 
-    public void Run() {
-    }
-
-    @Override
-    public boolean CanStart() {
-        return pointLimit != null && super.CanStart();
+    public void run() {
     }
 
     @Override
-    public void End(boolean stopped) {
+    public boolean canStart() {
+        return pointLimit == null || super.canStart();
+    }
+
+    @Override
+    public void end(boolean stopped) {
         if (!stopped) {
             GetWinningTeam().getMembers().forEach(player -> {
-                Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
+                Playerstat playerstat = PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId());
                 playerstat.addWon();
                 playerstat.addPlayed();
             });
             GetLosingTeam().getMembers().forEach(player -> {
-                Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
+                Playerstat playerstat = PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId());
                 playerstat.addLost();
                 playerstat.addPlayed();
             });
         }
         HandlerList.unregisterAll(this);
-        super.End(stopped);
+        super.end(stopped);
     }
 
     @Override
-    public boolean CanJoin(Player player) {
-        return super.CanJoin(player);
+    protected boolean canJoin(Player player) {
+        return super.canJoin(player);
     }
 
     @Override
-    public void Join(Player player) {
-        super.Join(player);
+    public String[] join(Player player) {
+        super.join(player);
         if (gameState != State.QUEUED) {
-            pvpPlugin.getMatchmaker().addMember(player, red, blue);
+            PVPPlugin.getInstance().getMatchmaker().addMember(player, red, blue);
         }
         //TODO: handle update
+        return null;
     }
 
     @Override
-    public void Leave(Player player) {
+    public void leave(Player player) {
         if (blue.getMembers().contains(player)) {
             blue.getMembers().remove(player);
             blue.getDeadMembers().add(player);
         }
         red.getMembers().remove(player);
-        super.Leave(player);
+        super.leave(player);
     }
 
     private void InitialiseRed() {
@@ -169,7 +168,7 @@ public class TeamSlayerRunner extends BaseRunner {
                 red.getMembers().add(player);
             }
             ScoreboardEditor.updateValueTeamSlayer(scoreboard, red, blue);
-            HandleDeath(playerDeath);
+            handleDeath(playerDeath);
         }
     }
 

@@ -2,13 +2,9 @@ package com.mcmiddleearth.mcme.pvpplugin.command.commandParser;
 
 import com.google.common.base.Joiner;
 import com.mcmiddleearth.command.AbstractCommandHandler;
-import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
-import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
-import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
-import com.mcmiddleearth.mcme.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.mcme.pvpplugin.command.executor.GameExecutor;
 import org.bukkit.command.Command;
@@ -26,10 +22,11 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     @Override
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
-                .then(HelpfulLiteralBuilder.literal("join"))
+                .then(HelpfulLiteralBuilder.literal("join")
+                        .executes(GameExecutor::joinGame))
                 .then(HelpfulLiteralBuilder.literal("rules")
                         .then(Arguments.getGamemodes()
-                                .executes(GameExecutor::GetRule)))
+                                .executes(GameExecutor::getRule)))
                 .then(HelpfulLiteralBuilder.literal("stats")
                         .then(HelpfulLiteralBuilder.literal("delete")
                                 .then(HelpfulLiteralBuilder.literal("USER"))))

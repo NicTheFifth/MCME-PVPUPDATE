@@ -6,17 +6,15 @@ import org.bukkit.event.Listener;
 
 public interface GamemodeRunner extends Listener {
 
-    boolean CanStart();
+    boolean canStart();
 
-    void Start();
+    void start();
 
-    void Run();
+    void run();
 
-    void End(boolean stopped);
+    void end(boolean stopped);
 
-    boolean CanJoin(Player player);
+    String[] join(Player player);
 
-    void Join(Player player);
-
-    void Leave(Player player);
+    void leave(Player player);
 }

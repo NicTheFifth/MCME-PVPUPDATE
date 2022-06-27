@@ -1,6 +1,6 @@
 package com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes;
 
-import com.google.common.base.Function;
+import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
@@ -29,8 +29,7 @@ public class InfectedRunner extends BaseRunner {
     Team survivors = new Team();
     Integer timeSec;
 
-    public InfectedRunner(JSONMap map, PVPPlugin pvpplugin, boolean privateGame) {
-        this.pvpPlugin = pvpplugin;
+    public InfectedRunner(JSONMap map, boolean privateGame) {
         this.privateGame = privateGame;
         InfectedTranscriber.Transcribe(map, this);
         InitialiseInfected();
@@ -39,23 +38,23 @@ public class InfectedRunner extends BaseRunner {
     }
 
     @Override
-    public void Start() {
+    public void start() {
         ScoreboardEditor.InitInfected(scoreboard, infected, survivors, timeSec);
-        pvpPlugin.getPluginManager().registerEvents(this, pvpPlugin);
-        pvpPlugin.getMatchmaker().infectedMatchMake(players, infected, survivors);
+        PVPPlugin.getInstance().getPluginManager().registerEvents(this, PVPPlugin.getInstance());
+        PVPPlugin.getInstance().getMatchmaker().infectedMatchMake(players, infected, survivors);
         TeamHandler.spawnAll(infected, survivors, spectator);
         TeamHandler.setGamemode(GameMode.SURVIVAL, infected, survivors);
-        super.Start();
-        Run();
+        super.start();
+        run();
     }
 
-    public void Run() {
+    public void run() {
         new BukkitRunnable() {
             @Override
             public void run() {
                 timeSec--;
                 if (timeSec == 0) {
-                    End(false);
+                    InfectedRunner.this.end(false);
                 }
                 if (timeSec == 1) {
                     players.forEach(player -> player.sendMessage(ChatColor.GREEN + "1 second remaining!"));
@@ -68,59 +67,72 @@ public class InfectedRunner extends BaseRunner {
                 }
                 ScoreboardEditor.updateTime(scoreboard, timeSec);
             }
-        }.runTaskTimer(pvpPlugin, 20, 20L * timeSec);
-        End(false);
+        }.runTaskTimer(PVPPlugin.getInstance(), 20, 20L * timeSec);
+        this.end(false);
     }
 
     @Override
-    public boolean CanStart() {
-        return timeSec != null && super.CanStart();
+    public boolean canStart() {
+        return timeSec == null || super.canStart();
     }
 
     @Override
-    public void End(boolean stopped) {
+    public void end(boolean stopped) {
         if (!stopped) {
             GetWinningTeam().getMembers().forEach(player -> {
-                Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
+                Playerstat playerstat = PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId());
                 playerstat.addWon();
                 playerstat.addPlayed();
             });
             GetLosingTeam().getMembers().forEach(player -> {
-                Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
+                Playerstat playerstat = PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId());
                 playerstat.addLost();
                 playerstat.addPlayed();
             });
         }
         HandlerList.unregisterAll(this);
-        super.End(stopped);
+        super.end(stopped);
     }
 
     @Override
-    public boolean CanJoin(Player player) {
-        return super.CanJoin(player);
+    protected boolean canJoin(Player player) {
+        return super.canJoin(player);
     }
 
     @Override
-    public void Join(Player player) {
-        super.Join(player);
-        if (gameState != State.QUEUED) {
-            if (survivors.getDeadMembers().contains(player)) addMember(player, infected);
-             else addMember(player, survivors);
+    public String[] join(Player player) {
+        if(canJoin(player)) {
+            super.join(player);
+            if (gameState != State.QUEUED) {
+                String[] retText = new String[1];
+                if (survivors.getDeadMembers().contains(player)) {
+                    addMember(player, infected);
+                    retText[0] = Style.INFO + "Joined the infected team!";
+                }
+                else {
+                    addMember(player, survivors);
+                    retText[0] = Style.INFO + "Joined the survivor team!";
+                }
+                ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
+                return retText;
+            }
+            return new String[]{Style.INFO + "Joined the game!"};
         }
-        ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
+        return new String[]{Style.ERROR + "Cannot join the game"};
     }
 
     @Override
-    public void Leave(Player player) {
+    public void leave(Player player) {
         if (survivors.getMembers().contains(player)) {
             survivors.getMembers().remove(player);
             survivors.getDeadMembers().add(player);
         }
         infected.getMembers().remove(player);
         ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
-        super.Leave(player);
+        super.leave(player);
     }
 
+    //<editor-fold desc="Initialising teams">
     private void InitialiseInfected() {
         infected.setPrefix("Infected");
         infected.setTeamColour(Color.RED);
@@ -161,29 +173,15 @@ public class InfectedRunner extends BaseRunner {
         returnInventory.forEach(item -> KitEditor.setItemColour(item, survivors.getTeamColour()));
         return new Kit(returnInventory);
     }
+    //</editor-fold>
 
-    private Team GetWinningTeam() {
-        if (survivors.getMembers().isEmpty()) {
-            return infected;
-        }
-        return survivors;
-    }
-
-//<editor-fold defaultstate="collapsed" desc="delombok">
-//</editor-fold>
-    private Team GetLosingTeam() {
-        if (survivors.getMembers().isEmpty()) {
-            return survivors;
-        }
-        return infected;
-    }
-
+    //<editor-fold desc="EventHandlers">
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent playerLeave) {
         Player player = playerLeave.getPlayer();
-        Leave(player);
+        leave(player);
         if (infected.getMembers().isEmpty()) {
-            End(true);
+            this.end(true);
         }
     }
 
@@ -196,10 +194,10 @@ public class InfectedRunner extends BaseRunner {
                 infected.getMembers().add(player);
             }
             ScoreboardEditor.updateValueInfected(scoreboard, infected, survivors);
-            HandleDeath(playerDeath);
+            handleDeath(playerDeath);
         }
         if (survivors.getMembers().isEmpty()) {
-            End(false);
+            this.end(false);
         }
     }
 
@@ -215,26 +213,34 @@ public class InfectedRunner extends BaseRunner {
             }
         }
     }
+    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="delombok">
-    @SuppressWarnings("all")
+    //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public Team getInfected() {
         return this.infected;
     }
-
-    @SuppressWarnings("all")
     public Team getSurvivors() {
         return this.survivors;
     }
 
-    @SuppressWarnings("all")
     public Integer getTimeSec() {
         return this.timeSec;
     }
-
-    @SuppressWarnings("all")
     public void setTimeSec(final Integer timeSec) {
         this.timeSec = timeSec;
+    }
+
+    private Team GetWinningTeam() {
+        if (survivors.getMembers().isEmpty()) {
+            return infected;
+        }
+        return survivors;
+    }
+    private Team GetLosingTeam() {
+        if (survivors.getMembers().isEmpty()) {
+            return survivors;
+        }
+        return infected;
     }
     //</editor-fold>
 }
