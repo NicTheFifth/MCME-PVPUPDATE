@@ -8,6 +8,8 @@ public class JSONLocation {
     Integer z;
     String world;
 
+    public JSONLocation(){}
+
     public JSONLocation(Location loc){
         this.x = loc.getBlockX();
         this.y = loc.getBlockY();

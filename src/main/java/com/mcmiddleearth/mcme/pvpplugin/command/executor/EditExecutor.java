@@ -10,162 +10,185 @@ import com.mojang.brigadier.context.CommandContext;
 import org.bukkit.entity.Player;
 
 public class EditExecutor {
-    /*
-    public static int Action(CommandContext<McmeCommandSender> c){
+
+    public static int CreateMap(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument("map", String.class);
-        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUUID());
         if(source == null)
             return 0;
-        if(me == null){
-            createMapEditor();
-            return Action(c);
-        }
-        source.sendMessage(me.Action(mapName));
+        JSONMap newMap = new JSONMap(mapName);
+        PVPPlugin.getInstance().getMaps().put(mapName, newMap);
+        PVPPlugin.getInstance().getMapEditors().put(source.getUniqueId(), new MapEditor(newMap));
+        source.sendMessage(Style.INFO + String.format("%s created.", mapName));
         return 1;
     }
-     */
-    //TODO: Refactor with above structure
-    public static int CreateMapEditor(CommandContext<McmeCommandSender> c){
-        Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            String mapName = c.getArgument("map", String.class);
-            if(!PVPPlugin.getInstance().getMaps().containsKey(mapName)) {
-                JSONMap newMap = new JSONMap(mapName);
-                PVPPlugin.getInstance().getMaps().put(mapName, newMap);
-                PVPPlugin.getInstance().getMapEditors().put(source.getUniqueId(), new MapEditor(newMap));
-            }else{
-                source.sendMessage("This name is already in use, please use another name" + Style.WARNING);
-            }
-            return 1;
+
+    private static boolean createMapEditor(Player source, String mapName) {
+        JSONMap map = PVPPlugin.getInstance().getMaps().get(mapName);
+        if(map == null){
+            return false;
         }
-        return 0;
+        PVPPlugin.getInstance().getMapEditors().put(source.getUniqueId(), new MapEditor(map));
+        return true;
     }
 
     public static int NewMapEditor(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            String mapName = c.getArgument("map",String.class);
-            JSONMap existingMap = PVPPlugin.getInstance().getMaps().get(mapName);
-            PVPPlugin.getInstance().getMapEditors().put(source.getUniqueId(),new MapEditor(existingMap));
-            return 1;
+        String mapName = c.getArgument("map", String.class);
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            createMapEditor(source, mapName);
         }
-        return 0;
+        source.sendMessage(String.format("Editor created, ready to edit %s", mapName));
+        return 1;
     }
 
     public static int SetArea(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-            me.setArea(PVPPlugin.getInstance(), source);
-            return 1;
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
+            return 0;
         }
-        return 0;
+        source.sendMessage(me.setArea(source));
+        return 1;
     }
 
     public static int SetTitle(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            String mapName = c.getArgument("map", String.class);
-            MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-            me.setTitle(PVPPlugin.getInstance(), mapName);
-            return 1;
+        String mapName = c.getArgument("map", String.class);
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
+            return 0;
         }
-        return 0;
+        source.sendMessage(me.setTitle(mapName));
+        return 1;
     }
 
     public static int SetRP(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            String rpName = c.getArgument("rp", String.class);
-            MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-            me.setRP(rpName);
-            return 1;
+        String rpName = c.getArgument("rp", String.class);
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
+            return 0;
         }
-        return 0;
+        source.sendMessage(me.setRP(rpName));
+        return 1;
     }
 
     public static int SetGamemode(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            String gamemode = c.getArgument("gamemode", String.class);
-            MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-            me.setGamemode(gamemode);
-            return 1;
+        String gamemode = c.getArgument("gamemode", String.class);
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
+            return 0;
         }
-        return 0;
+        source.sendMessage(me.setGamemode(gamemode));
+        return 1;
     }
 
     public static int SetMax(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            Integer max = c.getArgument("amount", Integer.class);
-            MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-            me.setMax(max);
-            return 1;
+        Integer max = c.getArgument("amount", Integer.class);
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
+            return 0;
         }
-        return 0;
+        source.sendMessage(me.setMax(max));
+        return 1;
     }
 
     public static int EditGoal(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-            me.setGoal(source);
-            return 1;
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
+            return 0;
         }
-        return 0;
+        source.sendMessage(me.setGoal(source));
+        return 1;
     }
 
     public static int CreateCapture(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-            me.createCapturePoint(source);
-            return 1;
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
+            return 0;
         }
-        return 0;
+        source.sendMessage(me.createCapturePoint(source));
+        return 1;
     }
 
     public static int DelCapture(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            Integer point = c.getArgument("pointNum", Integer.class);
-            MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-            me.delCapturePoint(point);
-            return 1;
+        Integer point = c.getArgument("pointNum", Integer.class);
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
+            return 0;
         }
-        return 0;
+        source.sendMessage(me.delCapturePoint(point));
+        return 1;
     }
 
     public static int SetSpawn(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
-        if(source != null){
-            String spawnType = c.getArgument("spawn", String.class);
-            MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-            switch(spawnType){
-                case "red":
-                    me.setRedSpawn(source.getLocation());
-                    break;
-                case "blue":
-                    me.setBlueSpawn(source.getLocation());
-                    break;
-                case"death":
-                    me.setDeathSpawn(source.getLocation());
-                    break;
-                case "runner":
-                    me.setRunnerSpawn(source.getLocation());
-                    break;
-                case "infected":
-                    me.setInfectedSpawn(source.getLocation());
-                    break;
-                case "survivor":
-                    me.setSurvivorSpawn(source.getLocation());
-                    break;
-                default: return 0;
-            }
-            return 1;
+        String spawnType = c.getArgument("spawn", String.class);
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
+            return 0;
         }
-        return 0;
+        String[] response;
+        switch(spawnType){
+            case "red":
+                response = me.setRedSpawn(source.getLocation());
+                break;
+            case "blue":
+                response = me.setBlueSpawn(source.getLocation());
+                break;
+            case"death":
+                response = me.setDeathSpawn(source.getLocation());
+                break;
+            case "runner":
+                response = me.setRunnerSpawn(source.getLocation());
+                break;
+            case "infected":
+                response = me.setInfectedSpawn(source.getLocation());
+                break;
+            case "survivor":
+                response = me.setSurvivorSpawn(source.getLocation());
+                break;
+            default:
+                source.sendMessage();
+                return 0;
+        }
+        source.sendMessage(response);
+        return 1;
     }
 }

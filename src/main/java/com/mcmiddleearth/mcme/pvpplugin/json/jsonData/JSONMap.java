@@ -13,20 +13,21 @@ public class JSONMap {
 
     String resourcePack;
 
-    JSONCaptureTheFlag JSONCaptureTheFlag;
+    JSONCaptureTheFlag JSONCaptureTheFlag = new JSONCaptureTheFlag();
 
-    JSONDeathRun JSONDeathRun;
+    JSONDeathRun JSONDeathRun = new JSONDeathRun();
 
-    JSONFreeForAll JSONFreeForAll;
+    JSONFreeForAll JSONFreeForAll = new JSONFreeForAll();
 
-    JSONInfected JSONInfected;
+    JSONInfected JSONInfected = new JSONInfected();
 
-    JSONTeamConquest JSONTeamConquest;
+    JSONTeamConquest JSONTeamConquest = new JSONTeamConquest();
 
-    JSONTeamDeathMatch JSONTeamDeathMatch;
+    JSONTeamDeathMatch JSONTeamDeathMatch = new JSONTeamDeathMatch();
 
-    JSONTeamSlayer JSONTeamSlayer;
+    JSONTeamSlayer JSONTeamSlayer = new JSONTeamSlayer();
 
+    public JSONMap(){}
     public JSONMap(String title) {
         this.title = title;
     }

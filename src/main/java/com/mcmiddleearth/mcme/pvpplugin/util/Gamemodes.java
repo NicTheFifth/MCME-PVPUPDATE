@@ -64,9 +64,9 @@ public enum Gamemodes {
     }
 
     public static String[] GetRules(String gamemode) {
-        if(GetGamemode(gamemode) != null)
-            return GetGamemode(gamemode).getRules();
-        return new String[]{ChatColor.RED + "GAMEMODE RULES NOT IMPLEMENTED"};
+        if(GetGamemode(gamemode) == null)
+            return new String[]{ChatColor.RED + "GAMEMODE RULES NOT IMPLEMENTED"};
+        return GetGamemode(gamemode).getRules();
     }
 
     public String[] getRules() {

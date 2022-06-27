@@ -7,11 +7,9 @@ import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
-import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.mcme.pvpplugin.command.executor.EditExecutor;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -19,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.logging.Level;
 
 public class MapEditCommand extends AbstractCommandHandler implements TabExecutor {
 
@@ -35,12 +32,12 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                 .then(Arguments.getMap()
                         .executes(EditExecutor::NewMapEditor)))
             .then(HelpfulLiteralBuilder.literal("create")
-                .then(HelpfulRequiredArgumentBuilder.argument("map", StringArgumentType.string())
-                        .executes(EditExecutor::CreateMapEditor)))
+                .then(Arguments.NewMapArgument()
+                        .executes(EditExecutor::CreateMap)))
             .then(HelpfulLiteralBuilder.literal("setarea")
                     .executes(EditExecutor::SetArea))
             .then(HelpfulLiteralBuilder.literal("title")
-                .then(HelpfulRequiredArgumentBuilder.argument("map", StringArgumentType.string())
+                .then(Arguments.NewMapArgument()
                     .executes(EditExecutor::SetTitle)))
             .then(HelpfulLiteralBuilder.literal("setrp")
                 .then(Arguments.rpArgument()

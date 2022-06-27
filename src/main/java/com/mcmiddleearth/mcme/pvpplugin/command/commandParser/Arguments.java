@@ -1,17 +1,10 @@
 package com.mcmiddleearth.mcme.pvpplugin.command.commandParser;
 
-import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
-import com.mcmiddleearth.mcme.pvpplugin.command.argumentTypes.CommandStringArgument;
-import com.mcmiddleearth.mcme.pvpplugin.command.argumentTypes.ExistingGamemodeArgument;
-import com.mcmiddleearth.mcme.pvpplugin.command.argumentTypes.NonExistingGamemodeArgument;
-import com.mcmiddleearth.mcme.pvpplugin.command.argumentTypes.SpawnArgument;
-import com.mojang.brigadier.builder.ArgumentBuilder;
-import org.jetbrains.annotations.NotNull;
+import com.mcmiddleearth.mcme.pvpplugin.command.argumentTypes.*;
 
 import java.util.HashSet;
-import java.util.Set;
 
 public class Arguments {
 
@@ -27,21 +20,6 @@ public class Arguments {
     }
     static HelpfulRequiredArgumentBuilder<String> getMap() {
         return HelpfulRequiredArgumentBuilder.argument("map", Maps());
-    }
-
-    static ExistingGamemodeArgument ExistingGamemode(){
-        return new ExistingGamemodeArgument();
-    }
-    static HelpfulRequiredArgumentBuilder<String> existingGamemode() {
-        return HelpfulRequiredArgumentBuilder.argument("gamemode", NonExistingGamemode());
-    }
-
-    static NonExistingGamemodeArgument NonExistingGamemode(){
-        return new NonExistingGamemodeArgument();
-    }
-
-    static HelpfulRequiredArgumentBuilder<String> nonExistingGamemode() {
-        return HelpfulRequiredArgumentBuilder.argument("gamemode", NonExistingGamemode());
     }
 
     public static HelpfulRequiredArgumentBuilder<String> rpArgument() {
@@ -74,5 +52,13 @@ public class Arguments {
 
     private static CommandStringArgument SpawnsIS() {
         return new CommandStringArgument("infected", "survivor");
+    }
+
+    public static HelpfulRequiredArgumentBuilder<String> NewMapArgument() {
+        return HelpfulRequiredArgumentBuilder.argument("map", NonExistingMap());
+    }
+
+    private static NonExistingMapArgument NonExistingMap() {
+        return new NonExistingMapArgument();
     }
 }

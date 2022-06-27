@@ -6,10 +6,7 @@ import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.mcme.pvpplugin.util.MapEditor;
 import com.mcmiddleearth.mcme.pvpplugin.util.Permissions;
 import org.bukkit.entity.Player;
-
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Requirements {
     public static boolean isMapEditor(McmeCommandSender player){

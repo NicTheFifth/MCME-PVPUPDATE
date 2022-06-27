@@ -7,7 +7,6 @@ import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class MapLoader {
 
@@ -19,7 +18,7 @@ public class MapLoader {
                 JSONMap map = objectMapper.readValue(mapFile, JSONMap.class);
                 PVPPlugin.getInstance().getMaps().put(map.getTitle(), map);
             } catch (Exception e) {
-                throw new MapLoadException(e);
+                new MapLoadException(e).printStackTrace();
             }
         });
     }
@@ -32,7 +31,7 @@ public class MapLoader {
                 File saveFile = new File(mapDirectory + System.getProperty("file.separator") + jsonMap.getTitle());
                 objectMapper.writeValue(saveFile, jsonMap);
             } catch (Exception e) {
-                throw new MapLoadException(e);
+                new MapLoadException(e).printStackTrace();
             }
         });
     }
