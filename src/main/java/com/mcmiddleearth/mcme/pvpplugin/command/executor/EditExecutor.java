@@ -145,8 +145,21 @@ public class EditExecutor {
         source.sendMessage(me.delCapturePoint(point));
         return 1;
     }
+    public static int setMapSpawn(CommandContext<McmeCommandSender> c){
+        Player source = CommandUtil.getPlayer(c.getSource());
+        if(source == null)
+            return 0;
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null){
+            source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
+            return 0;
+        }
+        source.sendMessage(me.setSpawn(source.getLocation()));
+        return 1;
 
-    public static int SetSpawn(CommandContext<McmeCommandSender> c) {
+    }
+
+    public static int setSpawn(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
         String spawnType = c.getArgument("spawn", String.class);
         if(source == null)

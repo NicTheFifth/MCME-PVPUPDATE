@@ -63,4 +63,11 @@ public class Arguments {
     private static ExistingGamemodeArgument existingGamemode() {
         return new ExistingGamemodeArgument();
     }
+
+    public static HelpfulRequiredArgumentBuilder<String> getExistingGamemodeAlter() {
+        return HelpfulRequiredArgumentBuilder.argument("gamemode", existingGamemodeAlter());
+    }
+    private static ExistingGamemodeAlterArgument existingGamemodeAlter() {
+        return new ExistingGamemodeAlterArgument();
+    }
 }

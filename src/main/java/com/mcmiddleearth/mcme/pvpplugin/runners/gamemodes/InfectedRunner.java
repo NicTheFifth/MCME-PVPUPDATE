@@ -223,7 +223,7 @@ public class InfectedRunner extends BaseRunner {
         return this.timeSec;
     }
     public void setTimeSec(final Integer timeSec) {
-        this.timeSec = timeSec;
+        this.timeSec = timeSec*60;
     }
 
     private Team GetWinningTeam() {

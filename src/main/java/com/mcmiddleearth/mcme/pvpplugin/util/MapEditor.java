@@ -38,6 +38,11 @@ public class MapEditor {
         state = null;
     }
 
+    public String[] setSpawn(Location location) {
+        map.setSpawn(new JSONLocation(location));
+        return new String[]{Style.INFO + String.format("Spawn location set for %s", map.getTitle())};
+    }
+
     public String[] setArea(Player source) {
         BukkitPlayer bukkitP = new BukkitPlayer(source);
         LocalSession session = PVPPlugin.getInstance().getWorldEditPlugin().getWorldEdit().getSessionManager().get(bukkitP);

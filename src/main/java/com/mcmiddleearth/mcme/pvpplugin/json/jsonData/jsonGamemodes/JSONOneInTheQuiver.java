@@ -1,5 +1,20 @@
 package com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes;
 
+import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONLocation;
+
+import java.util.List;
+
 public class JSONOneInTheQuiver extends JSONGamemode{
-    //TODO: Finish
+    List<JSONLocation> spawns;
+
+    //<editor-fold desc="Getters and Setters">
+    public List<JSONLocation> getSpawns() {
+        return spawns;
+    }
+
+    public void setSpawns(List<JSONLocation> spawns) {
+        this.spawns = spawns;
+    }
+    //</editor-fold>
+
 }

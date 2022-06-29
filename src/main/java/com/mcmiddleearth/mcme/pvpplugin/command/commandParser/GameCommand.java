@@ -5,8 +5,10 @@ import com.mcmiddleearth.command.AbstractCommandHandler;
 import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
+import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.mcme.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.mcme.pvpplugin.command.executor.GameExecutor;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -22,6 +24,7 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     @Override
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
+                .requires(Requirements::canRun)
                 .then(HelpfulLiteralBuilder.literal("join")
                     .executes(GameExecutor::joinGame))
                 .then(HelpfulLiteralBuilder.literal("rules")
@@ -34,11 +37,29 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
                     .then(HelpfulLiteralBuilder.literal("list")
                         .executes(GameExecutor::listMaps)))
                 .then(HelpfulLiteralBuilder.literal("kick"))
-                .then(HelpfulLiteralBuilder.literal("game")
-                    .then(HelpfulLiteralBuilder.literal("create")
-                            .executes(GameExecutor::createGame))
-                    .then(HelpfulLiteralBuilder.literal("start"))
-                    .then(HelpfulLiteralBuilder.literal("end")));
+                .then(HelpfulLiteralBuilder.literal("create")
+                    .executes(GameExecutor::createGame)
+                    .then(Arguments.getMap()
+                        .executes(GameExecutor::createGame)
+                        .then(Arguments.getExistingGamemode()
+                            .executes(GameExecutor::createGame)
+                            .then(HelpfulRequiredArgumentBuilder.argument("var", IntegerArgumentType.integer(1))
+                                .executes(GameExecutor::createGame)))))
+                .then(HelpfulLiteralBuilder.literal("load")
+                    .then(HelpfulLiteralBuilder.literal("public")
+                        .executes(GameExecutor::loadPublic))
+                    .then(HelpfulLiteralBuilder.literal("private")
+                        .executes(GameExecutor::loadPrivate))
+                    .then(HelpfulLiteralBuilder.literal("map")
+                        .then(Arguments.getMap()
+                            .executes(GameExecutor::loadMap)))
+                    .then(HelpfulLiteralBuilder.literal("gamemode")
+                        .then(Arguments.getExistingGamemodeAlter()
+                            .executes(GameExecutor::loadGamemode))))
+                .then(HelpfulLiteralBuilder.literal("start")
+                    .executes(GameExecutor::startGame))
+                .then(HelpfulLiteralBuilder.literal("end")
+                    .executes(GameExecutor::endGame));
         return commandNodeBuilder;
     }
 
