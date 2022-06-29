@@ -23,15 +23,6 @@ public class EditExecutor {
         return 1;
     }
 
-    private static boolean createMapEditor(Player source, String mapName) {
-        JSONMap map = PVPPlugin.getInstance().getMaps().get(mapName);
-        if(map == null){
-            return false;
-        }
-        PVPPlugin.getInstance().getMapEditors().put(source.getUniqueId(), new MapEditor(map));
-        return true;
-    }
-
     public static int NewMapEditor(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument("map", String.class);
@@ -39,7 +30,8 @@ public class EditExecutor {
             return 0;
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         if(me == null){
-            createMapEditor(source, mapName);
+            JSONMap map = PVPPlugin.getInstance().getMaps().get(mapName);
+            PVPPlugin.getInstance().getMapEditors().put(source.getUniqueId(), new MapEditor(map));
         }
         source.sendMessage(String.format("Editor created, ready to edit %s", mapName));
         return 1;

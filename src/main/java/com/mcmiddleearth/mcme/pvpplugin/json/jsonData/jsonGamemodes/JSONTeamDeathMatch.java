@@ -2,10 +2,9 @@ package com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes;
 
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONLocation;
 
-public class JSONTeamDeathMatch {
+public class JSONTeamDeathMatch extends JSONGamemode{
     JSONLocation blueSpawn;
     JSONLocation redSpawn;
-    Integer maximumPlayers;
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public JSONLocation getBlueSpawn() {
@@ -20,13 +19,6 @@ public class JSONTeamDeathMatch {
     }
     public void setRedSpawn(final JSONLocation redSpawn) {
         this.redSpawn = redSpawn;
-    }
-
-    public Integer getMaximumPlayers() {
-        return this.maximumPlayers;
-    }
-    public void setMaximumPlayers(final Integer maximumPlayers) {
-        this.maximumPlayers = maximumPlayers;
     }
     //</editor-fold>
 }

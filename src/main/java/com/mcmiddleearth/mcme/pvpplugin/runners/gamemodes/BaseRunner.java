@@ -80,7 +80,7 @@ public abstract class BaseRunner implements GamemodeRunner {
             return List.of(Style.ERROR + "Cannot join game, during countdown, please wait before retrying.");
         if(maxPlayers <= players.size())
             return List.of(Style.ERROR + "Cannot join game, game is already full.");
-        if(privateGame || !whitelistedPlayers.contains(player))
+        if(privateGame && !whitelistedPlayers.contains(player))
             return List.of(Style.ERROR + "Cannot join a private game, ask the one running it to whitelist you.");
         players.add(player);
         return List.of();

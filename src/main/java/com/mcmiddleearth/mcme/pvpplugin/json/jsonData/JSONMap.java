@@ -13,19 +13,23 @@ public class JSONMap {
 
     String resourcePack;
 
-    JSONCaptureTheFlag JSONCaptureTheFlag = new JSONCaptureTheFlag();
+    JSONCaptureTheFlag JSONCaptureTheFlag;
 
-    JSONDeathRun JSONDeathRun = new JSONDeathRun();
+    JSONDeathRun JSONDeathRun;
 
-    JSONFreeForAll JSONFreeForAll = new JSONFreeForAll();
+    JSONFreeForAll JSONFreeForAll;
 
-    JSONInfected JSONInfected = new JSONInfected();
+    JSONInfected JSONInfected;
 
-    JSONTeamConquest JSONTeamConquest = new JSONTeamConquest();
+    JSONOneInTheQuiver JSONOneInTheQuiver;
 
-    JSONTeamDeathMatch JSONTeamDeathMatch = new JSONTeamDeathMatch();
+    JSONRingBearer JSONRingBearer;
 
-    JSONTeamSlayer JSONTeamSlayer = new JSONTeamSlayer();
+    JSONTeamConquest JSONTeamConquest;
+
+    JSONTeamDeathMatch JSONTeamDeathMatch;
+
+    JSONTeamSlayer JSONTeamSlayer;
 
     public JSONMap(){}
     public JSONMap(String title) {
@@ -87,6 +91,20 @@ public class JSONMap {
     }
     public void setJSONInfected(JSONInfected JSONInfected) {
         this.JSONInfected = JSONInfected;
+    }
+
+    public JSONOneInTheQuiver getJSONOneInTheQuiver() {
+        return JSONOneInTheQuiver;
+    }
+    public void setJSONOneInTheQuiver(JSONOneInTheQuiver JSONOneInTheQuiver) {
+        this.JSONOneInTheQuiver = JSONOneInTheQuiver;
+    }
+
+    public JSONRingBearer getJSONRingBearer() {
+        return JSONRingBearer;
+    }
+    public void setJSONRingBearer(JSONRingBearer JSONRingBearer) {
+        this.JSONRingBearer = JSONRingBearer;
     }
 
     public JSONTeamConquest getJSONTeamConquest() {

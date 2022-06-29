@@ -23,17 +23,22 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
                 .then(HelpfulLiteralBuilder.literal("join")
-                        .executes(GameExecutor::joinGame))
+                    .executes(GameExecutor::joinGame))
                 .then(HelpfulLiteralBuilder.literal("rules")
-                        .then(Arguments.getGamemodes()
-                                .executes(GameExecutor::getRule)))
+                    .then(Arguments.getGamemodes()
+                        .executes(GameExecutor::getRule)))
                 .then(HelpfulLiteralBuilder.literal("stats")
-                        .then(HelpfulLiteralBuilder.literal("delete")
-                                .then(HelpfulLiteralBuilder.literal("USER"))))
+                    .then(HelpfulLiteralBuilder.literal("delete")
+                        .then(HelpfulLiteralBuilder.literal("USER"))))
                 .then(HelpfulLiteralBuilder.literal("map")
-                        .then(HelpfulLiteralBuilder.literal("list")))
+                    .then(HelpfulLiteralBuilder.literal("list")
+                        .executes(GameExecutor::listMaps)))
                 .then(HelpfulLiteralBuilder.literal("kick"))
-                .then(HelpfulLiteralBuilder.literal("game"));
+                .then(HelpfulLiteralBuilder.literal("game")
+                    .then(HelpfulLiteralBuilder.literal("create")
+                            .executes(GameExecutor::createGame))
+                    .then(HelpfulLiteralBuilder.literal("start"))
+                    .then(HelpfulLiteralBuilder.literal("end")));
         return commandNodeBuilder;
     }
 

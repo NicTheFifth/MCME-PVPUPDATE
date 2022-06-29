@@ -2,10 +2,9 @@ package com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes;
 
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONLocation;
 
-public class JSONInfected {
+public class JSONInfected extends JSONGamemode{
     JSONLocation infectedSpawn;
     JSONLocation survivorSpawn;
-    Integer maximumPlayers;
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     @SuppressWarnings("all")
@@ -21,13 +20,6 @@ public class JSONInfected {
     }
     public void setSurvivorSpawn(final JSONLocation survivorSpawn) {
         this.survivorSpawn = survivorSpawn;
-    }
-
-    public Integer getMaximumPlayers() {
-        return this.maximumPlayers;
-    }
-    public void setMaximumPlayers(final Integer maximumPlayers) {
-        this.maximumPlayers = maximumPlayers;
     }
     //</editor-fold>
 }

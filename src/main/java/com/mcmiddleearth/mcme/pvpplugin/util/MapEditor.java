@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
+import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes.*;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
@@ -110,24 +111,38 @@ public class MapEditor {
     public String[] setGamemode(String gamemode) {
         switch(gamemode){
             case "capturetheflag":
+                if(map.getJSONCaptureTheFlag() == null)
+                    map.setJSONCaptureTheFlag(new JSONCaptureTheFlag());
                 setState(EditorState.CAPTURETHEFLAG);
                 break;
             case "freeforall":
+                if(map.getJSONFreeForAll() == null)
+                    map.setJSONFreeForAll(new JSONFreeForAll());
                 setState(EditorState.FREEFORALL);
                 break;
             case "infected":
+                if(map.getJSONInfected() == null)
+                    map.setJSONInfected(new JSONInfected());
                 setState(EditorState.INFECTED);
                 break;
             case "teamconquest":
+                if(map.getJSONTeamConquest() == null)
+                    map.setJSONTeamConquest(new JSONTeamConquest());
                 setState(EditorState.TEAMCONQUEST);
                 break;
             case "teamdeathmatch":
+                if(map.getJSONTeamDeathMatch() == null)
+                    map.setJSONTeamDeathMatch(new JSONTeamDeathMatch());
                 setState(EditorState.TEAMDEATHMATCH);
                 break;
             case "teamslayer":
+                if(map.getJSONTeamSlayer() == null)
+                    map.setJSONTeamSlayer(new JSONTeamSlayer());
                 setState(EditorState.TEAMSLAYER);
                 break;
             case "deathrun":
+                if(map.getJSONDeathRun() == null)
+                    map.setJSONDeathRun(new JSONDeathRun());
                 setState(EditorState.DEATHRUN);
                 break;
             default:

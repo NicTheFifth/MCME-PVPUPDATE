@@ -2,11 +2,10 @@ package com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes;
 
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONLocation;
 
-public class JSONDeathRun {
+public class JSONDeathRun extends JSONGamemode{
     JSONLocation deathSpawn;
     JSONLocation runnerSpawn;
     JSONLocation goal;
-    Integer maximumPlayers;
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public JSONLocation getDeathSpawn() {
@@ -28,13 +27,6 @@ public class JSONDeathRun {
     }
     public void setGoal(final JSONLocation goal) {
         this.goal = goal;
-    }
-
-    public Integer getMaximumPlayers() {
-        return this.maximumPlayers;
-    }
-    public void setMaximumPlayers(final Integer maximumPlayers) {
-        this.maximumPlayers = maximumPlayers;
     }
     //</editor-fold>
 }
