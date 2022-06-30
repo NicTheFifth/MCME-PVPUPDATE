@@ -40,7 +40,7 @@ public class Matchmaker {
 
     public static void addMember(Player player, Team team){
         team.getMembers().add(player);
-        player.getInventory().setContents(team.getKit().inventory.getContents());
+        team.getKit().getInventory().apply(player);
     }
 
     public Double avgELO(Team team){

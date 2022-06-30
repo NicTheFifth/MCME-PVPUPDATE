@@ -16,10 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class BaseRunner implements GamemodeRunner {
 
@@ -28,8 +25,8 @@ public abstract class BaseRunner implements GamemodeRunner {
     }
 
     State gameState;
-    Set<Player> players;
-    Team spectator;
+    Set<Player> players = new HashSet<>();
+    Team spectator = new Team();
     Integer maxPlayers;
 
     Region region;
@@ -55,10 +52,12 @@ public abstract class BaseRunner implements GamemodeRunner {
         new BukkitRunnable() {
             @Override
             public void run() {
+                if(countDownTimer == 0)
+                    this.cancel();
                 players.forEach(player -> player.sendMessage(ChatColor.GREEN + "Game starts in " + countDownTimer));
                 countDownTimer--;
             }
-        }.runTaskTimer(PVPPlugin.getInstance(), 0, 20L * countDownTimer + 20);
+        }.runTaskTimer(PVPPlugin.getInstance(), 0, 20);
         gameState = State.RUNNING;
     }
 
@@ -83,7 +82,7 @@ public abstract class BaseRunner implements GamemodeRunner {
         if(privateGame && !whitelistedPlayers.contains(player))
             return List.of(Style.ERROR + "Cannot join a private game, ask the one running it to whitelist you.");
         players.add(player);
-        return List.of();
+        return new ArrayList<>();
     }
 
     @Override

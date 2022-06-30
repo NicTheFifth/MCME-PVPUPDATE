@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class TeamDeathmatchRunner extends BaseRunner {
     Team red = new Team();
@@ -98,19 +99,22 @@ public class TeamDeathmatchRunner extends BaseRunner {
     }
 
     private Kit RedKit() {
-        PlayerInventory returnInventory = (PlayerInventory) Bukkit.createInventory(null, InventoryType.PLAYER);
-        returnInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
-        returnInventory.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
-        returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
-        returnInventory.setHelmet(new ItemStack(Material.LEATHER_HELMET));
-        returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
-        returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
-        ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
-        returnInventory.setItem(1, bow);
-        returnInventory.setItem(2, new ItemStack(Material.ARROW));
-        returnInventory.forEach(item -> KitEditor.setItemColour(item, red.getTeamColour()));
-        return new Kit(returnInventory);
+        Function<Player, Void> invFunc = (x -> {
+            PlayerInventory returnInventory = x.getInventory();
+            returnInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
+            returnInventory.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
+            returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
+            returnInventory.setHelmet(new ItemStack(Material.LEATHER_HELMET));
+            returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
+            returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
+            ItemStack bow = new ItemStack(Material.BOW);
+            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+            returnInventory.setItem(1, bow);
+            returnInventory.setItem(2, new ItemStack(Material.ARROW));
+            returnInventory.forEach(item -> KitEditor.setItemColour(item, red.getTeamColour()));
+            return null;
+        });
+        return new Kit(invFunc);
     }
 
     private void InitialiseBlue() {
@@ -120,19 +124,22 @@ public class TeamDeathmatchRunner extends BaseRunner {
     }
 
     private Kit BlueKit() {
-        PlayerInventory returnInventory = (PlayerInventory) Bukkit.createInventory(null, InventoryType.PLAYER);
-        returnInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
-        returnInventory.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
-        returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
-        returnInventory.setHelmet(new ItemStack(Material.LEATHER_HELMET));
-        returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
-        returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
-        ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
-        returnInventory.setItem(1, bow);
-        returnInventory.setItem(2, new ItemStack(Material.ARROW));
-        returnInventory.forEach(item -> KitEditor.setItemColour(item, blue.getTeamColour()));
-        return new Kit(returnInventory);
+        Function<Player, Void> invFunc = (x -> {
+            PlayerInventory returnInventory = x.getInventory();
+            returnInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
+            returnInventory.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
+            returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
+            returnInventory.setHelmet(new ItemStack(Material.LEATHER_HELMET));
+            returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
+            returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
+            ItemStack bow = new ItemStack(Material.BOW);
+            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+            returnInventory.setItem(1, bow);
+            returnInventory.setItem(2, new ItemStack(Material.ARROW));
+            returnInventory.forEach(item -> KitEditor.setItemColour(item, blue.getTeamColour()));
+            return null;
+        });
+        return new Kit(invFunc);
     }
 
     private Team GetWinningTeam() {

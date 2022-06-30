@@ -19,11 +19,13 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
+import java.util.function.Function;
 
 import static com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker.*;
 
@@ -62,7 +64,7 @@ public class InfectedRunner extends BaseRunner {
             public void run() {
                 timeSec--;
                 if (timeSec == 0) {
-                    InfectedRunner.this.end(false);
+                    this.cancel();
                 }
                 if (timeSec == 1) {
                     players.forEach(player -> player.sendMessage(ChatColor.GREEN + "1 second remaining!"));
@@ -75,7 +77,7 @@ public class InfectedRunner extends BaseRunner {
                 }
                 ScoreboardEditor.updateTime(scoreboard, timeSec);
             }
-        }.runTaskTimer(PVPPlugin.getInstance(), 20, 20L * timeSec);
+        }.runTaskTimer(PVPPlugin.getInstance(), 20, 20L );
         this.end(false);
     }
 
@@ -136,16 +138,19 @@ public class InfectedRunner extends BaseRunner {
     }
 
     private Kit InfectedKit() {
-        PlayerInventory returnInventory = (PlayerInventory) Bukkit.createInventory(null, InventoryType.PLAYER);
-        returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
-        returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
-        returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
-        ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
-        returnInventory.setItem(1, bow);
-        returnInventory.setItem(2, new ItemStack(Material.ARROW));
-        returnInventory.forEach(item -> KitEditor.setItemColour(item, infected.getTeamColour()));
-        return new Kit(returnInventory);
+        Function<Player, Void> invFunc = (x -> {
+            PlayerInventory returnInventory = x.getInventory();
+            returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
+            returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
+            returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
+            ItemStack bow = new ItemStack(Material.BOW);
+            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+            returnInventory.setItem(1, bow);
+            returnInventory.setItem(2, new ItemStack(Material.ARROW));
+            returnInventory.forEach(item -> KitEditor.setItemColour(item, infected.getTeamColour()));
+            return null;
+        });
+        return new Kit(invFunc);
     }
 
     private void InitialiseSurvivors() {
@@ -155,19 +160,22 @@ public class InfectedRunner extends BaseRunner {
     }
 
     private Kit SurvivorKit() {
-        PlayerInventory returnInventory = (PlayerInventory) Bukkit.createInventory(null, InventoryType.PLAYER);
-        returnInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
-        returnInventory.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
-        returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
-        returnInventory.setHelmet(new ItemStack(Material.LEATHER_HELMET));
-        returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
-        returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
-        ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
-        returnInventory.setItem(1, bow);
-        returnInventory.setItem(2, new ItemStack(Material.ARROW));
-        returnInventory.forEach(item -> KitEditor.setItemColour(item, survivors.getTeamColour()));
-        return new Kit(returnInventory);
+        Function<Player, Void> invFunc = (x -> {
+            PlayerInventory returnInventory = x.getInventory();
+            returnInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
+            returnInventory.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
+            returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
+            returnInventory.setHelmet(new ItemStack(Material.LEATHER_HELMET));
+            returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
+            returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
+            ItemStack bow = new ItemStack(Material.BOW);
+            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+            returnInventory.setItem(1, bow);
+            returnInventory.setItem(2, new ItemStack(Material.ARROW));
+            returnInventory.forEach(item -> KitEditor.setItemColour(item, survivors.getTeamColour()));
+            return null;
+        });
+        return new Kit(invFunc);
     }
     //</editor-fold>
 

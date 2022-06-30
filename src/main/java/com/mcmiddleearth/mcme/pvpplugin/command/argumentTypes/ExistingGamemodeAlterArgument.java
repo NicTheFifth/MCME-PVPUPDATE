@@ -1,5 +1,6 @@
 package com.mcmiddleearth.mcme.pvpplugin.command.argumentTypes;
 
+import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.mcme.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
@@ -25,7 +26,9 @@ public class ExistingGamemodeAlterArgument implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        Player source = (Player)context.getSource();
+        Player source = CommandUtil.getPlayer((McmeCommandSender) context.getSource());
+        if(source == null)
+            return builder.buildFuture();
         GameCreator gc = PVPPlugin.getInstance().getGameCreators().get(source.getUniqueId());
         if(gc == null)
             return builder.buildFuture();
@@ -35,19 +38,19 @@ public class ExistingGamemodeAlterArgument implements ArgumentType<String> {
         Set<String> options = new java.util.HashSet<>(Collections.emptySet());
 
         if(map.getJSONCaptureTheFlag() != null)
-            options.add("CaptureTheFlag");
+            options.add("capturetheflag");
         if(map.getJSONDeathRun() != null)
-            options.add("DeathRun");
+            options.add("deathrun");
         if(map.getJSONFreeForAll() != null)
-            options.add("FreeForAll");
+            options.add("freeforall");
         if(map.getJSONInfected() != null)
-            options.add("Infected");
+            options.add("infected");
         if(map.getJSONTeamConquest() != null)
-            options.add("TeamConquest");
+            options.add("teamconquest");
         if(map.getJSONTeamDeathMatch() != null)
-            options.add("TeamDeathMatch");
+            options.add("teamdeathmatch");
         if(map.getJSONTeamSlayer() != null)
-            options.add("TeamSlayer");
+            options.add("teamslayer");
 
         for (String option : options) {
             if (option.startsWith(builder.getRemaining())) {

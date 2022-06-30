@@ -103,15 +103,15 @@ public class GameExecutor {
             }
             if (map != null && !creatorMade) {
                 newCreator = new GameCreator(map);
-                extraMessage = Style.INFO_STRESSED + "Please set a gamemode too with /game load gamemode <gamemode>";
+                extraMessage = Style.INFO_STRESSED + "Please set a gamemode too with /pvp load gamemode <gamemode>";
                 creatorMade = true;
             }
             if (!creatorMade) {
-                extraMessage = Style.INFO_STRESSED + "Please set a gamemode and map with /game load map <mapName> /game load gamemode <gamemode>";
+                extraMessage = Style.INFO_STRESSED + "Please set a gamemode and map with /pvp load map <mapName> and /pvp load gamemode <gamemode>";
             }
 
             PVPPlugin.getInstance().getGameCreators().put(source.getUniqueId(), newCreator);
-            source.sendMessage(Style.INFO + "Game creator made, when ready to start, type /game load private or /game load public");
+            source.sendMessage(Style.INFO + "Game creator made, when ready to start, type /pvp load private or /pvp load public");
             if (extraMessage != null)
                 source.sendMessage(extraMessage);
             return 1;

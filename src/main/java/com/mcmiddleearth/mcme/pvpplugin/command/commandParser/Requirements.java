@@ -8,6 +8,8 @@ import com.mcmiddleearth.mcme.pvpplugin.util.MapEditor;
 import com.mcmiddleearth.mcme.pvpplugin.util.Permissions;
 import org.bukkit.entity.Player;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Requirements {
     public static boolean canRun(McmeCommandSender player){
@@ -53,30 +55,5 @@ public class Requirements {
         if(source == null)
             return false;
         return isState(source,  MapEditor.EditorState.TEAMCONQUEST);
-    }
-
-    public static boolean hasRB(McmeCommandSender c) {
-        Player source = CommandUtil.getPlayer(c);
-        if(source == null)
-            return false;
-        return isState(source, MapEditor.EditorState.CAPTURETHEFLAG,
-                    MapEditor.EditorState.FREEFORALL,
-                    MapEditor.EditorState.TEAMCONQUEST,
-                    MapEditor.EditorState.TEAMDEATHMATCH,
-                    MapEditor.EditorState.TEAMSLAYER);
-    }
-
-    public static boolean hasIS(McmeCommandSender c) {
-        Player source = CommandUtil.getPlayer(c);
-        if(source == null)
-            return false;
-        return isState(source, MapEditor.EditorState.INFECTED);
-    }
-
-    public static boolean hasDR(McmeCommandSender c) {
-        Player source = CommandUtil.getPlayer(c);
-        if(source == null)
-            return false;
-        return isState(source, MapEditor.EditorState.DEATHRUN);
     }
 }

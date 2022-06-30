@@ -1,15 +1,15 @@
 package com.mcmiddleearth.mcme.pvpplugin.json.jsonData;
 
 public class Playerstat {
-    Integer deaths;
-    Integer kills;
-    Integer gamesPlayed;
-    Integer gamesWon;
-    Integer gamesLost;
-    Integer gamesSpectated;
-    Integer damageTaken;
-    Integer damageGiven;
-    Integer elo;
+    Integer deaths = 0;
+    Integer kills = 0;
+    Integer gamesPlayed = 0;
+    Integer gamesWon = 0;
+    Integer gamesLost = 0;
+    Integer gamesSpectated = 0;
+    Integer damageTaken = 0;
+    Integer damageGiven = 0;
+    Integer elo = 0;
 
     public void addDeath() {
         deaths++;

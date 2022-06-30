@@ -3,17 +3,16 @@ package com.mcmiddleearth.mcme.pvpplugin.util;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 
 public class Team {
-    Set<Player> members = Collections.emptySet();
-    Set<Player> deadMembers = Collections.emptySet();
+    Set<Player> members = new HashSet<>();
+    Set<Player> deadMembers = new HashSet<>();
     Color teamColour;
     String Prefix;
     Kit kit;
-    List<Location> spawnLocations;
+    List<Location> spawnLocations = new ArrayList<>();
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public Set<Player> getMembers() {
@@ -54,7 +53,7 @@ public class Team {
     public List<Location> getSpawnLocations() {
         return this.spawnLocations;
     }
-    public void setSpawnLocations(final List<Location> spawnLocations) {
+    public void setSpawnLocations(List<Location> spawnLocations) {
         this.spawnLocations = spawnLocations;
     }
     //</editor-fold>

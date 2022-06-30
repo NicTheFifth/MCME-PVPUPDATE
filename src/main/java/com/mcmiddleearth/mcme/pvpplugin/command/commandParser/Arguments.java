@@ -29,25 +29,11 @@ public class Arguments {
         return new CommandStringArgument("dwarven", "eriador","rohan","paths","human");
     }
 
-    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentRB() {
-        return HelpfulRequiredArgumentBuilder.argument("spawn", spawnsRB());
+    public static HelpfulRequiredArgumentBuilder<String> spawnArgument() {
+        return HelpfulRequiredArgumentBuilder.argument("spawn", spawns());
     }
-    private static CommandStringArgument spawnsRB() {
-        return new CommandStringArgument("red","blue");
-    }
-
-    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentDR() {
-        return HelpfulRequiredArgumentBuilder.argument("spawn", spawnsDR());
-    }
-    private static CommandStringArgument spawnsDR() {
-        return new CommandStringArgument("death, runner");
-    }
-
-    public static HelpfulRequiredArgumentBuilder<String> spawnArgumentIS() {
-        return HelpfulRequiredArgumentBuilder.argument("spawn", spawnsIS());
-    }
-    private static CommandStringArgument spawnsIS() {
-        return new CommandStringArgument("infected", "survivor");
+    private static SpawnArgument spawns() {
+        return new SpawnArgument();
     }
 
     public static HelpfulRequiredArgumentBuilder<String> NewMapArgument() {

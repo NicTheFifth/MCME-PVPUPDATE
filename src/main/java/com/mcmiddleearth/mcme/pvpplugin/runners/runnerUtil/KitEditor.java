@@ -11,6 +11,8 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 public class KitEditor {
     public static void setItemColour(ItemStack item, Color teamColour) {
+        if(item == null)
+            return;
         if(item instanceof LeatherArmorMeta){
             LeatherArmorMeta newColour = (LeatherArmorMeta) item;
             newColour.setColor(teamColour);
@@ -20,7 +22,8 @@ public class KitEditor {
             ItemMeta meta = item.getItemMeta();
             BlockStateMeta bmeta = (BlockStateMeta) meta;
             Banner banner = (Banner) bmeta.getBlockState();
-            banner.setBaseColor(DyeColor.getByColor(teamColour));
+            //TODO:Fix banner colouring.
+            //banner.setBaseColor(DyeColor.getByColor(teamColour));
             bmeta.setBlockState(banner);
             item.setItemMeta(bmeta);
         }

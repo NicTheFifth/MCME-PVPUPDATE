@@ -6,13 +6,14 @@ import com.mcmiddleearth.mcme.pvpplugin.util.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import java.util.Collections;
+import java.util.List;
 
 public class LocationTranscriber {
     static void setSpawnLocation(String title, String gamemode, String teamType, Team team, JSONLocation spawn) {
         try {
-            team.setSpawnLocations(Collections.singletonList(LocationTranscriber.TranscribeFromJSON(spawn)));
+            team.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(spawn)));
         } catch (Exception e) {
+            e.printStackTrace();
             throw new JSONLocationException(title, gamemode, teamType + " spawn");
         }
     }

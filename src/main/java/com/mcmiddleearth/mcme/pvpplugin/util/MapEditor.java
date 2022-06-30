@@ -31,6 +31,7 @@ public class MapEditor {
     }
 
     EditorState state;
+
     JSONMap map;
 
     public MapEditor(JSONMap map){
@@ -242,6 +243,10 @@ public class MapEditor {
                 return new String[]{Style.ERROR + "Please set the state to a gamemode using /mapedit gamemode <gamemode>"};
         }
         return new String[]{Style.INFO + String.format("Set %d for %s on %s", max, state.toString(), map.getTitle())};
+    }
+
+    public JSONMap getMap() {
+        return map;
     }
 
     public EditorState getState(){return state;}

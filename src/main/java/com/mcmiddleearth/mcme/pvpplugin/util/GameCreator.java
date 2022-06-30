@@ -104,7 +104,7 @@ public class GameCreator {
             return new String[]{Style.ERROR + "Can't set gamemode, first set the map, using /pvp load map <map>."};
         JSONGamemode jsonGamemode = Gamemodes.getGamemode(gamemode).getJSONGamemode().apply(map);
         if(jsonGamemode==null)
-            return new String[]{Style.ERROR + String.format("%s on %s is not configured, please do so first!", gamemode, map.getTitle())};
+            return new String[]{Style.ERROR + String.format("%s on %s is not created, please do so first!", gamemode, map.getTitle())};
         if(Gamemodes.getGamemode(gamemode).invalidGamemode().apply(map))
             return new String[]{Style.ERROR + String.format("%s on %s is not configured, please do so first!", gamemode, map.getTitle())};
         this.gamemode = Gamemodes.getGamemode(gamemode);

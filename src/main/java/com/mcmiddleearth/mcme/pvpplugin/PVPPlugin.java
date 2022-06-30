@@ -19,11 +19,14 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class PVPPlugin extends JavaPlugin {
+public class PVPPlugin extends JavaPlugin implements Listener {
 
     PluginManager pluginManager;
     HashMap<String, JSONMap> maps = new HashMap<>();
@@ -96,6 +99,7 @@ public class PVPPlugin extends JavaPlugin {
         GameCommand gameCommand = new GameCommand("pvp");
         Bukkit.getServer().getPluginCommand("pvp").setExecutor(gameCommand);
         Bukkit.getServer().getPluginCommand("pvp").setTabCompleter(gameCommand);
+        this.getPluginManager().registerEvents(new JoinListener(), this);
     }
 
     @Override
@@ -115,7 +119,6 @@ public class PVPPlugin extends JavaPlugin {
         result.append(message.create());
         recipient.sendMessage(result.create());
     }
-
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public WorldEditPlugin getWorldEditPlugin(){
         Plugin p = pluginManager.getPlugin("WorldEdit");
