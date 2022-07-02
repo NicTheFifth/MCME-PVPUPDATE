@@ -21,7 +21,7 @@ import java.util.*;
 public abstract class BaseRunner implements GamemodeRunner {
 
     enum State {
-        QUEUED, COUNTDOWN, RUNNING
+        QUEUED, COUNTDOWN, RUNNING, ENDED
     }
 
     State gameState;
@@ -52,13 +52,16 @@ public abstract class BaseRunner implements GamemodeRunner {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if(countDownTimer == 0)
+                if(countDownTimer == 0) {
+                    players.forEach(player -> player.sendMessage(ChatColor.GREEN + "Game starts!"));
+                    gameState = State.RUNNING;
                     this.cancel();
+                    return;
+                }
                 players.forEach(player -> player.sendMessage(ChatColor.GREEN + "Game starts in " + countDownTimer));
                 countDownTimer--;
             }
         }.runTaskTimer(PVPPlugin.getInstance(), 0, 20);
-        gameState = State.RUNNING;
     }
 
     @Override
@@ -69,6 +72,8 @@ public abstract class BaseRunner implements GamemodeRunner {
             player.setGameMode(GameMode.ADVENTURE);
         });
         if (!stopped) spectator.getMembers().forEach(player -> PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId()).addSpectate());
+        gameState = State.ENDED;
+        PVPPlugin.getInstance().setActiveGame(null);
     }
 
     @Override

@@ -66,7 +66,7 @@ public enum Gamemodes {
             (x -> new InfectedRunner(x,false)),
             (x -> new InfectedRunner(x,true)),
             ((x, y) -> {
-                ((InfectedRunner) x).setTimeSec(y);
+                ((InfectedRunner) x).setTimeMin(y);
                 return x;
             }),
             true,

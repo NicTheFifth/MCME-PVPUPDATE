@@ -24,7 +24,7 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     @Override
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
-                .requires(Requirements::canRun)
+                //TODO: Fix perms
                 .then(HelpfulLiteralBuilder.literal("join")
                     .executes(GameExecutor::joinGame))
                 .then(HelpfulLiteralBuilder.literal("rules")
@@ -32,12 +32,15 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
                         .executes(GameExecutor::getRule)))
                 .then(HelpfulLiteralBuilder.literal("stats")
                     .then(HelpfulLiteralBuilder.literal("delete")
+                        .requires(Requirements::canRun)
                         .then(HelpfulLiteralBuilder.literal("USER"))))
                 .then(HelpfulLiteralBuilder.literal("map")
                     .then(HelpfulLiteralBuilder.literal("list")
                         .executes(GameExecutor::listMaps)))
-                .then(HelpfulLiteralBuilder.literal("kick"))
+                .then(HelpfulLiteralBuilder.literal("kick")
+                        .requires(Requirements::canRun))
                 .then(HelpfulLiteralBuilder.literal("create")
+                    .requires(Requirements::canRun)
                     .executes(GameExecutor::createGame)
                     .then(Arguments.getMap()
                         .executes(GameExecutor::createGame)
@@ -46,6 +49,7 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
                             .then(HelpfulRequiredArgumentBuilder.argument("var", IntegerArgumentType.integer(1))
                                 .executes(GameExecutor::createGame)))))
                 .then(HelpfulLiteralBuilder.literal("load")
+                    .requires(Requirements::canRun)
                     .then(HelpfulLiteralBuilder.literal("public")
                         .executes(GameExecutor::loadPublic))
                     .then(HelpfulLiteralBuilder.literal("private")
@@ -57,8 +61,10 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
                         .then(Arguments.getExistingGamemodeAlter()
                             .executes(GameExecutor::loadGamemode))))
                 .then(HelpfulLiteralBuilder.literal("start")
+                    .requires(Requirements::canRun)
                     .executes(GameExecutor::startGame))
                 .then(HelpfulLiteralBuilder.literal("end")
+                    .requires(Requirements::canRun)
                     .executes(GameExecutor::endGame));
         return commandNodeBuilder;
     }

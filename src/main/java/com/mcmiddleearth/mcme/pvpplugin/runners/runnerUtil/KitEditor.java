@@ -23,9 +23,35 @@ public class KitEditor {
             BlockStateMeta bmeta = (BlockStateMeta) meta;
             Banner banner = (Banner) bmeta.getBlockState();
             //TODO:Fix banner colouring.
-            //banner.setBaseColor(DyeColor.getByColor(teamColour));
+            DyeColor c = DyeColor.getByColor(teamColour);
+            if(c != null)
+                banner.setBaseColor(c);
             bmeta.setBlockState(banner);
             item.setItemMeta(bmeta);
+        }
+    }
+    private static DyeColor getDyeColour(Color color){
+        switch(color){
+            case Color.WHITE :
+                return DyeColor.WHITE;
+            case Color.GRAY :
+                return DyeColor.GRAY;
+            case Color.BLACK :
+                return DyeColor.BLACK;
+            case Color.RED :
+                return DyeColor.RED;
+            case Color.MAROON :
+            case Color.YELLOW :
+            case Color.OLIVE :
+            case Color.LIME :
+            case Color.GREEN :
+            case Color.AQUA :
+            case Color.TEAL :
+            case Color.BLUE :
+            case Color.NAVY :
+            case Color.FUCHSIA :
+            case Color.PURPLE :
+            case Color.ORANGE :
         }
     }
 }

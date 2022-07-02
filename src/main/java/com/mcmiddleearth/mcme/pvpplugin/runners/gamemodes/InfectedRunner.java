@@ -23,6 +23,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.DisplaySlot;
 
 import java.util.List;
 import java.util.function.Function;
@@ -49,11 +50,12 @@ public class InfectedRunner extends BaseRunner {
 
     @Override
     public void start() {
-        ScoreboardEditor.InitInfected(scoreboard, infected, survivors, timeSec);
         PVPPlugin.getInstance().getPluginManager().registerEvents(this, PVPPlugin.getInstance());
         PVPPlugin.getInstance().getMatchmaker().infectedMatchMake(players, infected, survivors);
+        ScoreboardEditor.InitInfected(scoreboard, infected, survivors, timeSec);
+        players.forEach(p -> p.setScoreboard(scoreboard));
         TeamHandler.spawnAll(infected, survivors, spectator);
-        TeamHandler.setGamemode(GameMode.SURVIVAL, infected, survivors);
+        TeamHandler.setGamemode(GameMode.ADVENTURE, infected, survivors);
         super.start();
         run();
     }
@@ -62,23 +64,26 @@ public class InfectedRunner extends BaseRunner {
         new BukkitRunnable() {
             @Override
             public void run() {
-                timeSec--;
-                if (timeSec == 0) {
-                    this.cancel();
+                if(gameState == State.RUNNING) {
+                    timeSec--;
+                    if (timeSec == 0 || gameState == State.ENDED) {
+                        end(false);
+                        this.cancel();
+                        return;
+                    }
+                    if (timeSec == 1) {
+                        players.forEach(player -> player.sendMessage(ChatColor.GREEN + "1 second remaining!"));
+                    }
+                    if (timeSec >= 2 && timeSec <= 5) {
+                        players.forEach(player -> player.sendMessage(ChatColor.GREEN + String.format("%d seconds remaining!", timeSec)));
+                    }
+                    if (timeSec == 30) {
+                        players.forEach(player -> player.sendMessage(ChatColor.GREEN + "30 seconds remaining!"));
+                    }
+                    ScoreboardEditor.updateTime(scoreboard, timeSec);
                 }
-                if (timeSec == 1) {
-                    players.forEach(player -> player.sendMessage(ChatColor.GREEN + "1 second remaining!"));
-                }
-                if (timeSec >= 2 && timeSec <= 5) {
-                    players.forEach(player -> player.sendMessage(ChatColor.GREEN + "" + timeSec + "seconds remaining!"));
-                }
-                if (timeSec == 30) {
-                    players.forEach(player -> player.sendMessage(ChatColor.GREEN + "30 seconds remaining!"));
-                }
-                ScoreboardEditor.updateTime(scoreboard, timeSec);
             }
-        }.runTaskTimer(PVPPlugin.getInstance(), 20, 20L );
-        this.end(false);
+        }.runTaskTimer(PVPPlugin.getInstance(), 0, 20L );
     }
 
     @Override
@@ -95,6 +100,7 @@ public class InfectedRunner extends BaseRunner {
                 playerstat.addPlayed();
             });
         }
+        scoreboard.clearSlot(DisplaySlot.SIDEBAR);
         HandlerList.unregisterAll(this);
         super.end(stopped);
     }
@@ -140,6 +146,7 @@ public class InfectedRunner extends BaseRunner {
     private Kit InfectedKit() {
         Function<Player, Void> invFunc = (x -> {
             PlayerInventory returnInventory = x.getInventory();
+            returnInventory.clear();
             returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
@@ -162,6 +169,7 @@ public class InfectedRunner extends BaseRunner {
     private Kit SurvivorKit() {
         Function<Player, Void> invFunc = (x -> {
             PlayerInventory returnInventory = x.getInventory();
+            returnInventory.clear();
             returnInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
             returnInventory.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
             returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
@@ -230,8 +238,8 @@ public class InfectedRunner extends BaseRunner {
     public Integer getTimeSec() {
         return this.timeSec;
     }
-    public void setTimeSec(final Integer timeSec) {
-        this.timeSec = timeSec*60;
+    public void setTimeMin(final Integer timeMin) {
+        this.timeSec = timeMin*60;
     }
 
     private Team GetWinningTeam() {

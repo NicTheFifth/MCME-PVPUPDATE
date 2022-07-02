@@ -5,6 +5,8 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TeamHandler {
 
@@ -20,6 +22,7 @@ public class TeamHandler {
         int spawnNum = 0;
         for (Player player: team.getMembers()) {
             player.teleport(team.getSpawnLocations().get(spawnNum%team.getSpawnLocations().size()));
+            Logger.getLogger("PVPPlugin").log(Level.INFO, String.format("%s spawned for team %s", player.getName(), team.getPrefix()));
             spawnNum++;
         }
     }

@@ -5,10 +5,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
+import java.util.Random;
 import java.util.Set;
 
 public class Matchmaker {
     public void infectedMatchMake(Set<Player> players, Team infected, Team survivors){
+        if(infected.getMembers().isEmpty())
+            addMember(players.stream().skip((new Random().nextInt(players.size()))).findFirst().get(), infected);
         players.forEach(player -> {
             if(!(infected.getMembers().contains(player) || survivors.getMembers().contains(player))){
                 addMember(player, infectedAdder(infected, survivors));
@@ -17,9 +20,10 @@ public class Matchmaker {
     }
 
     public Team infectedAdder(Team infected, Team survivors){
-        if(5*getTotalELO(infected) > getTotalELO(survivors)){
+        if(infected.getMembers().isEmpty())
+            return infected;
+        if(5*getTotalELO(infected) >= getTotalELO(survivors))
             return survivors;
-        }
         return infected;
     }
 

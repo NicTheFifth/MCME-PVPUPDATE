@@ -7,6 +7,7 @@ import com.mcmiddleearth.mcme.pvpplugin.exceptions.UnloadableMapException;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes.JSONGamemode;
 import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
+import org.bukkit.ChatColor;
 
 public class GameCreator {
     JSONMap map = null;
@@ -75,7 +76,7 @@ public class GameCreator {
             return new String[]{Style.ERROR + "No gamemode set, please use /pvp load gamemode <gamemode>"};
         if(gamemode.needsVar()) {
             PVPPlugin.getInstance().setActiveGame(gamemode.getPublicRunner().apply(map));
-            //TODO: Broadcast
+            PVPPlugin.getInstance().getServer().getOnlinePlayers().forEach(p -> p.sendMessage(ChatColor.GREEN + "Game created, type /pvp join to join!"));
             return new String[]{Style.INFO + "Game loaded successfully."};
         }
         if(var == null){
@@ -84,7 +85,7 @@ public class GameCreator {
         GamemodeRunner r = gamemode.getPublicRunner().apply(map);
         r = gamemode.applyVar().apply(r,var);
         PVPPlugin.getInstance().setActiveGame(r);
-        //TODO: Broadcast
+        PVPPlugin.getInstance().getServer().getOnlinePlayers().forEach(p -> p.sendMessage(ChatColor.GREEN + "Game created, type /pvp join to join!"));
         return new String[]{Style.INFO + "Game loaded successfully."};
     }
 
