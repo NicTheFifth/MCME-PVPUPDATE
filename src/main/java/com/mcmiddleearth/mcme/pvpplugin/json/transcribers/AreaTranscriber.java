@@ -2,7 +2,7 @@ package com.mcmiddleearth.mcme.pvpplugin.json.transcribers;
 
 import com.mcmiddleearth.mcme.pvpplugin.exceptions.BadRegionException;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONLocation;
-import com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes.BaseRunner;
+import com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes.BaseGamemodeRunner;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AreaTranscriber {
-    public static void TranscribeArea(String mapName, List<JSONLocation> regionPoints, BaseRunner runner) {
+    public static void TranscribeArea(String mapName, List<JSONLocation> regionPoints, BaseGamemodeRunner runner) {
         ArrayList<BlockVector2> wePoints = new ArrayList<>();
         World world = Bukkit.getWorld("world");
         try {

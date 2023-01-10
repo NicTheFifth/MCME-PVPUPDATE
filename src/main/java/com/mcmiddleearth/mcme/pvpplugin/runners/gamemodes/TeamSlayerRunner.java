@@ -1,131 +1,85 @@
 package com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
-import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
-import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.Playerstat;
-import com.mcmiddleearth.mcme.pvpplugin.json.transcribers.TeamSlayerTranscriber;
-import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.KitEditor;
-import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.ScoreboardEditor;
-import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.mcme.pvpplugin.util.Kit;
-import com.mcmiddleearth.mcme.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
+import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.KitEditor;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.List;
 import java.util.function.Function;
 
-public class TeamSlayerRunner extends BaseRunner {
+
+public class TeamSlayerRunner extends GamemodeRunner {
     Team red = new Team();
     Team blue = new Team();
     Integer pointLimit;
 
-    public TeamSlayerRunner(JSONMap map, boolean privateGame) {
-        this.privateGame = privateGame;
-        TeamSlayerTranscriber.Transcribe(map, this);
-        InitialiseRed();
-        InitialiseBlue();
-        gameState = State.QUEUED;
-    }
-
     @Override
     public boolean canStart() {
-        return pointLimit != null || super.canStart();
+        return false;
     }
 
     @Override
     public void start() {
-        ScoreboardEditor.InitTeamSlayer(scoreboard, red, blue, pointLimit);
-        PVPPlugin.getInstance().getPluginManager().registerEvents(this, PVPPlugin.getInstance());
-        Matchmaker.TeamSlayerMatchMake(players, red, blue);
-        TeamHandler.spawnAll(red, blue, spectator);
-        TeamHandler.setGamemode(GameMode.SURVIVAL, red, blue);
-        super.start();
+
     }
 
     @Override
     public void end(boolean stopped) {
-        if (!stopped) {
-            GetWinningTeam().getMembers().forEach(player -> {
-                Playerstat playerstat = PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId());
-                playerstat.addWon();
-                playerstat.addPlayed();
-            });
-            GetLosingTeam().getMembers().forEach(player -> {
-                Playerstat playerstat = PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId());
-                playerstat.addLost();
-                playerstat.addPlayed();
-            });
-        }
-        HandlerList.unregisterAll(this);
-        super.end(stopped);
-    }
 
+    }
 
     @Override
     public List<String> tryJoin(Player player) {
-        super.tryJoin(player);
-        if (gameState != State.QUEUED) {
-            PVPPlugin.getInstance().getMatchmaker().addMember(player, red, blue);
-        }
-        //TODO: handle update
         return null;
     }
 
     @Override
     public void leave(Player player, boolean failedJoin) {
-        if (blue.getMembers().contains(player)) {
-            blue.getMembers().remove(player);
-            blue.getDeadMembers().add(player);
-        }
-        red.getMembers().remove(player);
-        super.leave(player, false);
+
     }
 
-    //<editor-fold desc="Initialisation of teams">
-    private void InitialiseRed() {
-        red.setPrefix("Red");
-        red.setTeamColour(Color.RED);
-        red.setKit(RedKit());
+    void initBaseRunner(){
+
+    }
+    //<editor-fold desc="Initialising teams">
+    private void InitialiseInfected() {
+        infected.setPrefix("Infected");
+        infected.setTeamColour(Color.RED);
+        infected.setKit(InfectedKit());
     }
 
-    private Kit RedKit() {
+    private Kit InfectedKit() {
         Function<Player, Void> invFunc = (x -> {
             PlayerInventory returnInventory = x.getInventory();
-            returnInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
-            returnInventory.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
+            returnInventory.clear();
             returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
-            returnInventory.setHelmet(new ItemStack(Material.LEATHER_HELMET));
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
             ItemStack bow = new ItemStack(Material.BOW);
             bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
-            returnInventory.forEach(item -> KitEditor.setItemColour(item, red.getTeamColour()));
+            returnInventory.forEach(item -> KitEditor.setItemColour(item, infected.getTeamColour()));
             return null;
         });
         return new Kit(invFunc);
     }
 
-    private void InitialiseBlue() {
-        blue.setPrefix("Blue");
-        blue.setTeamColour(Color.BLUE);
-        blue.setKit(BlueKit());
+    private void InitialiseSurvivors() {
+        survivors.setPrefix("Survivor");
+        survivors.setTeamColour(Color.BLUE);
+        survivors.setKit(SurvivorKit());
     }
 
-    private Kit BlueKit() {
+    private Kit SurvivorKit() {
         Function<Player, Void> invFunc = (x -> {
             PlayerInventory returnInventory = x.getInventory();
+            returnInventory.clear();
             returnInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
             returnInventory.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
             returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
@@ -136,74 +90,25 @@ public class TeamSlayerRunner extends BaseRunner {
             bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
-            returnInventory.forEach(item -> KitEditor.setItemColour(item, blue.getTeamColour()));
+            returnInventory.forEach(item -> KitEditor.setItemColour(item, survivors.getTeamColour()));
             return null;
         });
         return new Kit(invFunc);
     }
     //</editor-fold>
-
-    //TODO: Fix everything from here.
-    private Team GetWinningTeam() {
-        if (blue.getMembers().isEmpty()) {
-            return red;
-        }
-        return blue;
-    }
-
-//<editor-fold defaultstate="collapsed" desc="delombok">
-//</editor-fold>
-    private Team GetLosingTeam() {
-        if (blue.getMembers().isEmpty()) {
-            return blue;
-        }
-        return red;
-    }
-
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent playerDeath) {
-        Player player = playerDeath.getEntity();
-        if (players.contains(player)) {
-            if (blue.getMembers().remove(player)) {
-                blue.getDeadMembers().add(player);
-                red.getMembers().add(player);
-            }
-            ScoreboardEditor.updateValueTeamSlayer(scoreboard, red, blue);
-            handleDeath(playerDeath);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerSpawn(PlayerRespawnEvent playerRespawn) {
-        Player player = playerRespawn.getPlayer();
-        if (players.contains(player)) {
-            if (red.getMembers().contains(player)) {
-                playerRespawn.setRespawnLocation(red.getSpawnLocations().get(0));
-            }
-            if (blue.getMembers().contains(player)) {
-                playerRespawn.setRespawnLocation(red.getSpawnLocations().get(0));
-            }
-        }
-    }
-
-    //<editor-fold defaultstate="collapsed" desc="delombok">
-    @SuppressWarnings("all")
+    //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public Team getRed() {
         return this.red;
     }
-
-    @SuppressWarnings("all")
     public Team getBlue() {
         return this.blue;
     }
 
-    @SuppressWarnings("all")
-    public Integer getPointLimit() {
-        return this.pointLimit;
+    public Integer getPointLimit(){
+        return pointLimit;
     }
 
-    @SuppressWarnings("all")
-    public void setPointLimit(final Integer pointLimit) {
+    public void setPointLimit(Integer pointLimit){
         this.pointLimit = pointLimit;
     }
     //</editor-fold>

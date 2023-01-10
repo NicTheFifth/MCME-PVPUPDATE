@@ -2,9 +2,7 @@ package com.mcmiddleearth.mcme.pvpplugin.util;
 
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes.*;
-import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
-import com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes.InfectedRunner;
-import com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes.TeamDeathmatchRunner;
+import com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes.GamemodeRunner;
 import com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes.TeamSlayerRunner;
 import org.bukkit.ChatColor;
 
@@ -171,7 +169,7 @@ public enum Gamemodes {
     private final String title;
     private final Function<JSONMap, JSONGamemode> getJSONGamemode;
 
-    private final Function<JSONMap,GamemodeRunner> publicRunner;
+    private final Function<JSONMap, GamemodeRunner> publicRunner;
     private final Function<JSONMap, GamemodeRunner> privateRunner;
 
     private final BiFunction< GamemodeRunner, Integer, GamemodeRunner> applyVar;

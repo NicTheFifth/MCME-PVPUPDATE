@@ -1,7 +1,6 @@
 package com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes;
 
 import com.mcmiddleearth.mcme.pvpplugin.PVPPlugin;
-import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
 import com.mcmiddleearth.mcme.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.mcme.pvpplugin.util.Team;
@@ -10,15 +9,15 @@ import com.sk89q.worldedit.regions.Region;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
 
 import java.util.*;
 
-public abstract class BaseRunner implements GamemodeRunner {
+public class BaseGamemodeRunner implements Listener {
 
     enum State {
         QUEUED, COUNTDOWN, RUNNING, ENDED
@@ -39,12 +38,10 @@ public abstract class BaseRunner implements GamemodeRunner {
     boolean privateGame;
     Set<Player> whitelistedPlayers;
 
-    @Override
     public boolean canStart() {
         return !players.isEmpty();
     }
 
-    @Override
     public void start() {
         spectator.getMembers().forEach(player -> player.teleport(spectator.getSpawnLocations().get(0)));
         TeamHandler.setGamemode(GameMode.SPECTATOR, spectator);
@@ -64,7 +61,6 @@ public abstract class BaseRunner implements GamemodeRunner {
         }.runTaskTimer(PVPPlugin.getInstance(), 0, 20);
     }
 
-    @Override
     public void end(boolean stopped) {
         players.forEach(player -> {
             player.getInventory().clear();
@@ -76,7 +72,6 @@ public abstract class BaseRunner implements GamemodeRunner {
         PVPPlugin.getInstance().setActiveGame(null);
     }
 
-    @Override
     public List<String> tryJoin(Player player) {
         if (players.contains((player)))
             return List.of(Style.ERROR + "You already are a part of this game.");
@@ -90,7 +85,6 @@ public abstract class BaseRunner implements GamemodeRunner {
         return new ArrayList<>();
     }
 
-    @Override
     public void leave(Player player, boolean failedJoin) {
         if (players.remove(player)) {
             player.sendMessage(Style.INFO + "You have left the game.");

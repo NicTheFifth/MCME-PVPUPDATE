@@ -6,7 +6,6 @@ import com.mcmiddleearth.mcme.pvpplugin.exceptions.UnloadableGamemodeException;
 import com.mcmiddleearth.mcme.pvpplugin.exceptions.UnloadableMapException;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.jsonGamemodes.JSONGamemode;
-import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
 import org.bukkit.ChatColor;
 
 public class GameCreator {

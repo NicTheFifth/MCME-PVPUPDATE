@@ -7,7 +7,7 @@ import com.mcmiddleearth.mcme.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.mcme.pvpplugin.exceptions.UnloadableGamemodeException;
 import com.mcmiddleearth.mcme.pvpplugin.exceptions.UnloadableMapException;
 import com.mcmiddleearth.mcme.pvpplugin.json.jsonData.JSONMap;
-import com.mcmiddleearth.mcme.pvpplugin.runners.GamemodeRunner;
+import com.mcmiddleearth.mcme.pvpplugin.runners.gamemodes.GamemodeRunner;
 import com.mcmiddleearth.mcme.pvpplugin.util.GameCreator;
 import com.mcmiddleearth.mcme.pvpplugin.util.Gamemodes;
 import com.mojang.brigadier.context.CommandContext;
