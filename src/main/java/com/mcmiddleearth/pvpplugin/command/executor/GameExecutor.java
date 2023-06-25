@@ -8,29 +8,27 @@ import com.mcmiddleearth.pvpplugin.exceptions.UnloadableGamemodeException;
 import com.mcmiddleearth.pvpplugin.exceptions.UnloadableMapException;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.runners.GamemodeRunner;
-import com.mcmiddleearth.pvpplugin.util.GameCreator;
-import com.mcmiddleearth.pvpplugin.util.Gamemodes;
 import com.mojang.brigadier.context.CommandContext;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class GameExecutor {
-    /*
-            public static int Action(CommandContext<McmeCommandSender> c){
+            /*public static int Action(CommandContext<McmeCommandSender> c){
                 Player source = CommandUtil.getPlayer(c.getSource());
                 if(source == null)
                     return 0;
                 source.sendMessage(me.Action(mapName));
                 return 1;
-            }
-             */
+            }*/
+
+
     //TODO: Finish with above structure
     public static int getRule(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
         String gamemode = c.getArgument("gamemode", String.class);
         if(source == null)
             return 0;
-        source.sendMessage(Gamemodes.getRules(gamemode));
+        //source.sendMessage(Gamemodes.getRules(gamemode));
         return 1;
     }
 
@@ -89,20 +87,20 @@ public class GameExecutor {
             var = c.getArgument("var", Integer.class);
         }catch(Exception ignored){}
 
-        GameCreator newCreator = new GameCreator();
+        //GameCreator newCreator = new GameCreator();
         boolean creatorMade = false;
         String extraMessage = null;
         try {
             if (var != null) {
-                newCreator = new GameCreator(map, gamemode, var);
+                //newCreator = new GameCreator(map, gamemode, var);
                 creatorMade = true;
             }
             if (gamemode != null && !creatorMade) {
-                newCreator = new GameCreator(map, gamemode);
+                //newCreator = new GameCreator(map, gamemode);
                 creatorMade = true;
             }
             if (map != null && !creatorMade) {
-                newCreator = new GameCreator(map);
+                //newCreator = new GameCreator(map);
                 extraMessage = Style.INFO_STRESSED + "Please set a gamemode too with /pvp load gamemode <gamemode>";
                 creatorMade = true;
             }
@@ -110,7 +108,7 @@ public class GameExecutor {
                 extraMessage = Style.INFO_STRESSED + "Please set a gamemode and map with /pvp load map <mapName> and /pvp load gamemode <gamemode>";
             }
 
-            PVPPlugin.getInstance().getGameCreators().put(source.getUniqueId(), newCreator);
+            //PVPPlugin.getInstance().getGameCreators().put(source.getUniqueId(), newCreator);
             source.sendMessage(Style.INFO + "Game creator made, when ready to start, type /pvp load private or /pvp load public");
             if (extraMessage != null)
                 source.sendMessage(extraMessage);
@@ -134,13 +132,13 @@ public class GameExecutor {
             source.sendMessage(Style.ERROR + "A game is running, please load again later.");
             return 0;
         }
-        GameCreator creator = PVPPlugin.getInstance().getGameCreators().get(source.getUniqueId());
-        if(creator == null){
+        //GameCreator creator = PVPPlugin.getInstance().getGameCreators().get(source.getUniqueId());
+        //if(creator == null){
             source.sendMessage(Style.ERROR + "You have no creator, thus can't load a game.");
             return 0;
-        }
-        source.sendMessage(creator.loadPublic());
-        return 1;
+        //}
+        //source.sendMessage(creator.loadPublic());
+        //return 1;
     }
 
     public static int loadPrivate(CommandContext<McmeCommandSender> c) {
@@ -152,13 +150,13 @@ public class GameExecutor {
             source.sendMessage(Style.ERROR + "A game is running, please load again later.");
             return 0;
         }
-        GameCreator creator = PVPPlugin.getInstance().getGameCreators().get(source.getUniqueId());
-        if(creator == null){
+        //GameCreator creator = PVPPlugin.getInstance().getGameCreators().get(source.getUniqueId());
+        //if(creator == null){
             source.sendMessage(Style.ERROR + "You have no creator, thus can't load a game.");
             return 0;
-        }
-        source.sendMessage(creator.loadPrivate());
-        return 1;
+        //}
+        //source.sendMessage(creator.loadPrivate());
+        //return 1;
     }
 
     public static int loadMap(CommandContext<McmeCommandSender> c) {
@@ -175,13 +173,13 @@ public class GameExecutor {
             source.sendMessage(Style.ERROR + "This map does not exist.");
             return 0;
         }
-        GameCreator creator = PVPPlugin.getInstance().getGameCreators().get(source.getUniqueId());
-        if(creator == null){
+        //GameCreator creator = PVPPlugin.getInstance().getGameCreators().get(source.getUniqueId());
+        //if(creator == null){
             source.sendMessage(Style.ERROR + "You have no creator, thus can't load a map.");
             return 0;
-        }
-        source.sendMessage(creator.loadMap(map));
-        return 1;
+        //}
+        //source.sendMessage(creator.loadMap(map));
+        //return 1;
     }
 
     public static int loadGamemode(CommandContext<McmeCommandSender> c) {
@@ -194,13 +192,13 @@ public class GameExecutor {
             source.sendMessage(Style.ERROR + "A game is running, please load again later.");
             return 0;
         }
-        GameCreator creator = PVPPlugin.getInstance().getGameCreators().get(source.getUniqueId());
-        if(creator == null){
+        //GameCreator creator = PVPPlugin.getInstance().getGameCreators().get(source.getUniqueId());
+        //if(creator == null){
             source.sendMessage(Style.ERROR + "You have no creator, thus can't load a map.");
             return 0;
-        }
-        source.sendMessage(creator.loadGamemode(gamemode));
-        return 1;
+        //}
+        //source.sendMessage(creator.loadGamemode(gamemode));
+        //return 1;
     }
 
     public static int startGame(CommandContext<McmeCommandSender> c) {

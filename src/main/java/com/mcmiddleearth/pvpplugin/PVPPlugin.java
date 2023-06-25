@@ -42,7 +42,7 @@ public class PVPPlugin extends JavaPlugin implements Listener {
     GamemodeRunner activeGame;
 
     HashMap<UUID, MapEditor> mapEditors = new HashMap<>();
-    HashMap<UUID, GameCreator> gameCreators = new HashMap<>();
+    //HashMap<UUID, GameCreator> gameCreators = new HashMap<>();
 
     private static PVPPlugin instance;
     private File mapDirectory;
@@ -167,9 +167,9 @@ public class PVPPlugin extends JavaPlugin implements Listener {
 
     public HashMap<UUID,MapEditor> getMapEditors(){return this.mapEditors;}
 
-    public HashMap<UUID, GameCreator> getGameCreators() {
-        return gameCreators;
-    }
+    //public HashMap<UUID, GameCreator> getGameCreators() {
+    //    return gameCreators;
+    //}
 
     //</editor-fold>
 }

@@ -1,6 +1,7 @@
 package com.mcmiddleearth.pvpplugin.util;
 
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -15,6 +16,8 @@ public class Team {
     String Prefix;
     Kit kit;
     List<Location> spawnLocations = new ArrayList<>();
+
+    GameMode gameMode;
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public Set<Player> getActiveMembers() {
@@ -63,6 +66,13 @@ public class Team {
     }
     public void setSpawnLocations(List<Location> spawnLocations) {
         this.spawnLocations = spawnLocations;
+    }
+
+    public GameMode getGameMode(){
+        return this.gameMode;
+    }
+    public void setGameMode(GameMode gameMode){
+        this.gameMode = gameMode;
     }
     //</editor-fold>
 }

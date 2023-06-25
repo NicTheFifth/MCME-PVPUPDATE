@@ -4,6 +4,7 @@ import com.mcmiddleearth.pvpplugin.util.Team;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
+import java.util.Random;
 import java.util.Set;
 
 public class TeamHandler {
@@ -21,10 +22,12 @@ public class TeamHandler {
         for (Player player: team.getAliveMembers()) {
             player.teleport(team.getSpawnLocations().get(spawnNum%team.getSpawnLocations().size()));
             spawnNum++;
+            player.setGameMode(team.getGameMode());
         }
     }
     public static void spawn(Player player, Team team) {
-        player.teleport(team.getSpawnLocations().get(0));
+        player.teleport(team.getSpawnLocations().get((new Random()).nextInt(0,team.getSpawnLocations().size())));
+        player.setGameMode(team.getGameMode());
     }
 
     public static void setGamemode(GameMode gamemode, Team...teams){

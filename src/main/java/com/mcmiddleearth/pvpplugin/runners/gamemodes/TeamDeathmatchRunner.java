@@ -8,6 +8,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamDeathMatch;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
+import com.mcmiddleearth.pvpplugin.runners.GamemodeListener;
 import com.mcmiddleearth.pvpplugin.runners.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -16,14 +17,16 @@ import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.Team;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -40,7 +43,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TeamDeathmatchRunner implements GamemodeRunner {
-
+    //TODO: create private functionality
+    //TODO: Add team assignment prior to start
     private enum State{
         QUEUED, COUNTDOWN, RUNNING, ENDED
     }
@@ -88,6 +92,7 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         red.setSpawnLocations(new ArrayList<>(List.of(
                 LocationTranscriber.TranscribeFromJSON(spawn)
         )));
+        red.setGameMode(GameMode.ADVENTURE);
     }
 
     @Contract(value = " -> new", pure = true)
@@ -118,6 +123,7 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         blue.setSpawnLocations(new ArrayList<>(List.of(
                 LocationTranscriber.TranscribeFromJSON(spawn)
         )));
+        blue.setGameMode(GameMode.ADVENTURE);
     }
 
     @Contract(value = " -> new", pure = true)
@@ -147,6 +153,7 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         spectator.setSpawnLocations(new ArrayList<>(List.of(
                 LocationTranscriber.TranscribeFromJSON(spawn)
         )));
+        spectator.setGameMode(GameMode.SPECTATOR);
     }
     //</editor-fold>
 
@@ -182,11 +189,13 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
                 Matchmaker.addMember(player, blue);
             joinRed.set(!joinRed.get());
         });
+        PVPPlugin.getInstance().getServer().getOnlinePlayers().forEach(player ->{
+            if(!blue.getActiveMembers().contains(player) && !red.getActiveMembers().contains(player))
+                spectator.getActiveMembers().add(player);
+        });
         createScoreboard();
         players.forEach(player -> player.setScoreboard(scoreboard));
         TeamHandler.spawnAll(red,blue,spectator);
-        TeamHandler.setGamemode(GameMode.ADVENTURE,red,blue);
-        TeamHandler.setGamemode(GameMode.SPECTATOR, spectator);
         pvpPlugin.getPluginManager().registerEvents(new Listeners(), pvpPlugin);
         countDown();
     }
@@ -252,13 +261,13 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
     }
 
     private Set<Player> getWinningTeamMembers() {
-        if(red.getDeadMembers().containsAll(red.getActiveMembers()))
+        if(red.getAliveMembers().isEmpty())
             return blue.getActiveMembers();
         return red.getActiveMembers();
     }
 
     private Set<Player> getLosingTeamMembers() {
-        if(!red.getDeadMembers().containsAll(red.getActiveMembers()))
+        if(!red.getAliveMembers().isEmpty())
             return blue.getActiveMembers();
         return red.getActiveMembers();
     }
@@ -277,19 +286,42 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
 
     @Override
     public List<String> joinGame(Player player) {
-        //TODO: implement joinGame correctly
-        if(blue.getActiveMembers().size() <=red.getActiveMembers().size()){
-            Matchmaker.addMember(player, blue);
-            TeamHandler.spawn(player,blue);
-            player.setGameMode(GameMode.ADVENTURE);
-            updateScoreboard();
-            return List.of(Color.BLUE + player.getName() + "  has joined the blue team!");
-        }
+        if(isInRed(player)) 
+            return joinRed(player);
+        if(isInBlue(player))
+            return joinBlue(player);
+        return(joinRandom(player));
+    }
+
+    private Boolean isInRed(Player player){
+        return red.getAliveMembers().contains(player) || red.getDeadMembers().contains(player);
+    }
+
+    private Boolean isInBlue(Player player){
+        return blue.getAliveMembers().contains(player) || blue.getDeadMembers().contains(player);
+    }
+
+    private List<String> joinRed(Player player) {
         Matchmaker.addMember(player,red);
         TeamHandler.spawn(player,red);
         player.setGameMode(GameMode.ADVENTURE);
         updateScoreboard();
         return List.of(Color.RED + player.getName() + "  has joined the red team!");
+    }
+
+    private List<String> joinBlue(Player player) {
+        Matchmaker.addMember(player, blue);
+        TeamHandler.spawn(player,blue);
+        player.setGameMode(GameMode.ADVENTURE);
+        updateScoreboard();
+        return List.of(Color.BLUE + player.getName() + "  has joined the blue team!");
+    }
+
+    private List<String> joinRandom(Player player){
+        //todo: ELO shit
+        if(blue.getAliveMembers().size() <=red.getAliveMembers().size())
+            return joinBlue(player);
+        return joinRed(player);
     }
 
     @Override
@@ -301,85 +333,77 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         checkEnd();
     }
 
-    @Override
-    public void leaveServer(Player player){
-        red.getActiveMembers().remove(player);
-        blue.getActiveMembers().remove(player);
-        player.getInventory().clear();
-        players.remove(player);
-        checkEnd();
-
-    }
-
-
     private void checkEnd() {
+        if(red.getAliveMembers().isEmpty() ||
+        red.getActiveMembers().isEmpty() ||
+        blue.getAliveMembers().isEmpty() ||
+                blue.getActiveMembers().isEmpty())
+            end(false);
     }
-//
-//    Team spectator = new Team();
-//
-//    Set<Player> players = new HashSet<>();
-//
-//    public TeamDeathMatchRunner(JSONMap map){
-//        JSONTeamDeathMatch tdm = map.getJSONTeamDeathMatch();
-//        JSONLocation redSpawn = tdm.getRedSpawn();
-//        JSONLocation blueSpawn = tdm.getBlueSpawn();
-//        JSONLocation spectatorSpawn = map.getSpawn();
-//        red.setSpawnLocations(new ArrayList<>(List.of(
-//                LocationTranscriber.TranscribeFromJSON(redSpawn)
-//        )));
-//        blue.setSpawnLocations(new ArrayList<>(List.of(
-//                LocationTranscriber.TranscribeFromJSON(blueSpawn)
-//        )));
-//        spectator.setSpawnLocations(new ArrayList<>(List.of(
-//                LocationTranscriber.TranscribeFromJSON(spectatorSpawn)
-//        )));
-//    }
-//    void join(Player player){
-//        players.add(player);
-//        Integer eloRed = getElo(red);
-//        Integer eloBlue = getElo(blue);
-//        if(eloRed <= eloBlue){
-//            addToTeam(red,player);
-//            broadcastJoin(player,"red");
-//            return;
-//        }
-//        addToTeam(blue,player);
-//        broadcastJoin(player,"blue");
-//    }
-//
-//    private Integer getElo(Team team) {
-//        return 0;
-//    }
-//
-//    private void broadcastJoin(Player player, String blue) {
-//    }
-//
-//    private void addToTeam(Team red, Player player) {
-//    }
-//
-//    void leave(Player player){
-//        leaveTeam(red,player);
-//        leaveTeam(blue,player);
-//        if(red.getMembers().isEmpty() || blue.getMembers().isEmpty()){
-//            end(false);
-//        }
-//        broadcastLeave(player);
-//    }
-//
-//    private void broadcastLeave(Player player) {
-//    }
-//
-//    private void leaveTeam(Team red, Player player) {
-//    }
-//
-//    void end(boolean ended){
-//
-//    }
-    private class Listeners implements Listener{
+
+    private class Listeners implements GamemodeListener {
+
+        HashMap<UUID, Long> playerAreaLeaveTimer = new HashMap<>();
+        @EventHandler
+        public void onPlayerDeath(PlayerDeathEvent e){
+            Player player = e.getEntity();
+            if(!players.contains(player))
+                return;
+            if(blue.getAliveMembers().contains(player)){
+                blue.getAliveMembers().remove(player);
+                blue.getDeadMembers().add(player);
+            }
+            if(red.getAliveMembers().contains(player)){
+                red.getAliveMembers().remove(player);
+                red.getDeadMembers().add(player);
+            }
+            player.setGameMode(GameMode.SPECTATOR);
+            PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId()).addDeath();
+            updateScoreboard();
+            checkEnd();
+        }
 
         @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent e){
-
+        public void onPlayerLeave(PlayerQuitEvent e){
+            Player player = e.getPlayer();
+            red.getActiveMembers().remove(player);
+            blue.getActiveMembers().remove(player);
+            player.getInventory().clear();
+            players.remove(player);
+            updateScoreboard();
+            checkEnd();
         }
-}
+
+        @Override
+        public void onPlayerMove(PlayerMoveEvent e) {
+            Location from = e.getFrom();
+            Location to = e.getTo();
+
+            Player player = e.getPlayer();
+            UUID uuid = player.getUniqueId();
+
+
+            if(gameState == State.QUEUED)
+                return;
+            if(gameState == State.COUNTDOWN &&
+                    !spectator.getAliveMembers().contains(e.getPlayer())){
+                if(from.getX() != to.getX() || from.getZ() != to.getZ()){
+                    e.setCancelled(true);
+                    return;
+                }
+            }
+            if(!region.contains(BlockVector3.at(to.getX(), to.getY(), to.getZ()))){
+                e.setCancelled(true);
+                if(!playerAreaLeaveTimer.containsKey(uuid)){
+                    player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
+                    playerAreaLeaveTimer.put(uuid, System.currentTimeMillis());
+                }
+
+                else if(System.currentTimeMillis() - playerAreaLeaveTimer.get(uuid) > 3000){
+                    player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
+                    playerAreaLeaveTimer.put(uuid, System.currentTimeMillis());
+                }
+            }
+        }
+    }
 }

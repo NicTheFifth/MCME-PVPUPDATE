@@ -1,9 +1,9 @@
+/*
 package com.mcmiddleearth.pvpplugin.json.transcribers;
 
 import com.mcmiddleearth.pvpplugin.exceptions.BadMaxPlayerException;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONInfected;
-import com.mcmiddleearth.pvpplugin.runners.gamemodes.InfectedRunner;
 
 public class InfectedTranscriber{
     public static void Transcribe(JSONMap jsonMap, InfectedRunner runner) {
@@ -18,3 +18,4 @@ public class InfectedTranscriber{
         AreaTranscriber.TranscribeArea(jsonMap.getTitle(), jsonMap.getRegionPoints(), runner);
     }
 }
+*/

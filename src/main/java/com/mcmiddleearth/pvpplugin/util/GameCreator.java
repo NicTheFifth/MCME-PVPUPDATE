@@ -1,3 +1,4 @@
+/*
 package com.mcmiddleearth.pvpplugin.util;
 
 import com.mcmiddleearth.command.Style;
@@ -138,3 +139,4 @@ public class GameCreator {
     }
     //</editor-fold>
 }
+*/

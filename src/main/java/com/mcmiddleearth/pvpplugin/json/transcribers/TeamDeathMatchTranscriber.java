@@ -11,10 +11,10 @@ public class TeamDeathMatchTranscriber{
         if (gamemodeData.getMaximumPlayers() == null) {
             throw new BadMaxPlayerException(jsonMap.getTitle() + " has null for max players for TeamDeathmatch");
         }
-        runner.setMaxPlayers(gamemodeData.getMaximumPlayers());
-        LocationTranscriber.setSpawnLocation(jsonMap.getTitle(), "TeamDeathMatch", "red", runner.getRed(), gamemodeData.getRedSpawn());
-        LocationTranscriber.setSpawnLocation(jsonMap.getTitle(), "TeamDeathMatch", "blue", runner.getBlue(), gamemodeData.getBlueSpawn());
-        LocationTranscriber.setSpawnLocation(jsonMap.getTitle(), "TeamDeathMatch", "spectators", runner.getSpectator(),jsonMap.getSpawn());
-        AreaTranscriber.TranscribeArea(jsonMap.getTitle(), jsonMap.getRegionPoints(), runner);
+        //runner.setMaxPlayers(gamemodeData.getMaximumPlayers());
+        //LocationTranscriber.setSpawnLocation(jsonMap.getTitle(), "TeamDeathMatch", "red", runner.getRed(), gamemodeData.getRedSpawn());
+        //LocationTranscriber.setSpawnLocation(jsonMap.getTitle(), "TeamDeathMatch", "blue", runner.getBlue(), gamemodeData.getBlueSpawn());
+        //LocationTranscriber.setSpawnLocation(jsonMap.getTitle(), "TeamDeathMatch", "spectators", runner.getSpectator(),jsonMap.getSpawn());
+        //AreaTranscriber.TranscribeArea(jsonMap.getTitle(), jsonMap.getRegionPoints(), runner);
     }
 }

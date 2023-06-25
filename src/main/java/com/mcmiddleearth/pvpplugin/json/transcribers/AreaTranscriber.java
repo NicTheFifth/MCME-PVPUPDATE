@@ -1,8 +1,8 @@
+/*
 package com.mcmiddleearth.pvpplugin.json.transcribers;
 
 import com.mcmiddleearth.pvpplugin.exceptions.BadRegionException;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
-import com.mcmiddleearth.pvpplugin.runners.gamemodes.BaseRunner;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
@@ -28,3 +28,4 @@ public class AreaTranscriber {
         }
     }
 }
+*/

@@ -19,6 +19,4 @@ public interface GamemodeRunner extends Listener {
     List<String> joinGame(Player player);
 
     void leaveGame(Player player);
-
-    void leaveServer(Player player);
 }

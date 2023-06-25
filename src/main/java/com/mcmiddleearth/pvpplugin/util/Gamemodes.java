@@ -1,11 +1,10 @@
+/*
 package com.mcmiddleearth.pvpplugin.util;
 
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.*;
 import com.mcmiddleearth.pvpplugin.runners.GamemodeRunner;
-import com.mcmiddleearth.pvpplugin.runners.gamemodes.InfectedRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamDeathmatchRunner;
-import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamSlayerRunner;
 import org.bukkit.ChatColor;
 
 import java.util.function.BiFunction;
@@ -265,3 +264,4 @@ public enum Gamemodes {
 
     //</editor-fold>
 }
+*/
