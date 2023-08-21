@@ -4,7 +4,7 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
-import com.mcmiddleearth.pvpplugin.util.MapEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.util.Permissions;
 import org.bukkit.entity.Player;
 import java.util.Arrays;

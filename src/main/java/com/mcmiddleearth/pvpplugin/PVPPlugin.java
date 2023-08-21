@@ -13,6 +13,7 @@ import com.mcmiddleearth.pvpplugin.command.commandParser.GameCommand;
 import com.mcmiddleearth.pvpplugin.command.commandParser.MapEditCommand;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.Playerstat;
+import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.runners.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.util.*;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;

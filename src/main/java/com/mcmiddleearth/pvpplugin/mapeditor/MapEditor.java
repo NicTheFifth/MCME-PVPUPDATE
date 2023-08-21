@@ -1,10 +1,11 @@
-package com.mcmiddleearth.pvpplugin.util;
+package com.mcmiddleearth.pvpplugin.mapeditor;
 
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.*;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.GamemodeEditor;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
@@ -20,25 +21,16 @@ import java.util.List;
 
 public class MapEditor {
 
-    public enum EditorState{
-        CAPTURETHEFLAG,
-        FREEFORALL,
-        INFECTED,
-        TEAMCONQUEST,
-        TEAMDEATHMATCH,
-        TEAMSLAYER,
-        DEATHRUN
-    }
-
-    EditorState state;
-
     JSONMap map;
+
+    GamemodeEditor gamemodeEditor;
 
     public MapEditor(JSONMap map){
         this.map = map;
-        state = null;
+        gamemodeEditor = null;
     }
 
+    //<editor-fold desc="Basic map edits">
     public String[] setSpawn(Location location) {
         map.setSpawn(new JSONLocation(location));
         return new String[]{Style.INFO + String.format("Spawn location set for %s", map.getTitle())};
@@ -85,6 +77,16 @@ public class MapEditor {
         return new String[]{Style.INFO + String.format("%s has been set as the resource pack on %s", rpName, map.getTitle())};
     }
 
+
+    public String[] setMax(Integer max) {
+        if(gamemodeEditor == null){
+            return new String[]{Style.ERROR + "No gamemode selected yet, please use /mapeditor editgamemode [gamemode]"};
+        }
+        return setMax(max);
+    }
+    //</editor-fold>
+
+    /*
     public String[] setGoal(Player source) {
         JSONLocation point = new JSONLocation(source.getLocation().add(0,1,0));
         if(state == EditorState.DEATHRUN) {
@@ -244,13 +246,22 @@ public class MapEditor {
         }
         return new String[]{Style.INFO + String.format("Set %d for %s on %s", max, state.toString(), map.getTitle())};
     }
+     */
 
     public JSONMap getMap() {
         return map;
     }
 
-    public EditorState getState(){return state;}
-    public void setState(EditorState state){
-        this.state = state;
+    public void setMap(String mapName){
+        //TODO: setMap
+    }
+
+    public GamemodeEditor getGamemodeEditor(){
+        return gamemodeEditor;
+    }
+
+    public String[] setGamemodeEditor(String gamemode){
+        //TODO: setGamemodeEditor
+        return null;
     }
 }

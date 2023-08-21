@@ -5,7 +5,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
-import com.mcmiddleearth.pvpplugin.util.MapEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mojang.brigadier.context.CommandContext;
 import org.bukkit.entity.Player;
 
@@ -88,7 +88,7 @@ public class EditExecutor {
             source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
             return 0;
         }
-        source.sendMessage(me.setGamemode(gamemode));
+        source.sendMessage(me.setGamemodeEditor(gamemode));
         return 1;
     }
 
@@ -115,7 +115,8 @@ public class EditExecutor {
             source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
             return 0;
         }
-        source.sendMessage(me.setGoal(source));
+        //TODO: Check instance of the GamemodeEditor, to make sure it can edit
+        //source.sendMessage(me.setGoal(source));
         return 1;
     }
 
@@ -128,7 +129,8 @@ public class EditExecutor {
             source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
             return 0;
         }
-        source.sendMessage(me.createCapturePoint(source));
+        //TODO: Check instance of the GamemodeEditor, to make sure it can edit
+        //source.sendMessage(me.createCapturePoint(source));
         return 1;
     }
 
@@ -142,7 +144,8 @@ public class EditExecutor {
             source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
             return 0;
         }
-        source.sendMessage(me.delCapturePoint(point));
+        //TODO: Check instance of the GamemodeEditor, to make sure it can edit
+        //source.sendMessage(me.delCapturePoint(point));
         return 1;
     }
     public static int setMapSpawn(CommandContext<McmeCommandSender> c){
@@ -172,28 +175,42 @@ public class EditExecutor {
         String[] response;
         switch(spawnType){
             case "red":
-                response = me.setRedSpawn(source.getLocation());
+
+                //TODO: Check instance of the GamemodeEditor, to make sure it can edit
+                //response = me.setRedSpawn(source.getLocation());
                 break;
             case "blue":
-                response = me.setBlueSpawn(source.getLocation());
+
+                //TODO: Check instance of the GamemodeEditor, to make sure it can edit
+                //response = me.setBlueSpawn(source.getLocation());
                 break;
             case"death":
-                response = me.setDeathSpawn(source.getLocation());
+
+                //TODO: Check instance of the GamemodeEditor, to make sure it can edit
+                //response = me.setDeathSpawn(source.getLocation());
                 break;
             case "runner":
-                response = me.setRunnerSpawn(source.getLocation());
+
+                //TODO: Check instance of the GamemodeEditor, to make sure it can edit
+                //response = me.setRunnerSpawn(source.getLocation());
                 break;
             case "infected":
-                response = me.setInfectedSpawn(source.getLocation());
+
+                //TODO: Check instance of the GamemodeEditor, to make sure it can edit
+                //response = me.setInfectedSpawn(source.getLocation());
                 break;
             case "survivor":
-                response = me.setSurvivorSpawn(source.getLocation());
+
+                //TODO: Check instance of the GamemodeEditor, to make sure it can edit
+                //response = me.setSurvivorSpawn(source.getLocation());
                 break;
             default:
                 source.sendMessage();
                 return 0;
         }
-        source.sendMessage(response);
+
+        //TODO: Check instance of the GamemodeEditor, to make sure it can edit
+        //source.sendMessage(response);
         return 1;
     }
 }
