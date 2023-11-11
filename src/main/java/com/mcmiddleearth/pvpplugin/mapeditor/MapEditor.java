@@ -38,7 +38,9 @@ public class MapEditor {
 
     public String[] setArea(Player source) {
         BukkitPlayer bukkitP = new BukkitPlayer(source);
-        LocalSession session = PVPPlugin.getInstance().getWorldEditPlugin().getWorldEdit().getSessionManager().get(bukkitP);
+        LocalSession session = PVPPlugin.getInstance()
+                .getWorldEditPlugin().getWorldEdit()
+                .getSessionManager().get(bukkitP);
 
         try{
             Region r = session.getSelection(new BukkitWorld(source.getWorld()));

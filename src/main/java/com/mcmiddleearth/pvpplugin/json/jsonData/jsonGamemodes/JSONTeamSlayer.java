@@ -2,22 +2,24 @@ package com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes;
 
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 
+import java.util.List;
+
 public class JSONTeamSlayer extends JSONGamemode{
-    JSONLocation blueSpawn;
-    JSONLocation redSpawn;
+    List<JSONLocation> blueSpawn;
+    List<JSONLocation> redSpawn;
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
-    public JSONLocation getBlueSpawn() {
+    public List<JSONLocation> getBlueSpawn() {
         return this.blueSpawn;
     }
-    public void setBlueSpawn(final JSONLocation blueSpawn) {
+    public void setBlueSpawn(final List<JSONLocation> blueSpawn) {
         this.blueSpawn = blueSpawn;
     }
 
-    public JSONLocation getRedSpawn() {
+    public List<JSONLocation> getRedSpawn() {
         return this.redSpawn;
     }
-    public void setRedSpawn(final JSONLocation redSpawn) {
+    public void setRedSpawn(final List<JSONLocation> redSpawn) {
         this.redSpawn = redSpawn;
     }
     //</editor-fold>
