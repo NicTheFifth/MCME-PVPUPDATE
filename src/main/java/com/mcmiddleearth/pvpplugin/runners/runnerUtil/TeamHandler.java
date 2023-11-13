@@ -19,7 +19,7 @@ public class TeamHandler {
 
     public static void spawnAll(Team team){
         int spawnNum = 0;
-        for (Player player: team.getAliveMembers()) {
+        for (Player player: team.getActiveMembers()) {
             player.teleport(team.getSpawnLocations().get(spawnNum%team.getSpawnLocations().size()));
             spawnNum++;
             player.setGameMode(team.getGameMode());

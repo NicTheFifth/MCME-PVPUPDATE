@@ -1,13 +1,15 @@
 PVP Plugin version 2
 ===========
 ## To be Implemented
-* Mechanism for doing private games
 * FBT tag whilst in lobby  
 * Multi spawns for every gamemode
 * Disallow removal of armour and/or banner
+* Toggle Auto-Join
+* Kit implementation
+* Functionality to assign team before game start
 
 ## Implemented
 * JSON structure
+* Mechanism for doing private games
 * Whitelist
-* Infected assign the infected
 * Save and Load

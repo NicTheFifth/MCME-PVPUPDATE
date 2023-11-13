@@ -25,6 +25,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -43,31 +44,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TeamDeathmatchRunner implements GamemodeRunner {
-    //TODO: create private functionality
     //TODO: Add team assignment prior to start
     private enum State{
         QUEUED, COUNTDOWN, RUNNING, ENDED
     }
-
     int maxPlayers;
     State gameState;
-
     private long countDownTimer = 5;
-
     Boolean isPrivate;
-
+    Set<Player> whiteList = new HashSet<>();
     Set<Player> players = new HashSet<>();
-
-    Team red = new Team();
-
-    Team blue = new Team();
-
+    TDMTeam red = new TDMTeam();
+    TDMTeam blue = new TDMTeam();
     Team spectator = new Team();
-
     Region region;
-
     Scoreboard scoreboard;
 
+    //<editor-fold defaultstate="collapsed" desc="Initialisation">
     public TeamDeathmatchRunner(JSONMap map, Boolean isPrivate){
         //TODO: add a check if this game can actually be ran
         JSONTeamDeathMatch tdm = map.getJSONTeamDeathMatch();
@@ -171,12 +164,8 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
             throw new BadRegionException(mapName);
         }
     }
-
-    @Override
-    public boolean canStart() {
-        return !(red.getActiveMembers().isEmpty() || blue.getActiveMembers().isEmpty());
-    }
-
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="Start">
     @Override
     public void start() {
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
@@ -199,7 +188,6 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         pvpPlugin.getPluginManager().registerEvents(new Listeners(), pvpPlugin);
         countDown();
     }
-
     private void countDown() {
         gameState = State.COUNTDOWN;
         new BukkitRunnable() {
@@ -216,23 +204,14 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
             }
         }.runTaskTimer(PVPPlugin.getInstance(),0,20);
     }
-
     private void createScoreboard(){
         Objective Points = scoreboard.registerNewObjective("TDM Scoreboard", "dummy", "Remaining:");
-        Points.getScore(ChatColor.BLUE + "Blue:").setScore(blue.getAliveMembers().size());
-        Points.getScore(ChatColor.DARK_RED + "Red:").setScore(red.getAliveMembers().size());
+        Points.getScore(ChatColor.BLUE + "Blue:").setScore(blue.getAlive());
+        Points.getScore(ChatColor.DARK_RED + "Red:").setScore(red.getAlive());
         Points.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
-
-    private void updateScoreboard(){
-        Objective Points = scoreboard.getObjective("TDM Scoreboard");
-        if (Points != null) {
-            Points.getScore(ChatColor.BLUE + "Blue:").setScore(blue.getAliveMembers().size());
-            Points.getScore(ChatColor.DARK_RED + "Red:").setScore(red.getAliveMembers().size());
-        }
-        else
-            Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Scoreboard has failed for Team Deathmatch");
-    }
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="End">
     @Override
     public void end(boolean stopped) {
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
@@ -252,8 +231,7 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
             player.setGameMode(GameMode.ADVENTURE);
-            //TODO: teleport all players back to spawn
-            player.teleport(pvpPlugin.getServer().getWorld(player.getWorld().getName()).getSpawnLocation());
+            player.teleport(pvpPlugin.getSpawn());
         });
         if (!stopped) spectator.getActiveMembers().forEach(player -> PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId()).addSpectate());
         gameState = State.ENDED;
@@ -261,19 +239,22 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
     }
 
     private Set<Player> getWinningTeamMembers() {
-        if(red.getAliveMembers().isEmpty())
+        if(red.getAlive() == 0)
             return blue.getActiveMembers();
         return red.getActiveMembers();
     }
 
     private Set<Player> getLosingTeamMembers() {
-        if(!red.getAliveMembers().isEmpty())
+        if(red.getAlive() != 0)
             return blue.getActiveMembers();
         return red.getActiveMembers();
     }
-
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="Player join"
     @Override
     public List<String> tryJoin(Player player) {
+        if(isPrivate && !whiteList.contains(player))
+            return List.of(Style.ERROR + "You cannot join this game, you are not on the whitelist.");
         if(players.contains(player))
             return List.of(Style.ERROR + "You are already part of this game.");
         if(gameState == State.COUNTDOWN)
@@ -283,24 +264,19 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         players.add(player);
         return joinGame(player);
     }
-
-    @Override
-    public List<String> joinGame(Player player) {
-        if(isInRed(player)) 
-            return joinRed(player);
-        if(isInBlue(player))
-            return joinBlue(player);
+    private List<String> joinGame(Player player) {
+        if(red.getDeadMembers().contains(player))
+            return joinDeadRed(player);
+        if(blue.getDeadMembers().contains(player))
+            return joinDeadBlue(player);
         return(joinRandom(player));
     }
-
-    private Boolean isInRed(Player player){
-        return red.getAliveMembers().contains(player) || red.getDeadMembers().contains(player);
+    private List<String> joinDeadRed(Player player){
+        red.getActiveMembers().add(player);
+        TeamHandler.spawn(player, spectator);
+        player.setGameMode(GameMode.SPECTATOR);
+        return List.of(Color.RED + player.getName() + " has joined, but was already dead.");
     }
-
-    private Boolean isInBlue(Player player){
-        return blue.getAliveMembers().contains(player) || blue.getDeadMembers().contains(player);
-    }
-
     private List<String> joinRed(Player player) {
         Matchmaker.addMember(player,red);
         TeamHandler.spawn(player,red);
@@ -308,7 +284,12 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         updateScoreboard();
         return List.of(Color.RED + player.getName() + "  has joined the red team!");
     }
-
+    private List<String> joinDeadBlue(Player player){
+        blue.getActiveMembers().add(player);
+        TeamHandler.spawn(player, spectator);
+        player.setGameMode(GameMode.SPECTATOR);
+        return List.of(Color.BLUE + player.getName() + " has joined, but was already dead.");
+    }
     private List<String> joinBlue(Player player) {
         Matchmaker.addMember(player, blue);
         TeamHandler.spawn(player,blue);
@@ -316,14 +297,14 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         updateScoreboard();
         return List.of(Color.BLUE + player.getName() + "  has joined the blue team!");
     }
-
     private List<String> joinRandom(Player player){
         //todo: ELO shit
-        if(blue.getAliveMembers().size() <=red.getAliveMembers().size())
+        if(blue.getAlive() <=red.getAlive())
             return joinBlue(player);
         return joinRed(player);
     }
-
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="Player leave"
     @Override
     public void leaveGame(Player player) {
         red.getActiveMembers().remove(player);
@@ -332,15 +313,27 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         spectator.getActiveMembers().add(player);
         checkEnd();
     }
-
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="Checks"
+    @Override
+    public boolean canStart() {
+        return !(red.getActiveMembers().isEmpty() ||
+                blue.getActiveMembers().isEmpty());
+    }
     private void checkEnd() {
-        if(red.getAliveMembers().isEmpty() ||
-        red.getActiveMembers().isEmpty() ||
-        blue.getAliveMembers().isEmpty() ||
-                blue.getActiveMembers().isEmpty())
+        if(red.getAlive() == 0 || blue.getAlive() == 0)
             end(false);
     }
-
+    //</editor-fold>
+    private void updateScoreboard(){
+        Objective Points = scoreboard.getObjective("TDM Scoreboard");
+        if (Points != null) {
+            Points.getScore(ChatColor.BLUE + "Blue:").setScore(blue.getAlive());
+            Points.getScore(ChatColor.DARK_RED + "Red:").setScore(red.getAlive());
+        }
+        else
+            Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Scoreboard has failed for Team Deathmatch");
+    }
     private class Listeners implements GamemodeListener {
 
         HashMap<UUID, Long> playerAreaLeaveTimer = new HashMap<>();
@@ -349,12 +342,10 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
             Player player = e.getEntity();
             if(!players.contains(player))
                 return;
-            if(blue.getAliveMembers().contains(player)){
-                blue.getAliveMembers().remove(player);
+            if(blue.getActiveMembers().contains(player)){
                 blue.getDeadMembers().add(player);
             }
-            if(red.getAliveMembers().contains(player)){
-                red.getAliveMembers().remove(player);
+            if(red.getActiveMembers().contains(player)){
                 red.getDeadMembers().add(player);
             }
             player.setGameMode(GameMode.SPECTATOR);
@@ -362,7 +353,6 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
             updateScoreboard();
             checkEnd();
         }
-
         @EventHandler
         public void onPlayerLeave(PlayerQuitEvent e){
             Player player = e.getPlayer();
@@ -373,8 +363,7 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
             updateScoreboard();
             checkEnd();
         }
-
-        @Override
+        @EventHandler
         public void onPlayerMove(PlayerMoveEvent e) {
             Location from = e.getFrom();
             Location to = e.getTo();
@@ -386,24 +375,46 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
             if(gameState == State.QUEUED)
                 return;
             if(gameState == State.COUNTDOWN &&
-                    !spectator.getAliveMembers().contains(e.getPlayer())){
-                if(from.getX() != to.getX() || from.getZ() != to.getZ()){
-                    e.setCancelled(true);
-                    return;
-                }
+                    !spectator.getActiveMembers().contains(e.getPlayer()) &&
+                    (from.getX() != to.getX() || from.getZ() != to.getZ())) {
+                e.setCancelled(true);
+                return;
             }
+
             if(!region.contains(BlockVector3.at(to.getX(), to.getY(), to.getZ()))){
                 e.setCancelled(true);
                 if(!playerAreaLeaveTimer.containsKey(uuid)){
                     player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
                     playerAreaLeaveTimer.put(uuid, System.currentTimeMillis());
+                    return;
                 }
-
-                else if(System.currentTimeMillis() - playerAreaLeaveTimer.get(uuid) > 3000){
+                if(System.currentTimeMillis() - playerAreaLeaveTimer.get(uuid) > 3000){
                     player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
                     playerAreaLeaveTimer.put(uuid, System.currentTimeMillis());
                 }
             }
+        }
+        @EventHandler
+        public void onPlayerJoin(PlayerJoinEvent e){
+            Player player = e.getPlayer();
+            if(PVPPlugin.getInstance().isPVPServer()) {
+                Matchmaker.addMember(player, spectator);
+                TeamHandler.spawn(player, spectator);
+            }
+        }
+
+    }
+    private class TDMTeam extends Team{
+        Set<Player> deadMembers = new HashSet<>();
+
+        public Set<Player> getDeadMembers(){
+            return deadMembers;
+        }
+
+        public Integer getAlive(){
+            Set<Player> members = activeMembers;
+            members.removeAll(deadMembers);
+            return members.size();
         }
     }
 }

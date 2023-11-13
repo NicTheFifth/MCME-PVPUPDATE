@@ -9,9 +9,7 @@ import java.util.*;
 
 public class Team {
 
-    Set<Player> activeMembers = new HashSet<>();
-    Set<Player> aliveMembers = new HashSet<>();
-    Set<Player> deadMembers = new HashSet<>();
+    protected Set<Player> activeMembers = new HashSet<>();
     Color teamColour;
     String Prefix;
     Kit kit;
@@ -25,19 +23,6 @@ public class Team {
     }
     public void setActiveMembers(final Set<Player> activeMembers) {
         this.activeMembers = activeMembers;
-    }
-
-    public Set<Player> getAliveMembers(){
-        return this.aliveMembers;
-    }
-    public void setAliveMembers(final Set<Player> aliveMembers) {
-        this.aliveMembers = aliveMembers;
-    }
-    public Set<Player> getDeadMembers() {
-        return this.deadMembers;
-    }
-    public void setDeadMembers(final Set<Player> deadMembers) {
-        this.deadMembers = deadMembers;
     }
 
     public Color getTeamColour() {

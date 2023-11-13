@@ -20,6 +20,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -39,15 +40,22 @@ public class PVPPlugin extends JavaPlugin implements Listener {
                     "teamslayer",
                     "oneinthequiver",
                     "ringbearer"));
+    static HashSet<String> rps = new HashSet<>(
+            Set.of("dwarven",
+                    "human",
+                    "eriador",
+                    "rohan")
+    );
+    final Location spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
-
     HashMap<UUID, MapEditor> mapEditors = new HashMap<>();
     //HashMap<UUID, GameCreator> gameCreators = new HashMap<>();
-
-    private static PVPPlugin instance;
-    private File mapDirectory;
-    private File statDirectory;
+    static PVPPlugin instance;
+    //TODO: Implement switching between servermode and minigame mode.
+    Boolean isPVPServer = true;
+    File mapDirectory;
+    File statDirectory;
 
     @Override
     public void onLoad() {
@@ -77,7 +85,6 @@ public class PVPPlugin extends JavaPlugin implements Listener {
             }
         }
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        //Spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
         Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
     }
 
@@ -144,8 +151,10 @@ public class PVPPlugin extends JavaPlugin implements Listener {
     }
 
     public HashSet<String> getAvailableGamemodes() {
-        return this.availableGamemodes;
+        return availableGamemodes;
     }
+
+    public HashSet<String> getRps() {return rps;}
 
     public Matchmaker getMatchmaker() {
         return this.matchmaker;
@@ -168,6 +177,12 @@ public class PVPPlugin extends JavaPlugin implements Listener {
 
     public HashMap<UUID,MapEditor> getMapEditors(){return this.mapEditors;}
 
+    public Location getSpawn(){
+        return spawn;
+    }
+    public Boolean isPVPServer(){
+        return isPVPServer;
+    }
     //public HashMap<UUID, GameCreator> getGameCreators() {
     //    return gameCreators;
     //}

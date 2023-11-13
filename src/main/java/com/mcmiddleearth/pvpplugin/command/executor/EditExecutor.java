@@ -13,7 +13,7 @@ public class EditExecutor {
 
     public static int CreateMap(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
-        String mapName = c.getArgument("map", String.class);
+        String mapName = c.getArgument("mapName", String.class);
         if(source == null)
             return 0;
         JSONMap newMap = new JSONMap(mapName);
@@ -23,17 +23,19 @@ public class EditExecutor {
         return 1;
     }
 
-    public static int NewMapEditor(CommandContext<McmeCommandSender> c){
+    public static int SelectMap(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
-        String mapName = c.getArgument("map", String.class);
+        String mapName = c.getArgument("mapName", String.class);
         if(source == null)
             return 0;
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         if(me == null){
             JSONMap map = PVPPlugin.getInstance().getMaps().get(mapName);
-            PVPPlugin.getInstance().getMapEditors().put(source.getUniqueId(), new MapEditor(map));
+            me = new MapEditor(map);
+            PVPPlugin.getInstance().getMapEditors().put(source.getUniqueId(), me);
         }
-        source.sendMessage(String.format("Editor created, ready to edit %s", mapName));
+        source.sendMessage(String.format("Selected %s", mapName));
+        me.getStatus().forEach(source::sendMessage);
         return 1;
     }
 
@@ -88,7 +90,7 @@ public class EditExecutor {
             source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
             return 0;
         }
-        source.sendMessage(me.setGamemodeEditor(gamemode));
+        me.setGamemodeEditor(gamemode).forEach(source::sendMessage);
         return 1;
     }
 

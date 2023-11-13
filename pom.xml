@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <jackson.version>2.13.4.1</jackson.version>
+        <jackson.version>2.15.1</jackson.version>
         <bungeecord.version>1.16-R0.4</bungeecord.version>
     </properties>
 
@@ -100,12 +100,12 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>22.0.0</version>
+            <version>24.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
+            <version>3.12.0</version>
         </dependency>
     </dependencies>
 </project>

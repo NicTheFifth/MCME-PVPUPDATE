@@ -16,7 +16,5 @@ public interface GamemodeRunner extends Listener {
 
     List<String> tryJoin(Player player);
 
-    List<String> joinGame(Player player);
-
     void leaveGame(Player player);
 }

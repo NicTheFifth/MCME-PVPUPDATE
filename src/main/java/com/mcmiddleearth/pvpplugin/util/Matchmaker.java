@@ -44,7 +44,6 @@ public class Matchmaker {
 
     public static void addMember(Player player, Team team){
         team.getActiveMembers().add(player);
-        team.getAliveMembers().add(player);
         team.getKit().getInventory().apply(player);
     }
 

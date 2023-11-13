@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MapEditor {
 
@@ -88,181 +89,52 @@ public class MapEditor {
     }
     //</editor-fold>
 
-    /*
-    public String[] setGoal(Player source) {
-        JSONLocation point = new JSONLocation(source.getLocation().add(0,1,0));
-        if(state == EditorState.DEATHRUN) {
-            map.getJSONDeathRun().setGoal(point);
-            return new String[]{Style.INFO + String.format("Goal for deathrun has been set on %s", map.getTitle())};
-        }
-        return new String[]{Style.ERROR + "Please set the state to deathrun using /mapedit gamemode deathrun"};
+    public List<String> getStatus(){
+        return List.of(
+                String.format(Style.INFO + "Map name: %s", map.getTitle()),
+                String.format(Style.INFO + "Resource pack: %s", map.getResourcePack()),
+                String.format(Style.INFO + "Gamemodes:"),
+                String.format(Style.INFO + "\t Capture The Flag: %b", Objects.isNull(map.getJSONCaptureTheFlag())),
+                String.format(Style.INFO + "\t Death Run: %b", Objects.isNull(map.getJSONDeathRun())),
+                String.format(Style.INFO + "\t Free for All: %b", Objects.isNull(map.getJSONFreeForAll())),
+                String.format(Style.INFO + "\t Infected: %b", Objects.isNull(map.getJSONInfected())),
+                String.format(Style.INFO + "\t One in the Quiver: %b", Objects.isNull(map.getJSONOneInTheQuiver())),
+                String.format(Style.INFO + "\t Ringbearer: %b", Objects.isNull(map.getJSONRingBearer())),
+                String.format(Style.INFO + "\t Team Conquest: %b", Objects.isNull(map.getJSONTeamConquest())),
+                String.format(Style.INFO + "\t Team Deathmatch: %b", Objects.isNull(map.getJSONTeamDeathMatch())),
+                String.format(Style.INFO + "\t Team Slayer: %b", Objects.isNull(map.getJSONTeamSlayer()))
+        );
     }
 
-    public String[] createCapturePoint(Player source) {
-        JSONLocation point = new JSONLocation(source.getLocation().add(0,1,0));
-        if(state == EditorState.TEAMCONQUEST) {
-            map.getJSONTeamConquest().getCapturePoints().add(point);
-            return new String[]{Style.INFO + String.format("Capture point added for team conquest on %s", map.getTitle())};
-        }
-        return new String[]{Style.ERROR + "Please set the state to deathrun using /mapedit gamemode teamconquest"};
+    public String[] getShortStatus(){
+        return new String[]{
+                String.format(Style.INFO + "Map name: %s", map.getTitle()),
+                String.format(Style.INFO + "Resource pack: %s", map.getResourcePack()),
+                String.format(Style.INFO + "Selected Gamemode: %s", (gamemodeEditor == null ? "None": gamemodeEditor.getGamemode()))};
     }
-
-    public String[] delCapturePoint(int point) {
-        List<JSONLocation> capturePoints = map.getJSONTeamConquest().getCapturePoints();
-        if(state == EditorState.TEAMCONQUEST && point < capturePoints.size() ){
-            capturePoints.remove(point);
-            return new String[]{Style.INFO + String.format("Capture point removed for team conquest on %s", map.getTitle())};
-        }
-        return (state != EditorState.TEAMCONQUEST) ?
-            (new String[]{Style.ERROR + "Please set the state to deathrun using /mapedit gamemode teamconquest"}):
-            (new String[]{Style.ERROR + String.format("Please use a number under %d, as that is the amount of points.", capturePoints.size())});
-    }
-
-    public String[] setGamemode(String gamemode) {
-        switch(gamemode){
-            case "capturetheflag":
-                if(map.getJSONCaptureTheFlag() == null)
-                    map.setJSONCaptureTheFlag(new JSONCaptureTheFlag());
-                setState(EditorState.CAPTURETHEFLAG);
-                break;
-            case "freeforall":
-                if(map.getJSONFreeForAll() == null)
-                    map.setJSONFreeForAll(new JSONFreeForAll());
-                setState(EditorState.FREEFORALL);
-                break;
-            case "infected":
-                if(map.getJSONInfected() == null)
-                    map.setJSONInfected(new JSONInfected());
-                setState(EditorState.INFECTED);
-                break;
-            case "teamconquest":
-                if(map.getJSONTeamConquest() == null)
-                    map.setJSONTeamConquest(new JSONTeamConquest());
-                setState(EditorState.TEAMCONQUEST);
-                break;
-            case "teamdeathmatch":
-                if(map.getJSONTeamDeathMatch() == null)
-                    map.setJSONTeamDeathMatch(new JSONTeamDeathMatch());
-                setState(EditorState.TEAMDEATHMATCH);
-                break;
-            case "teamslayer":
-                if(map.getJSONTeamSlayer() == null)
-                    map.setJSONTeamSlayer(new JSONTeamSlayer());
-                setState(EditorState.TEAMSLAYER);
-                break;
-            case "deathrun":
-                if(map.getJSONDeathRun() == null)
-                    map.setJSONDeathRun(new JSONDeathRun());
-                setState(EditorState.DEATHRUN);
-                break;
-            default:
-                return new String[]{Style.ERROR + String.format("%s is not available as a gamemode, please create a report in discord, the dev public channel.", gamemode)};
-        }
-        return new String[]{Style.INFO + String.format("Gamemode to edit is set to %s on map %s", gamemode, map.getTitle())};
-    }
-
-    public String[] setBlueSpawn(Location loc){
-        JSONLocation location = new JSONLocation(loc);
-        switch(state){
-            case CAPTURETHEFLAG:
-                map.getJSONCaptureTheFlag().setBlueSpawn(location);
-                break;
-            case TEAMSLAYER:
-                map.getJSONTeamSlayer().setBlueSpawn(location);
-                break;
-            case TEAMCONQUEST:
-                map.getJSONTeamConquest().setBlueSpawn(location);
-                break;
-            case TEAMDEATHMATCH:
-                map.getJSONTeamDeathMatch().setBlueSpawn(location);
-                break;
-            default:
-                return new String[]{Style.INFO + "Please set the state to either capture the flag, team slayer, team conquest or team death match, using /mapedit gamemode <gamemode>"};
-        }
-        return new String[]{Style.INFO + String.format("Blue spawn set for %s on %s", state.toString(), map.getTitle())};
-    }
-
-    public String[] setRedSpawn(Location loc){
-        JSONLocation location = new JSONLocation(loc);
-        switch(state){
-            case CAPTURETHEFLAG:
-                map.getJSONCaptureTheFlag().setRedSpawn(location);
-                break;
-            case TEAMSLAYER:
-                map.getJSONTeamSlayer().setRedSpawn(location);
-                break;
-            case TEAMCONQUEST:
-                map.getJSONTeamConquest().setRedSpawn(location);
-                break;
-            case TEAMDEATHMATCH:
-                map.getJSONTeamDeathMatch().setRedSpawn(location);
-                break;
-            default:
-                return new String[]{Style.INFO + "Please set the state to either capture the flag, team slayer, team conquest or team death match, using /mapedit gamemode <gamemode>"};
-        }
-        return new String[]{Style.INFO + String.format("Red spawn set for %s on %s", state.toString(), map.getTitle())};
-    }
-
-    public String[] setDeathSpawn(Location loc) {
-        map.getJSONDeathRun().setDeathSpawn(new JSONLocation(loc));
-        return new String[]{Style.INFO + String.format("Death spawn set for deathrun on %s", map.getTitle())};
-    }
-
-    public String[] setRunnerSpawn(Location loc) {
-        map.getJSONDeathRun().setRunnerSpawn(new JSONLocation(loc));
-        return new String[]{Style.INFO + String.format("Runner spawn set for deathrun on %s", map.getTitle())};
-    }
-
-    public String[] setInfectedSpawn(Location loc) {
-        map.getJSONInfected().setInfectedSpawn(new JSONLocation(loc));
-        return new String[]{Style.INFO + String.format("Infected spawn set for infected on %s", map.getTitle())};
-    }
-
-    public String[] setSurvivorSpawn(Location loc) {
-        map.getJSONInfected().setSurvivorSpawn(new JSONLocation(loc));
-        return new String[]{Style.INFO + String.format("Survivor spawn set for infected on %s", map.getTitle())};
-    }
-
-    public String[] setMax(Integer max){
-        switch(state) {
-            case CAPTURETHEFLAG:
-                map.getJSONCaptureTheFlag().setMaximumPlayers(max);
-                break;
-            case FREEFORALL:
-                map.getJSONFreeForAll().setMaximumPlayers(max);
-                break;
-            case INFECTED:
-                map.getJSONInfected().setMaximumPlayers(max);
-                break;
-            case TEAMSLAYER:
-                map.getJSONTeamSlayer().setMaximumPlayers(max);
-                break;
-            case TEAMCONQUEST:
-                map.getJSONTeamConquest().setMaximumPlayers(max);
-                break;
-            case TEAMDEATHMATCH:
-                map.getJSONTeamDeathMatch().setMaximumPlayers(max);
-                break;
-            default:
-                return new String[]{Style.ERROR + "Please set the state to a gamemode using /mapedit gamemode <gamemode>"};
-        }
-        return new String[]{Style.INFO + String.format("Set %d for %s on %s", max, state.toString(), map.getTitle())};
-    }
-     */
-
     public JSONMap getMap() {
         return map;
     }
 
     public void setMap(String mapName){
-        //TODO: setMap
+        map = PVPPlugin.getInstance().getMaps().get(mapName);
     }
 
     public GamemodeEditor getGamemodeEditor(){
         return gamemodeEditor;
     }
 
-    public String[] setGamemodeEditor(String gamemode){
+    public List<String> setGamemodeEditor(String gamemode){
+        switch(gamemode){
+            case "capturetheflag":
+            case "deathrun":
+            case "infected":
+            case "teamconquest":
+            case "teamdeathmatch":
+            case "teamslayer":
+            case  "oneinthequiver":
+            case  "ringbearer":
+        }
         //TODO: setGamemodeEditor
         return null;
     }
