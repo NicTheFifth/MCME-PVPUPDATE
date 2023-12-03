@@ -10,6 +10,14 @@ import com.mojang.brigadier.context.CommandContext;
 import org.bukkit.entity.Player;
 
 public class EditExecutor {
+            //Structure function
+            /*public static int Action(CommandContext<McmeCommandSender> c){
+                Player source = CommandUtil.getPlayer(c.getSource());
+                if(source == null)
+                    return 0;
+                source.sendMessage(me.Action(mapName));
+                return 1;
+            }*/
 
     public static int CreateMap(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
@@ -22,7 +30,6 @@ public class EditExecutor {
         source.sendMessage(Style.INFO + String.format("%s created.", mapName));
         return 1;
     }
-
     public static int SelectMap(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument("mapName", String.class);
@@ -38,7 +45,6 @@ public class EditExecutor {
         me.getStatus().forEach(source::sendMessage);
         return 1;
     }
-
     public static int SetArea(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
         if(source == null)
@@ -51,7 +57,6 @@ public class EditExecutor {
         source.sendMessage(me.setArea(source));
         return 1;
     }
-
     public static int SetTitle(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument("map", String.class);
@@ -65,7 +70,6 @@ public class EditExecutor {
         source.sendMessage(me.setTitle(mapName));
         return 1;
     }
-
     public static int SetRP(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
         String rpName = c.getArgument("rp", String.class);
@@ -79,7 +83,6 @@ public class EditExecutor {
         source.sendMessage(me.setRP(rpName));
         return 1;
     }
-
     public static int SetGamemode(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
         String gamemode = c.getArgument("gamemode", String.class);
@@ -93,7 +96,6 @@ public class EditExecutor {
         me.setGamemodeEditor(gamemode).forEach(source::sendMessage);
         return 1;
     }
-
     public static int SetMax(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
         Integer max = c.getArgument("amount", Integer.class);
@@ -104,10 +106,9 @@ public class EditExecutor {
             source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
             return 0;
         }
-        source.sendMessage(me.setMax(max));
+        source.sendMessage(me.getGamemodeEditor().setMaxPlayers(max));
         return 1;
     }
-
     public static int EditGoal(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
         if(source == null)
@@ -121,7 +122,6 @@ public class EditExecutor {
         //source.sendMessage(me.setGoal(source));
         return 1;
     }
-
     public static int CreateCapture(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
         if(source == null)
@@ -135,7 +135,6 @@ public class EditExecutor {
         //source.sendMessage(me.createCapturePoint(source));
         return 1;
     }
-
     public static int DelCapture(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
         Integer point = c.getArgument("pointNum", Integer.class);
@@ -163,7 +162,6 @@ public class EditExecutor {
         return 1;
 
     }
-
     public static int setSpawn(CommandContext<McmeCommandSender> c) {
         Player source = CommandUtil.getPlayer(c.getSource());
         String spawnType = c.getArgument("spawn", String.class);

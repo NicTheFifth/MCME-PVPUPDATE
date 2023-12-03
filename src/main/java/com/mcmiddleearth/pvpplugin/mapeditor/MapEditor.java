@@ -4,8 +4,10 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
-import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.*;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.CaptureTheFlagEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.GamemodeEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.TeamDeathMatchEditor;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
@@ -23,6 +25,10 @@ import java.util.Objects;
 public class MapEditor {
 
     JSONMap map;
+    // List<JSONLocation> regionPoints;
+    // String title;
+    // JSONLocation spawn;
+    // String resourcePack;
 
     GamemodeEditor gamemodeEditor;
 
@@ -32,11 +38,6 @@ public class MapEditor {
     }
 
     //<editor-fold desc="Basic map edits">
-    public String[] setSpawn(Location location) {
-        map.setSpawn(new JSONLocation(location));
-        return new String[]{Style.INFO + String.format("Spawn location set for %s", map.getTitle())};
-    }
-
     public String[] setArea(Player source) {
         BukkitPlayer bukkitP = new BukkitPlayer(source);
         LocalSession session = PVPPlugin.getInstance()
@@ -64,7 +65,6 @@ public class MapEditor {
             return new String[]{Style.ERROR + "You don't have a region selected!"};
         }
     }
-
     public String[] setTitle(String newName) {
         String oldName = map.getTitle();
         PVPPlugin.getInstance().getMaps().remove(oldName);
@@ -74,18 +74,13 @@ public class MapEditor {
         PVPPlugin.getInstance().getMaps().put(newName, map);
         return new String[]{Style.INFO + String.format("%s has been renamed to %s.", oldName, newName)};
     }
-
+    public String[] setSpawn(Location location) {
+        map.setSpawn(new JSONLocation(location));
+        return new String[]{Style.INFO + String.format("Spawn location set for %s", map.getTitle())};
+    }
     public String[] setRP(String rpName) {
         map.setResourcePack(rpName);
         return new String[]{Style.INFO + String.format("%s has been set as the resource pack on %s", rpName, map.getTitle())};
-    }
-
-
-    public String[] setMax(Integer max) {
-        if(gamemodeEditor == null){
-            return new String[]{Style.ERROR + "No gamemode selected yet, please use /mapeditor editgamemode [gamemode]"};
-        }
-        return setMax(max);
     }
     //</editor-fold>
 
@@ -105,7 +100,6 @@ public class MapEditor {
                 String.format(Style.INFO + "\t Team Slayer: %b", Objects.isNull(map.getJSONTeamSlayer()))
         );
     }
-
     public String[] getShortStatus(){
         return new String[]{
                 String.format(Style.INFO + "Map name: %s", map.getTitle()),
@@ -115,7 +109,6 @@ public class MapEditor {
     public JSONMap getMap() {
         return map;
     }
-
     public void setMap(String mapName){
         map = PVPPlugin.getInstance().getMaps().get(mapName);
     }
@@ -127,10 +120,13 @@ public class MapEditor {
     public List<String> setGamemodeEditor(String gamemode){
         switch(gamemode){
             case "capturetheflag":
+                gamemodeEditor = new CaptureTheFlagEditor(map);
             case "deathrun":
+                gamemodeEditor = new DeathRunEditor(map);
             case "infected":
             case "teamconquest":
             case "teamdeathmatch":
+                gamemodeEditor = new TeamDeathMatchEditor(map);
             case "teamslayer":
             case  "oneinthequiver":
             case  "ringbearer":

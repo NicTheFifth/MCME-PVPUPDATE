@@ -18,23 +18,20 @@ public class TeamDeathMatchEditor implements GamemodeEditor{
         this.jsonTeamDeathMatch = jsonMap.getJSONTeamDeathMatch();
     }
     @Override
-    public List<String> setMaxPlayers(Integer maxPlayers) {
+    public String[] setMaxPlayers(Integer maxPlayers) {
         jsonTeamDeathMatch.setMaximumPlayers(maxPlayers);
-        return List.of(String.format(Style.INFO + "Set the max players to %d.", maxPlayers));
+        return new String[]{String.format(Style.INFO + "Set the max players to %d.", maxPlayers)};
     }
-
-    public List<String> setBlueSpawn(Location blueSpawn, JSONMap map){
+    public List<String> setBlueSpawn(Location blueSpawn){
         JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
-        map.getJSONTeamDeathMatch().setBlueSpawn(JSONBlueSpawn);
-        return List.of(Style.INFO + String.format("Blue spawn set for Team Deathmatch on %s", map.getTitle()));
+        jsonTeamDeathMatch.setBlueSpawn(JSONBlueSpawn);
+        return List.of(Style.INFO + "Blue spawn set for Team Deathmatch.");
     }
-
-    public List<String> setRedSpawn(Location redSpawn, JSONMap map){
+    public List<String> setRedSpawn(Location redSpawn){
         JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
-        map.getJSONTeamDeathMatch().setRedSpawn(JSONRedSpawn);
-        return List.of(Style.INFO + String.format("Red spawn set for Team Deathmatch on %s", map.getTitle()));
+        jsonTeamDeathMatch.setRedSpawn(JSONRedSpawn);
+        return List.of(Style.INFO + "Red spawn set for Team Deathmatch.");
     }
-
     @Override
     public String getGamemode(){return "Team Deathmatch";}
 }

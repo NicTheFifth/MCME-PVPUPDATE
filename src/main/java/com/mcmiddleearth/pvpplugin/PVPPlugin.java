@@ -105,7 +105,6 @@ public class PVPPlugin extends JavaPlugin implements Listener {
         GameCommand gameCommand = new GameCommand("pvp");
         Bukkit.getServer().getPluginCommand("pvp").setExecutor(gameCommand);
         Bukkit.getServer().getPluginCommand("pvp").setTabCompleter(gameCommand);
-        this.getPluginManager().registerEvents(new JoinListener(), this);
     }
 
     @Override

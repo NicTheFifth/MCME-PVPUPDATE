@@ -4,7 +4,7 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor.EditorState;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.GamemodeEditor;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -41,27 +42,27 @@ public class SpawnArgument implements ArgumentType<String> {
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         if(me == null)
             return builder.buildFuture();
-        MapEditor.EditorState map = me.getState();
+        GamemodeEditor map = me.getGamemodeEditor();
         if(map == null)
             return builder.buildFuture();
         Set<String> options = new java.util.HashSet<>(Collections.emptySet());
 
-        if(map == EditorState.CAPTURETHEFLAG ||
-                map == EditorState.TEAMCONQUEST ||
-                map == EditorState.TEAMDEATHMATCH ||
-                map == EditorState.TEAMSLAYER) {
+        if(Objects.equals(map.getGamemode(), "Capture the Flag") ||
+                Objects.equals(map.getGamemode(), "Team Conquest") ||
+                Objects.equals(map.getGamemode(), "Team Deathmatch") ||
+                Objects.equals(map.getGamemode(), "Ringbearer")) {
             options.add("blue");
             options.add("red");
         }
 
-        if(map == EditorState.FREEFORALL)
+        if(Objects.equals(map.getGamemode(), "Free For All"))
             options.add("spawn");
 
-        if(map == EditorState.DEATHRUN){
+        if(Objects.equals(map.getGamemode(), "Deathrun")){
             options.add("death");
             options.add("runner");
         }
-        if(map == EditorState.INFECTED){
+        if(Objects.equals(map.getGamemode(), "Infected")){
             options.add("infected");
             options.add("survivor");
         }

@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class StatLoader {
-
     public static void loadStats() throws StatLoadException {
         ObjectMapper objectMapper = new ObjectMapper();
         File statDirectory  = PVPPlugin.getInstance().getStatDirectory();
@@ -24,7 +23,6 @@ public class StatLoader {
             }
         });
     }
-
     public static void saveStats(){
         ObjectMapper objectMapper = new ObjectMapper();
         File statDirectory  = PVPPlugin.getInstance().getStatDirectory();

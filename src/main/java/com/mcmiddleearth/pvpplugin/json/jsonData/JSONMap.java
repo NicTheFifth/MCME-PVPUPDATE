@@ -6,29 +6,17 @@ import java.util.List;
 
 public class JSONMap {
     List<JSONLocation> regionPoints;
-
     String title;
-
     JSONLocation spawn;
-
     String resourcePack;
-
     JSONCaptureTheFlag JSONCaptureTheFlag;
-
     JSONDeathRun JSONDeathRun;
-
     JSONFreeForAll JSONFreeForAll;
-
     JSONInfected JSONInfected;
-
     JSONOneInTheQuiver JSONOneInTheQuiver;
-
     JSONRingBearer JSONRingBearer;
-
     JSONTeamConquest JSONTeamConquest;
-
     JSONTeamDeathMatch JSONTeamDeathMatch;
-
     JSONTeamSlayer JSONTeamSlayer;
 
     public JSONMap(){}

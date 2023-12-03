@@ -55,37 +55,31 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
             ;
         return commandNodeBuilder;
     }
-
     //<editor-fold defaultstate="collapsed" desc="Individual Commands">
     private LiteralArgumentBuilder<McmeCommandSender> SelectMap() {
         return HelpfulLiteralBuilder.literal("select")
                 .then(Arguments.ExistingMap()
                         .executes(EditExecutor::SelectMap));
     }
-
     private LiteralArgumentBuilder<McmeCommandSender> CreateNewMap() {
         return HelpfulLiteralBuilder.literal("create")
                 .then(Arguments.NonExistingMap()
                         .executes(EditExecutor::CreateMap));
     }
-
     private LiteralArgumentBuilder<McmeCommandSender> SetArea(){
         return HelpfulLiteralBuilder.literal("setarea")
                 .executes(EditExecutor::SetArea);
     }
-
     private LiteralArgumentBuilder<McmeCommandSender> RenameMap() {
         return HelpfulLiteralBuilder.literal("rename")
                 .then(Arguments.NonExistingMap()
                         .executes(EditExecutor::SetTitle));
     }
-
     private LiteralArgumentBuilder<McmeCommandSender> SetRP(){
         return HelpfulLiteralBuilder.literal("setrp")
                 .then(Arguments.RPArgument()
                         .executes(EditExecutor::SetRP));
     }
-
     private LiteralArgumentBuilder<McmeCommandSender> SetSpawn(){
         return HelpfulLiteralBuilder.literal("setSpawn")
                 .executes(EditExecutor::setMapSpawn)

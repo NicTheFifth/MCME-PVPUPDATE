@@ -14,31 +14,24 @@ public class Playerstat {
     public void addDeath() {
         deaths++;
     }
-
     public void addKill() {
         kills++;
     }
-
     public void addPlayed() {
         gamesPlayed++;
     }
-
     public void addLost() {
         gamesLost++;
     }
-
     public void addWon() {
         gamesWon++;
     }
-
     public void addSpectate() {
         gamesSpectated++;
     }
-
     public void addDamageGiven(Integer damage) {
         damageGiven += damage;
     }
-
     public void addDamageTaken(Integer damage) {
         damageTaken += damage;
     }

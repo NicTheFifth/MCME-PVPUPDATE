@@ -14,6 +14,7 @@ import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
+import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector2;
@@ -217,14 +218,12 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
         if(!stopped){
             getWinningTeamMembers().forEach(player->{
-                Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
-                playerstat.addWon();
-                playerstat.addPlayed();
+                PlayerStatEditor.addWon(player);
+                PlayerStatEditor.addPlayed(player);
             });
             getLosingTeamMembers().forEach(player->{
-                Playerstat playerstat = pvpPlugin.getPlayerstats().get(player.getUniqueId());
-                playerstat.addLost();
-                playerstat.addPlayed();
+                PlayerStatEditor.addLost(player);
+                PlayerStatEditor.addPlayed(player);
             });
         }
         players.forEach(player -> {
@@ -233,7 +232,7 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
             player.setGameMode(GameMode.ADVENTURE);
             player.teleport(pvpPlugin.getSpawn());
         });
-        if (!stopped) spectator.getActiveMembers().forEach(player -> PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId()).addSpectate());
+        if (!stopped) spectator.getActiveMembers().forEach(PlayerStatEditor::addSpectate);
         gameState = State.ENDED;
         pvpPlugin.setActiveGame(null);
     }
@@ -349,9 +348,13 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
                 red.getDeadMembers().add(player);
             }
             player.setGameMode(GameMode.SPECTATOR);
-            PVPPlugin.getInstance().getPlayerstats().get(player.getUniqueId()).addDeath();
+            PlayerStatEditor.addDeath(player);
             updateScoreboard();
             checkEnd();
+            Player killer = player.getKiller();
+            if(killer != null){
+                PlayerStatEditor.addKill(killer);
+            }
         }
         @EventHandler
         public void onPlayerLeave(PlayerQuitEvent e){
