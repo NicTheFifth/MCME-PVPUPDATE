@@ -7,6 +7,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamDeathMatch;
+import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.GamemodeListener;
 import com.mcmiddleearth.pvpplugin.runners.GamemodeRunner;
@@ -62,12 +63,15 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
     Scoreboard scoreboard;
 
     //<editor-fold defaultstate="collapsed" desc="Initialisation">
-    public TeamDeathmatchRunner(JSONMap map, Boolean isPrivate){
+    public TeamDeathmatchRunner(JSONMap map, Boolean isPrivate) throws Exception {
         //TODO: add a check if this game can actually be ran
         JSONTeamDeathMatch tdm = map.getJSONTeamDeathMatch();
         createTeams(tdm);
         createSpectator(map.getSpawn());
-        setRegion(map.getRegionPoints(), map.getTitle());
+        region = AreaTranscriber.TranscribeArea(map);
+        if(region == null){
+            throw new Exception("Can't run create Deathmatch");
+        }
         this.maxPlayers = tdm.getMaximumPlayers();
         this.isPrivate = isPrivate;
         gameState = State.QUEUED;
@@ -150,21 +154,6 @@ public class TeamDeathmatchRunner implements GamemodeRunner {
         spectator.setGameMode(GameMode.SPECTATOR);
     }
     //</editor-fold>
-
-    private void setRegion(List<JSONLocation> regionPoints, String mapName) {
-        ArrayList<BlockVector2> wePoints = new ArrayList<>();
-        World world = Bukkit.getWorld("world");
-        try {
-            for (JSONLocation e : regionPoints) {
-                BlockVector2 point = BlockVector2.at(e.getX(), e.getZ());
-                wePoints.add(point);
-
-                region =new Polygonal2DRegion(new BukkitWorld(world), wePoints, 0, 1000);
-            }
-        } catch (Exception e) {
-            throw new BadRegionException(mapName);
-        }
-    }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start">
     @Override

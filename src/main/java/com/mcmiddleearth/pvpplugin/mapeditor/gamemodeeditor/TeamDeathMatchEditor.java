@@ -6,15 +6,9 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamDeathMatch;
 import org.bukkit.Location;
 
-import java.util.List;
-import java.util.Stack;
-
 public class TeamDeathMatchEditor implements GamemodeEditor{
-
     JSONTeamDeathMatch jsonTeamDeathMatch;
-
     private TeamDeathMatchEditor(){}
-
     public TeamDeathMatchEditor(JSONMap jsonMap){
         this.jsonTeamDeathMatch = jsonMap.getJSONTeamDeathMatch();
     }

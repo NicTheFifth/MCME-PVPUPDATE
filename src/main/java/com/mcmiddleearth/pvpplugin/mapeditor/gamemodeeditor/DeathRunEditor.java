@@ -6,8 +6,6 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
 import org.bukkit.Location;
 
-import java.util.List;
-
 public class DeathRunEditor implements GamemodeEditor{
     JSONDeathRun jsonDeathRun;
     private DeathRunEditor(){}

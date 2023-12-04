@@ -131,6 +131,7 @@ public class MapEditor {
             case "teamdeathmatch":
                 gamemodeEditor = new TeamDeathMatchEditor(map);
             case "teamslayer":
+                gamemodeEditor = new TeamSlayerEditor(map);
         }
         //TODO: setGamemodeEditor
         return null;
