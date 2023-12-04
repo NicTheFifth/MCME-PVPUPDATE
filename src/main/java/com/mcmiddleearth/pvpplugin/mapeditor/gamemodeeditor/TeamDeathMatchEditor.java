@@ -7,6 +7,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamDeathMatc
 import org.bukkit.Location;
 
 import java.util.List;
+import java.util.Stack;
 
 public class TeamDeathMatchEditor implements GamemodeEditor{
 
@@ -22,15 +23,15 @@ public class TeamDeathMatchEditor implements GamemodeEditor{
         jsonTeamDeathMatch.setMaximumPlayers(maxPlayers);
         return new String[]{String.format(Style.INFO + "Set the max players to %d.", maxPlayers)};
     }
-    public List<String> setBlueSpawn(Location blueSpawn){
+    public String[] setBlueSpawn(Location blueSpawn){
         JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
         jsonTeamDeathMatch.setBlueSpawn(JSONBlueSpawn);
-        return List.of(Style.INFO + "Blue spawn set for Team Deathmatch.");
+        return new String[]{Style.INFO + "Blue spawn set for Team Deathmatch."};
     }
-    public List<String> setRedSpawn(Location redSpawn){
+    public String[] setRedSpawn(Location redSpawn){
         JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
         jsonTeamDeathMatch.setRedSpawn(JSONRedSpawn);
-        return List.of(Style.INFO + "Red spawn set for Team Deathmatch.");
+        return new String[]{Style.INFO + "Red spawn set for Team Deathmatch."};
     }
     @Override
     public String getGamemode(){return "Team Deathmatch";}

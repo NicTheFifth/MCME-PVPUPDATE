@@ -4,10 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.CaptureTheFlagEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.GamemodeEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.TeamDeathMatchEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.*;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
@@ -124,12 +121,16 @@ public class MapEditor {
             case "deathrun":
                 gamemodeEditor = new DeathRunEditor(map);
             case "infected":
+                gamemodeEditor = new InfectedEditor(map);
+            case "oneinthequiver":
+                gamemodeEditor = new OneInTheQuiverEditor(map);
+            case "ringbearer":
+                gamemodeEditor = new RingBearerEditor(map);
             case "teamconquest":
+                gamemodeEditor = new TeamConquestEditor(map);
             case "teamdeathmatch":
                 gamemodeEditor = new TeamDeathMatchEditor(map);
             case "teamslayer":
-            case  "oneinthequiver":
-            case  "ringbearer":
         }
         //TODO: setGamemodeEditor
         return null;
