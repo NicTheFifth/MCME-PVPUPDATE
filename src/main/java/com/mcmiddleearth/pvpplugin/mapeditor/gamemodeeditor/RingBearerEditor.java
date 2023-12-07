@@ -31,4 +31,13 @@ public class RingBearerEditor implements GamemodeEditor{
     }
     @Override
     public String getGamemode() {return "Ringbearer";}
+    @Override
+    public String[] getInfo(){
+        return new String[]{
+                String.format(Style.INFO + "Current selected gamemode: Ringbearer."),
+                String.format(Style.INFO + "Max players: %d", jsonRingBearer.getMaximumPlayers()),
+                String.format(Style.INFO + "Blue spawn set: %b", jsonRingBearer.getBlueSpawn()),
+                String.format(Style.INFO + "Red spawn set: %b", jsonRingBearer.getRedSpawn())
+        };
+    }
 }

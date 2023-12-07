@@ -18,7 +18,6 @@ public class EditExecutor {
                 source.sendMessage(me.Action(mapName));
                 return 1;
             }*/
-
     public static int CreateMap(CommandContext<McmeCommandSender> c){
         Player source = CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument("mapName", String.class);
@@ -93,7 +92,8 @@ public class EditExecutor {
             source.sendMessage(Style.INFO_LIGHT + "Please select which map you wish to edit with /mapedit <map name>");
             return 0;
         }
-        me.setGamemodeEditor(gamemode).forEach(source::sendMessage);
+        source.sendMessage(me.setGamemodeEditor(gamemode));
+        source.sendMessage(me.getGamemodeEditor().getInfo());
         return 1;
     }
     public static int SetMax(CommandContext<McmeCommandSender> c) {

@@ -31,4 +31,13 @@ public class CaptureTheFlagEditor implements GamemodeEditor{
     }
     @Override
     public String getGamemode() {return "Capture the Flag";}
+    @Override
+    public String[] getInfo(){
+        return new String[]{
+                String.format(Style.INFO + "Current selected gamemode: Capture the Flag."),
+                String.format(Style.INFO + "Max players: %d", jsonCaptureTheFlag.getMaximumPlayers()),
+                String.format(Style.INFO + "Blue spawn set: %b", jsonCaptureTheFlag.getBlueSpawn()),
+                String.format(Style.INFO + "Red spawn set: %b", jsonCaptureTheFlag.getRedSpawn())
+        };
+    }
 }

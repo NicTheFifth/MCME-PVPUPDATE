@@ -6,6 +6,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONOneInTheQuiver;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OneInTheQuiverEditor implements GamemodeEditor{
@@ -13,6 +14,7 @@ public class OneInTheQuiverEditor implements GamemodeEditor{
     private OneInTheQuiverEditor(){}
     public OneInTheQuiverEditor(JSONMap map){
         this.jsonOneInTheQuiver = map.getJSONOneInTheQuiver();
+        this.jsonOneInTheQuiver.setSpawns(new ArrayList<>());
     }
     public String[] DeleteSpawn(int toDelete){
         jsonOneInTheQuiver.getSpawns().remove(toDelete);
@@ -30,4 +32,12 @@ public class OneInTheQuiverEditor implements GamemodeEditor{
     }
     @Override
     public String getGamemode(){return "One in the Quiver";}
+    @Override
+    public String[] getInfo(){
+        return new String[]{
+                String.format(Style.INFO + "Current selected gamemode: One in the Quiver."),
+                String.format(Style.INFO + "Max players: %d", jsonOneInTheQuiver.getMaximumPlayers()),
+                String.format(Style.INFO + "Spawn set: %s", jsonOneInTheQuiver.getSpawns().size())
+        };
+    }
 }

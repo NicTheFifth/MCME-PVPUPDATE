@@ -27,5 +27,14 @@ public class InfectedEditor implements GamemodeEditor{
         jsonInfected.setMaximumPlayers(maxPlayers);
         return new String[]{String.format(Style.INFO + "Set the max players to %d.", maxPlayers)};
     }
-    public String getGamemode(){return "infected";}
+    public String getGamemode(){return "Infected";}
+    @Override
+    public String[] getInfo(){
+        return new String[]{
+                String.format(Style.INFO + "Current selected gamemode: Infected."),
+                String.format(Style.INFO + "Max players: %d", jsonInfected.getMaximumPlayers()),
+                String.format(Style.INFO + "Survivor spawn set: %b", jsonInfected.getSurvivorSpawn()),
+                String.format(Style.INFO + "Infected spawn set: %b", jsonInfected.getInfectedSpawn())
+        };
+    }
 }

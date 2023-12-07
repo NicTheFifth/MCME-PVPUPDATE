@@ -29,4 +29,13 @@ public class TeamDeathMatchEditor implements GamemodeEditor{
     }
     @Override
     public String getGamemode(){return "Team Deathmatch";}
+    @Override
+    public String[] getInfo(){
+        return new String[]{
+                String.format(Style.INFO + "Current selected gamemode: Team Deathmatch."),
+                String.format(Style.INFO + "Max players: %d", jsonTeamDeathMatch.getMaximumPlayers()),
+                String.format(Style.INFO + "Blue spawn set: %b", jsonTeamDeathMatch.getBlueSpawn()),
+                String.format(Style.INFO + "Red spawn set: %b", jsonTeamDeathMatch.getRedSpawn())
+        };
+    }
 }

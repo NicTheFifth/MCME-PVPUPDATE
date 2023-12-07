@@ -36,4 +36,13 @@ public class DeathRunEditor implements GamemodeEditor{
     public String getGamemode() {
         return "Death Run";
     }
+    @Override
+    public String[] getInfo(){
+        return new String[]{
+                String.format(Style.INFO + "Current selected gamemode: Death Run."),
+                String.format(Style.INFO + "Max players: %d", jsonDeathRun.getMaximumPlayers()),
+                String.format(Style.INFO + "Runner spawn set: %b", jsonDeathRun.getRunnerSpawn()),
+                String.format(Style.INFO + "Death spawn set: %b", jsonDeathRun.getDeathSpawn())
+        };
+    }
 }

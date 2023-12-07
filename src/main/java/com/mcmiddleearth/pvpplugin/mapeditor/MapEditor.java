@@ -114,7 +114,7 @@ public class MapEditor {
         return gamemodeEditor;
     }
 
-    public List<String> setGamemodeEditor(String gamemode){
+    public String[] setGamemodeEditor(String gamemode){
         switch(gamemode){
             case "capturetheflag":
                 gamemodeEditor = new CaptureTheFlagEditor(map);
@@ -133,7 +133,6 @@ public class MapEditor {
             case "teamslayer":
                 gamemodeEditor = new TeamSlayerEditor(map);
         }
-        //TODO: setGamemodeEditor
-        return null;
+        return new String[]{String.format("Set the gamemode to %s. Current state of the gamemode is:", gamemode)};
     }
 }

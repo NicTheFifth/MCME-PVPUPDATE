@@ -37,4 +37,13 @@ public class TeamSlayerEditor implements GamemodeEditor{
     }
     @Override
     public String getGamemode(){return "Team Slayer";}
+    @Override
+    public String[] getInfo(){
+        return new String[]{
+                String.format(Style.INFO + "Current selected gamemode: Team Slayer."),
+                String.format(Style.INFO + "Max players: %d", jsonTeamSlayer.getMaximumPlayers()),
+                String.format(Style.INFO + "Blue spawns: %s", jsonTeamSlayer.getBlueSpawn().size()),
+                String.format(Style.INFO + "Red spawns: %s", jsonTeamSlayer.getRedSpawn().size())
+        };
+    }
 }

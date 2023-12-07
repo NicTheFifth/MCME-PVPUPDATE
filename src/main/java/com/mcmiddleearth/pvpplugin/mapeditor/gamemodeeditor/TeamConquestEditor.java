@@ -6,6 +6,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamConquest;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TeamConquestEditor implements GamemodeEditor{
@@ -14,6 +15,7 @@ public class TeamConquestEditor implements GamemodeEditor{
 
     public TeamConquestEditor(JSONMap jsonMap){
         this.jsonTeamConquest = jsonMap.getJSONTeamConquest();
+        this.jsonTeamConquest.setCapturePoints(new ArrayList<>());
     }
     @Override
     public String[] setMaxPlayers(Integer maxPlayers) {
@@ -41,4 +43,14 @@ public class TeamConquestEditor implements GamemodeEditor{
     }
     @Override
     public String getGamemode(){return "Team Conquest";}
+    @Override
+    public String[] getInfo(){
+        return new String[]{
+                String.format(Style.INFO + "Current selected gamemode: Team Conquest."),
+                String.format(Style.INFO + "Max players: %d", jsonTeamConquest.getMaximumPlayers()),
+                String.format(Style.INFO + "Blue spawn set: %b", jsonTeamConquest.getBlueSpawn()),
+                String.format(Style.INFO + "Red spawn set: %b", jsonTeamConquest.getRedSpawn()),
+                String.format(Style.INFO + "Goal points: %s", jsonTeamConquest.getCapturePoints().size())
+        };
+    }
 }
