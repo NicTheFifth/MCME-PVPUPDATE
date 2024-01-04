@@ -4,14 +4,20 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONRingBearer;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.List;
+
+import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class RingBearerEditor implements GamemodeEditor{
     JSONRingBearer jsonRingBearer;
     private RingBearerEditor(){}
     public RingBearerEditor(JSONMap map){
+        if(map.getJSONRingBearer() == null)
+            map.setJSONRingBearer(new JSONRingBearer());
         jsonRingBearer = map.getJSONRingBearer();
     }
     public List<String> setBlueSpawn(Location blueSpawn){
@@ -25,12 +31,25 @@ public class RingBearerEditor implements GamemodeEditor{
         return List.of(Style.INFO + "Red spawn set for Ringbearer.");
     }
     @Override
-    public String[] setMaxPlayers(Integer maxPlayers) {
+    public void setMaxPlayers(Integer maxPlayers, Player player) {
         jsonRingBearer.setMaximumPlayers(maxPlayers);
-        return new String[]{String.format(Style.INFO + "Set the max players to %d.", maxPlayers)};
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Set the max players to %d.",
+                maxPlayers))
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     @Override
     public String getGamemode() {return "Ringbearer";}
+
+    @Override
+    public void setMap(JSONMap map) {
+        if(map.getJSONRingBearer() == null)
+            map.setJSONRingBearer(new JSONRingBearer());
+        jsonRingBearer = map.getJSONRingBearer();
+    }
+
     @Override
     public String[] getInfo(){
         return new String[]{

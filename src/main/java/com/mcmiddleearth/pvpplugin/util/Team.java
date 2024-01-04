@@ -8,13 +8,11 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class Team {
-
     protected Set<Player> activeMembers = new HashSet<>();
     Color teamColour;
     String Prefix;
     Kit kit;
     List<Location> spawnLocations = new ArrayList<>();
-
     GameMode gameMode;
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">

@@ -31,21 +31,6 @@ public class PVPPlugin extends JavaPlugin implements Listener {
     PluginManager pluginManager;
     HashMap<String, JSONMap> maps = new HashMap<>();
     HashMap<UUID, Playerstat> playerstats = new HashMap<>();
-    static HashSet<String> availableGamemodes = new HashSet<String>(
-            Set.of("capturetheflag",
-                    "deathrun",
-                    "infected",
-                    "teamconquest",
-                    "teamdeathmatch",
-                    "teamslayer",
-                    "oneinthequiver",
-                    "ringbearer"));
-    static HashSet<String> rps = new HashSet<>(
-            Set.of("dwarven",
-                    "human",
-                    "eriador",
-                    "rohan")
-    );
     final Location spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
@@ -148,12 +133,6 @@ public class PVPPlugin extends JavaPlugin implements Listener {
     public HashMap<UUID, Playerstat> getPlayerstats() {
         return this.playerstats;
     }
-
-    public HashSet<String> getAvailableGamemodes() {
-        return availableGamemodes;
-    }
-
-    public HashSet<String> getRps() {return rps;}
 
     public Matchmaker getMatchmaker() {
         return this.matchmaker;

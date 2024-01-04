@@ -41,7 +41,6 @@ public enum Permissions {
                     editorPermission.getDefaultPerm(),
                     children);
             Bukkit.getServer().getPluginManager().addPermission(bukkitPerm);
-//Logger.getGlobal().info("register: "+bukkitPerm.getName());
         }
     }
 

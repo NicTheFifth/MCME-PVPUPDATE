@@ -18,7 +18,10 @@ public class NonExistingMapArgument implements ArgumentType<String> {
     public String parse(StringReader reader) throws CommandSyntaxException {
         String o = reader.readString();
         if(PVPPlugin.getInstance().getMaps().containsKey(o)){
-            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("This map name is already in use")), new LiteralMessage(o + " is already in use, please use another map name."));
+            LiteralMessage message = new LiteralMessage(
+                    o + " is already in use, please use another map name.");
+            throw new CommandSyntaxException(
+                    new SimpleCommandExceptionType(message), message);
         }
         return o;
     }

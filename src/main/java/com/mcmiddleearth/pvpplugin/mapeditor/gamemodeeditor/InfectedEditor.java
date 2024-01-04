@@ -11,7 +11,10 @@ import java.util.List;
 public class InfectedEditor implements GamemodeEditor{
     JSONInfected jsonInfected;
     private InfectedEditor(){}
-    public InfectedEditor(JSONMap map){this.jsonInfected = map.getJSONInfected();
+    public InfectedEditor(JSONMap map){
+        if(map.getJSONInfected() == null)
+            map.setJSONInfected(new JSONInfected());
+        this.jsonInfected = map.getJSONInfected();
     }
     public List<String> setInfectedSpawn(Location infectedSpawn){
         JSONLocation JSONInfectedSpawn = new JSONLocation(infectedSpawn);
@@ -28,6 +31,14 @@ public class InfectedEditor implements GamemodeEditor{
         return new String[]{String.format(Style.INFO + "Set the max players to %d.", maxPlayers)};
     }
     public String getGamemode(){return "Infected";}
+
+    @Override
+    public void setMap(JSONMap map) {
+        if(map.getJSONInfected() == null)
+            map.setJSONInfected(new JSONInfected());
+        this.jsonInfected = map.getJSONInfected();
+    }
+
     @Override
     public String[] getInfo(){
         return new String[]{

@@ -19,11 +19,10 @@ public class JSONMap {
     JSONTeamDeathMatch JSONTeamDeathMatch;
     JSONTeamSlayer JSONTeamSlayer;
 
-    public JSONMap(){}
+    private JSONMap(){}
     public JSONMap(String title) {
         this.title = title;
     }
-
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public List<JSONLocation> getRegionPoints() {
         return this.regionPoints;

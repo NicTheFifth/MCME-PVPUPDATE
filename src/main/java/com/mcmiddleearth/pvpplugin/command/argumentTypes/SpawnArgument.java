@@ -20,23 +20,14 @@ import java.util.concurrent.CompletableFuture;
 
 public class SpawnArgument implements ArgumentType<String> {
 
-    public SpawnArgument(){
-
-    }
-
     @Override
     public String parse(StringReader reader) {
         return reader.readUnquotedString();
     }
 
     @Override
-    public Collection<String> getExamples() {
-        return ArgumentType.super.getExamples();
-    }
-
-    @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
-        Player source = CommandUtil.getPlayer((McmeCommandSender) context.getSource());
+        Player source = (Player) context.getSource();
         if(source == null)
             return builder.buildFuture();
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());

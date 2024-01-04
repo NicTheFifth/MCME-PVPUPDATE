@@ -4,18 +4,29 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class DeathRunEditor implements GamemodeEditor{
     JSONDeathRun jsonDeathRun;
     private DeathRunEditor(){}
     public DeathRunEditor(JSONMap map){
+        if(map.getJSONDeathRun() == null)
+            map.setJSONDeathRun(new JSONDeathRun());
         this.jsonDeathRun = map.getJSONDeathRun();
     }
     @Override
-    public String[] setMaxPlayers(Integer maxPlayers) {
+    public void setMaxPlayers(Integer maxPlayers, Player player) {
         jsonDeathRun.setMaximumPlayers(maxPlayers);
-        return new String[]{String.format(Style.INFO + "Set the max players to %d.", maxPlayers)};
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Set the max players to %d.",
+                maxPlayers))
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     public String[] setDeathSpawn(Location deathSpawn){
         JSONLocation JSONDeathSpawn = new JSONLocation(deathSpawn);
@@ -27,15 +38,31 @@ public class DeathRunEditor implements GamemodeEditor{
         jsonDeathRun.setRunnerSpawn(JSONRunnerSpawn);
         return new String[]{Style.INFO + "Runner spawn set for Death Run."};
     }
-    public String[] setGoal(Location goal){
+    public void setGoal(Player player){
+        Location goal = player.getLocation();
         JSONLocation JSONGoal = new JSONLocation(goal);
         jsonDeathRun.setGoal(JSONGoal);
-        return new String[]{Style.INFO + "Goal set for Death Run."};
+
+        sendBaseComponent(
+            new ComponentBuilder("Goal set for Death Run.")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
     @Override
     public String getGamemode() {
         return "Death Run";
     }
+
+    @Override
+    public void setMap(JSONMap map) {
+        if(map.getJSONDeathRun() == null)
+            map.setJSONDeathRun(new JSONDeathRun());
+        this.jsonDeathRun = map.getJSONDeathRun();
+
+    }
+
     @Override
     public String[] getInfo(){
         return new String[]{

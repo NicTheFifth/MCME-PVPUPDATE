@@ -4,15 +4,22 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONCaptureTheFlag;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.List;
+
+import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class CaptureTheFlagEditor implements GamemodeEditor{
     JSONCaptureTheFlag jsonCaptureTheFlag;
     private CaptureTheFlagEditor(){}
     public CaptureTheFlagEditor(JSONMap map){
+        if(map.getJSONCaptureTheFlag() == null)
+            map.setJSONCaptureTheFlag(new JSONCaptureTheFlag());
         this.jsonCaptureTheFlag = map.getJSONCaptureTheFlag();
+
     }
     public List<String> setBlueSpawn(Location blueSpawn){
         JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
@@ -25,12 +32,25 @@ public class CaptureTheFlagEditor implements GamemodeEditor{
         return List.of(Style.INFO + "Red spawn set for Capture the Flag.");
     }
     @Override
-    public String[] setMaxPlayers(Integer maxPlayers) {
+    public void setMaxPlayers(Integer maxPlayers, Player player) {
         jsonCaptureTheFlag.setMaximumPlayers(maxPlayers);
-        return new String[]{String.format(Style.INFO + "Set the max players to %d.", maxPlayers)};
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Set the max players to %d.",
+                maxPlayers))
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     @Override
     public String getGamemode() {return "Capture the Flag";}
+
+    @Override
+    public void setMap(JSONMap map) {
+        if(map.getJSONCaptureTheFlag() == null)
+            map.setJSONCaptureTheFlag(new JSONCaptureTheFlag());
+        this.jsonCaptureTheFlag = map.getJSONCaptureTheFlag();
+    }
+
     @Override
     public String[] getInfo(){
         return new String[]{

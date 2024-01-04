@@ -11,31 +11,38 @@ import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.Region;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class MapEditor {
 
     JSONMap map;
-    // List<JSONLocation> regionPoints;
-    // String title;
-    // JSONLocation spawn;
-    // String resourcePack;
-
     GamemodeEditor gamemodeEditor;
 
-    public MapEditor(JSONMap map){
+    public MapEditor(JSONMap map, Player player){
         this.map = map;
-        gamemodeEditor = null;
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Map editor for %s created.",
+                    map.getTitle()))
+                .color(Style.INFO)
+                .create(),
+            player
+        );
+        sendStatus(player);
     }
 
     //<editor-fold desc="Basic map edits">
-    public String[] setArea(Player source) {
+    public void setArea(Player source) {
         BukkitPlayer bukkitP = new BukkitPlayer(source);
         LocalSession session = PVPPlugin.getInstance()
                 .getWorldEditPlugin().getWorldEdit()
@@ -43,8 +50,12 @@ public class MapEditor {
 
         try{
             Region r = session.getSelection(new BukkitWorld(source.getWorld()));
+            BaseComponent[] message;
             if(r.getHeight() < 250){
-                return new String[]{Style.INFO + "Use //expand vert then try again!"};
+                message =
+                    new ComponentBuilder("Use //expand vert then try again!")
+                        .color(Style.ERROR)
+                        .create();
             }
             else{
                 List<BlockVector2> wePoints = r.polygonize(1000);
@@ -55,66 +66,132 @@ public class MapEditor {
                 }
 
                 map.setRegionPoints(bPoints);
-                return new String[]{Style.INFO + String.format("Area set for %s!", map.getTitle())};
+                message =  new ComponentBuilder(String.format("Area set for " +
+                    "%s!", map.getTitle()))
+                        .color(Style.INFO)
+                        .create();
             }
+            sendBaseComponent(message, source);
         }
         catch(IncompleteRegionException e){
-            return new String[]{Style.ERROR + "You don't have a region selected!"};
+            sendBaseComponent(
+                new ComponentBuilder("You don't have a region selected!")
+                    .color(Style.ERROR)
+                    .create(),
+                source);
         }
     }
-    public String[] setTitle(String newName) {
+    public void setTitle(String newName, Player player) {
         String oldName = map.getTitle();
         PVPPlugin.getInstance().getMaps().remove(oldName);
-        File f = new File(PVPPlugin.getInstance().getMapDirectory() + System.getProperty("file.separator") + oldName);
-        f.delete();
-        map.setTitle(newName);
-        PVPPlugin.getInstance().getMaps().put(newName, map);
-        return new String[]{Style.INFO + String.format("%s has been renamed to %s.", oldName, newName)};
+        File f = new File(PVPPlugin.getInstance().getMapDirectory() +
+                System.getProperty("file.separator") +
+                oldName);
+        try {
+            if(f.delete()){
+                map.setTitle(newName);
+                PVPPlugin.getInstance().getMaps().put(newName, map);
+                sendBaseComponent(
+                    new ComponentBuilder(String.format("%s has been renamed to %s.",
+                        oldName, newName))
+                        .color(Style.INFO)
+                        .create(),
+                    player);
+                sendShortStatus(player);
+                return;
+            }
+            sendBaseComponent(
+                new ComponentBuilder(String.format("%s couldn't be deleted.",
+                    oldName))
+                    .color(Style.ERROR)
+                    .create(),
+                player);
+            sendShortStatus(player);
+        }
+        catch(SecurityException e){
+            sendBaseComponent(
+                new ComponentBuilder(String.format("%s couldn't be deleted.",
+                    oldName))
+                    .color(Style.ERROR)
+                    .create(),
+                player);
+            Logger.getLogger("PVPPlugin").log(Level.WARNING,
+                String.format("%s couldn't be deleted.", oldName));
+        }
     }
-    public String[] setSpawn(Location location) {
+    public void setSpawn(Player player) {
+        Location location = player.getLocation();
         map.setSpawn(new JSONLocation(location));
-        return new String[]{Style.INFO + String.format("Spawn location set for %s", map.getTitle())};
+        BaseComponent[] message = new ComponentBuilder(String.format("Spawn " +
+                "location set for" +
+                " %s",
+            map.getTitle()))
+            .color(Style.INFO)
+            .create();
+        sendBaseComponent(message, player);
     }
-    public String[] setRP(String rpName) {
+    public void setRP(String rpName, Player player) {
         map.setResourcePack(rpName);
-        return new String[]{Style.INFO + String.format("%s has been set as the resource pack on %s", rpName, map.getTitle())};
+        sendBaseComponent(
+            new ComponentBuilder(String.format("%s has been set as the " +
+                "resource pack on %s", rpName, map.getTitle()))
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     //</editor-fold>
 
-    public List<String> getStatus(){
-        return List.of(
-                String.format(Style.INFO + "Map name: %s", map.getTitle()),
-                String.format(Style.INFO + "Resource pack: %s", map.getResourcePack()),
-                String.format(Style.INFO + "Gamemodes:"),
-                String.format(Style.INFO + "\t Capture The Flag: %b", Objects.isNull(map.getJSONCaptureTheFlag())),
-                String.format(Style.INFO + "\t Death Run: %b", Objects.isNull(map.getJSONDeathRun())),
-                String.format(Style.INFO + "\t Free for All: %b", Objects.isNull(map.getJSONFreeForAll())),
-                String.format(Style.INFO + "\t Infected: %b", Objects.isNull(map.getJSONInfected())),
-                String.format(Style.INFO + "\t One in the Quiver: %b", Objects.isNull(map.getJSONOneInTheQuiver())),
-                String.format(Style.INFO + "\t Ringbearer: %b", Objects.isNull(map.getJSONRingBearer())),
-                String.format(Style.INFO + "\t Team Conquest: %b", Objects.isNull(map.getJSONTeamConquest())),
-                String.format(Style.INFO + "\t Team Deathmatch: %b", Objects.isNull(map.getJSONTeamDeathMatch())),
-                String.format(Style.INFO + "\t Team Slayer: %b", Objects.isNull(map.getJSONTeamSlayer()))
-        );
+    public void sendStatus(Player player){
+        BaseComponent[] message =
+            new ComponentBuilder(String.format("Map name: %s", map.getTitle()))
+                .append(String.format("\nResource pack: %s", map.getResourcePack()))
+                .append("\nGamemodes:")
+                .append(String.format("\n\tCapture The Flag: %b",
+                    map.getJSONCaptureTheFlag() != null))
+                .append(String.format("\n\t Death Run: %b",
+                    map.getJSONDeathRun() != null))
+                .append(String.format("\n\t Free for All: %b",
+                    map.getJSONFreeForAll() != null))
+                .append(String.format("\n\t Infected: %b",
+                    map.getJSONInfected() != null))
+                .append(String.format("\n\t One in the Quiver: %b",
+                    map.getJSONOneInTheQuiver() != null))
+                .append(String.format("\n\t Ringbearer: %b",
+                    map.getJSONRingBearer() != null))
+                .append(String.format("\n\t Team Conquest: %b",
+                    map.getJSONTeamConquest() != null))
+                .append(String.format("\n\t Team Deathmatch: %b",
+                    map.getJSONTeamDeathMatch() != null))
+                .append(String.format("\n\t Team Slayer: %b",
+                    map.getJSONTeamSlayer() != null))
+                .color(Style.INFO).create();
+        sendBaseComponent(message, player);
     }
-    public String[] getShortStatus(){
-        return new String[]{
-                String.format(Style.INFO + "Map name: %s", map.getTitle()),
-                String.format(Style.INFO + "Resource pack: %s", map.getResourcePack()),
-                String.format(Style.INFO + "Selected Gamemode: %s", (gamemodeEditor == null ? "None": gamemodeEditor.getGamemode()))};
+    public void sendShortStatus(Player player){
+        BaseComponent[] message =
+            new ComponentBuilder(String.format("Map name: %s", map.getTitle()))
+                .append(String.format("\nResource pack: %s", map.getResourcePack()))
+                .append(String.format("\nSelected Gamemode: %s",
+                    (gamemodeEditor == null ? "None": gamemodeEditor.getGamemode())))
+                .color(Style.INFO).create();
+        sendBaseComponent(message, player);
     }
     public JSONMap getMap() {
         return map;
     }
-    public void setMap(String mapName){
+    public void setMap(String mapName, Player player){
         map = PVPPlugin.getInstance().getMaps().get(mapName);
+        if(gamemodeEditor != null)
+            gamemodeEditor.setMap(map);
+        sendBaseComponent(new ComponentBuilder(String.format("Selected %s",
+            mapName)).color(Style.INFO).create(), player);
+
     }
 
     public GamemodeEditor getGamemodeEditor(){
         return gamemodeEditor;
     }
-
-    public String[] setGamemodeEditor(String gamemode){
+    public void setGamemodeEditor(String gamemode, Player player){
         switch(gamemode){
             case "capturetheflag":
                 gamemodeEditor = new CaptureTheFlagEditor(map);
@@ -133,6 +210,12 @@ public class MapEditor {
             case "teamslayer":
                 gamemodeEditor = new TeamSlayerEditor(map);
         }
-        return new String[]{String.format("Set the gamemode to %s. Current state of the gamemode is:", gamemode)};
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Set the gamemode to %s.\n " +
+                "Current state of the gamemode is:", gamemode))
+                .color(Style.INFO)
+                .create(),
+            player);
+        sendStatus(player);
     }
 }

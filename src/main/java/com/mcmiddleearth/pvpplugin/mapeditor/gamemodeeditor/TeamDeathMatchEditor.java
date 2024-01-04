@@ -4,18 +4,29 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamDeathMatch;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class TeamDeathMatchEditor implements GamemodeEditor{
     JSONTeamDeathMatch jsonTeamDeathMatch;
     private TeamDeathMatchEditor(){}
-    public TeamDeathMatchEditor(JSONMap jsonMap){
-        this.jsonTeamDeathMatch = jsonMap.getJSONTeamDeathMatch();
+    public TeamDeathMatchEditor(JSONMap map){
+        if(map.getJSONTeamDeathMatch() == null)
+            map.setJSONTeamDeathMatch(new JSONTeamDeathMatch());
+        this.jsonTeamDeathMatch = map.getJSONTeamDeathMatch();
     }
     @Override
-    public String[] setMaxPlayers(Integer maxPlayers) {
+    public void setMaxPlayers(Integer maxPlayers, Player player) {
         jsonTeamDeathMatch.setMaximumPlayers(maxPlayers);
-        return new String[]{String.format(Style.INFO + "Set the max players to %d.", maxPlayers)};
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Set the max players to %d.",
+                maxPlayers))
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     public String[] setBlueSpawn(Location blueSpawn){
         JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
@@ -29,6 +40,14 @@ public class TeamDeathMatchEditor implements GamemodeEditor{
     }
     @Override
     public String getGamemode(){return "Team Deathmatch";}
+
+    @Override
+    public void setMap(JSONMap map) {
+        if(map.getJSONTeamDeathMatch() == null)
+            map.setJSONTeamDeathMatch(new JSONTeamDeathMatch());
+        this.jsonTeamDeathMatch = map.getJSONTeamDeathMatch();
+    }
+
     @Override
     public String[] getInfo(){
         return new String[]{
