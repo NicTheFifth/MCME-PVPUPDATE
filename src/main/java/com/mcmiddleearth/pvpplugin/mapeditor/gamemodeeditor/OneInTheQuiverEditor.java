@@ -9,11 +9,10 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class OneInTheQuiverEditor implements GamemodeEditor{
+public class OneInTheQuiverEditor implements GamemodeEditor,SpawnListEditor{
     JSONOneInTheQuiver jsonOneInTheQuiver;
     private OneInTheQuiverEditor(){}
     public OneInTheQuiverEditor(JSONMap map){
@@ -23,15 +22,27 @@ public class OneInTheQuiverEditor implements GamemodeEditor{
             map.getJSONOneInTheQuiver().setSpawns(new ArrayList<>());
         this.jsonOneInTheQuiver = map.getJSONOneInTheQuiver();
     }
-    public String[] DeleteSpawn(int toDelete){
+    @Override
+    public void deleteSpawn(int toDelete, Player player){
         jsonOneInTheQuiver.getSpawns().remove(toDelete);
-        return new String[]{Style.INFO + "Spawn removed from One in the Quiver."};
+        sendBaseComponent(
+            new ComponentBuilder("Spawn removed from One in the Quiver.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
-    public String[] AddSpawn(Location spawn){
+    @Override
+    public void addSpawn(Player player){
+        Location spawn = player.getLocation();
         JSONLocation JSONSpawn = new JSONLocation(spawn);
         jsonOneInTheQuiver.getSpawns().add(JSONSpawn);
-        return new String[]{Style.INFO + "Spawn added to One in the Quiver."};
+        sendBaseComponent(
+            new ComponentBuilder("Spawn added to One in the Quiver.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
+
     @Override
     public void setMaxPlayers(Integer maxPlayers, Player player) {
         jsonOneInTheQuiver.setMaximumPlayers(maxPlayers);
@@ -44,7 +55,6 @@ public class OneInTheQuiverEditor implements GamemodeEditor{
     }
     @Override
     public String getGamemode(){return "One in the Quiver";}
-
     @Override
     public void setMap(JSONMap map) {
         if(map.getJSONOneInTheQuiver() == null)
@@ -61,5 +71,10 @@ public class OneInTheQuiverEditor implements GamemodeEditor{
                 String.format(Style.INFO + "Max players: %d", jsonOneInTheQuiver.getMaximumPlayers()),
                 String.format(Style.INFO + "Spawn set: %s", jsonOneInTheQuiver.getSpawns().size())
         };
+    }
+
+    @Override
+    public Integer amountOfSpawns() {
+        return jsonOneInTheQuiver.getSpawns().size();
     }
 }

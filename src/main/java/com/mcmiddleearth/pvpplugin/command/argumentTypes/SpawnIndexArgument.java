@@ -2,6 +2,7 @@ package com.mcmiddleearth.pvpplugin.command.argumentTypes;
 
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.FreeForAllEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.SpawnListEditor;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -14,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.mcmiddleearth.pvpplugin.command.executor.EditExecutor.getMapEditor;
 
-public class FFASpawnIndexArgument implements ArgumentType<Integer> {
+public class SpawnIndexArgument implements ArgumentType<Integer> {
     @Override
     public Integer parse(StringReader reader) {
         return Integer.valueOf(reader.readUnquotedString());
@@ -23,14 +24,15 @@ public class FFASpawnIndexArgument implements ArgumentType<Integer> {
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         Player player = (Player) context.getSource();
         Optional<MapEditor> mapEditor = getMapEditor(player);
-        if(!mapEditor.isPresent()){
+        if(!mapEditor.isPresent())
             return builder.buildFuture();
-        }
-        FreeForAllEditor editor =
-            (FreeForAllEditor) mapEditor.get().getGamemodeEditor();
-        if(editor != null)
-            for(int i = 0; i < editor.amountOfSpawns(); i++)
-                builder.suggest(i);
+        if(!(mapEditor.get().getGamemodeEditor() instanceof SpawnListEditor))
+            return builder.buildFuture();
+
+        SpawnListEditor editor =
+            (SpawnListEditor) mapEditor.get().getGamemodeEditor();
+        for(int i = 0; i < editor.amountOfSpawns(); i++)
+            builder.suggest(i);
 
         return builder.buildFuture();
     }

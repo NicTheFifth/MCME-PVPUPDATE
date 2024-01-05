@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.SpawnListEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.Permissions;
 import org.bukkit.entity.Player;
@@ -28,8 +29,6 @@ public class Requirements {
     }
     public static boolean allGamemode(McmeCommandSender c) {
         Player source = (Player)c;
-        if(source == null)
-            return false;
         MapEditor me =
             PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         if(me == null)
@@ -38,21 +37,19 @@ public class Requirements {
     }
     public static boolean canEditGoal(McmeCommandSender c) {
         Player source = (Player)c;
-        if(source == null)
-            return false;
         return isState(source, Gamemodes.DEATHRUN);
     }
     public static boolean canEditCapture(McmeCommandSender c) {
         Player source = (Player)c;
-        if(source == null)
-            return false;
         return isState(source, Gamemodes.TEAMCONQUEST);
     }
 
-    public static boolean canEditSpawn(McmeCommandSender c) {
+    public static boolean canEditSpawnList(McmeCommandSender c) {
         Player source = (Player)c;
-        if(source == null)
+        MapEditor me =
+            PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null)
             return false;
-        return isState(source, Gamemodes.FREEFORALL);
+        return me.getGamemodeEditor() instanceof SpawnListEditor;
     }
 }

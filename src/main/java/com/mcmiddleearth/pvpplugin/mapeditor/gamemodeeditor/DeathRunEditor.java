@@ -29,15 +29,27 @@ public class DeathRunEditor implements GamemodeEditor{
                 .create(),
             player);
     }
-    public String[] setDeathSpawn(Location deathSpawn){
+    public void setDeathSpawn(Player player){
+        Location deathSpawn = player.getLocation();
         JSONLocation JSONDeathSpawn = new JSONLocation(deathSpawn);
         jsonDeathRun.setDeathSpawn(JSONDeathSpawn);
-        return new String[]{Style.INFO + "Death spawn set for Death Run."};
+        sendBaseComponent(
+            new ComponentBuilder("Death spawn set for Death Run.")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
-    public String[] setRunnerSpawn(Location runnerSpawn){
+    public void setRunnerSpawn(Player player){
+        Location runnerSpawn = player.getLocation();
         JSONLocation JSONRunnerSpawn = new JSONLocation(runnerSpawn);
         jsonDeathRun.setRunnerSpawn(JSONRunnerSpawn);
-        return new String[]{Style.INFO + "Runner spawn set for Death Run."};
+        sendBaseComponent(
+            new ComponentBuilder("Runner spawn set for Death Run.")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
     public void setGoal(Player player){
         Location goal = player.getLocation();

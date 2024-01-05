@@ -30,7 +30,9 @@ public class CapturePointIndexArgument implements ArgumentType<Integer> {
             (TeamConquestEditor) mapEditor.get().getGamemodeEditor();
         if(editor != null)
             for(int i = 0; i < editor.amountOfCapturePoints(); i++)
-                builder.suggest(i);
+                if (String.valueOf(i).startsWith(builder.getRemaining())) {
+                    builder.suggest(i);
+                }
 
         return builder.buildFuture();
     }

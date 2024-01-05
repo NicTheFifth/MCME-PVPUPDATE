@@ -45,11 +45,17 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
             .then(
                 SetMapSpawn()
                     .then(
-                        setSpawn()))
+                        SetRedBlueSpawn())
+                    .then(
+                        SetInfectedSurvivorSpawn())
+                    .then(
+                        SetRunnerDeathSpawn()
+                    )
+            )
             .then(
-                addSpawnFFA())
+                AddSpawn())
             .then(
-                removeSpawnFFA())
+                DeleteSpawn())
             .then(
                 SelectGamemode())
             .then(
@@ -95,22 +101,28 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
         return HelpfulLiteralBuilder.literal("setSpawn")
                 .executes(EditExecutor::setMapSpawn);
     }
-
-    private static HelpfulRequiredArgumentBuilder<String> setSpawn() {
+    private static HelpfulRequiredArgumentBuilder<String> SetRedBlueSpawn() {
         return Arguments.RedBlueSpawnArgument()
-            .executes(EditExecutor::setRedBlueSpawn);
+            .executes(EditExecutor::SetRedBlueSpawn);
     }
-
-    private static LiteralArgumentBuilder<McmeCommandSender> addSpawnFFA() {
-        return HelpfulLiteralBuilder.literal("addSpawn")
-            .requires(Requirements::canEditSpawn)
-            .executes(EditExecutor::addSpawnFFA);
+    private static HelpfulRequiredArgumentBuilder<String> SetInfectedSurvivorSpawn() {
+        return Arguments.InfectedSurvivorSpawnArgument()
+            .executes(EditExecutor::SetInfectedSurvivorSpawn);
     }
-    private ArgumentBuilder<McmeCommandSender,?> removeSpawnFFA() {
-        return HelpfulLiteralBuilder.literal("removeSpawn")
-            .requires(Requirements::canEditSpawn)
-            .then(Arguments.GetSpawnsFFA()
-                .executes(EditExecutor::DelSpawnFFA));
+    private static HelpfulRequiredArgumentBuilder<String> SetRunnerDeathSpawn() {
+        return Arguments.RunnerDeathSpawnArgument()
+            .executes(EditExecutor::SetRunnerDeathSpawn);
+    }
+    private static LiteralArgumentBuilder<McmeCommandSender> AddSpawn() {
+        return HelpfulLiteralBuilder.literal("addspawn")
+            .requires(Requirements::canEditSpawnList)
+            .executes(EditExecutor::AddSpawn);
+    }
+    private ArgumentBuilder<McmeCommandSender,?> DeleteSpawn() {
+        return HelpfulLiteralBuilder.literal("deletespawn")
+            .requires(Requirements::canEditSpawnList)
+            .then(Arguments.GetSpawns()
+                .executes(EditExecutor::DelSpawn));
 
     }
     private static LiteralArgumentBuilder<McmeCommandSender> SelectGamemode(){

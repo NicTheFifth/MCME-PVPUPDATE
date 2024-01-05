@@ -3,10 +3,7 @@ package com.mcmiddleearth.pvpplugin.command.executor;
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.FreeForAllEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.TeamConquestEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.RedBlueTeamEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.*;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
@@ -165,69 +162,29 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int setSpawn(CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
-        String spawnType = c.getArgument(ArgumentNames.GAMEMODE_SPAWN, String.class);
-        Optional<MapEditor> result = getMapEditor(player);
-
-        if(result.isPresent()) {
-            //result.get().Action(player);
-            switch(spawnType) {
-                case "red":
-                    //TODO: Check instance of the GamemodeEditor, to make sure it can edit
-                    //response = me.setRedSpawn(source.getLocation());
-                    break;
-                case "blue":
-                    //TODO: Check instance of the GamemodeEditor, to make sure it can edit
-                    //response = me.setBlueSpawn(source.getLocation());
-                    break;
-                case "death":
-                    //TODO: Check instance of the GamemodeEditor, to make sure it can edit
-                    //response = me.setDeathSpawn(source.getLocation());
-                    break;
-                case "runner":
-                    //TODO: Check instance of the GamemodeEditor, to make sure it can edit
-                    //response = me.setRunnerSpawn(source.getLocation());
-                    break;
-                case "infected":
-                    //TODO: Check instance of the GamemodeEditor, to make sure it can edit
-                    //response = me.setInfectedSpawn(source.getLocation());
-                    break;
-                case "survivor":
-                    //TODO: Check instance of the GamemodeEditor, to make sure it can edit
-                    //response = me.setSurvivorSpawn(source.getLocation());
-                    break;
-                default:
-                    player.sendMessage();
-                    return 0;
-            }
-            return 1;
-        }
-        return 0;
-    }
-    public static int addSpawnFFA(CommandContext<McmeCommandSender> c) {
+    public static int AddSpawn(CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
-            ((FreeForAllEditor)result.get().getGamemodeEditor()).addSpawn(player);
+            ((SpawnListEditor)result.get().getGamemodeEditor()).addSpawn(player);
             return 1;
         }
         return 0;
     }
-    public static int DelSpawnFFA(CommandContext<McmeCommandSender> c) {
+    public static int DelSpawn(CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         Integer point = c.getArgument(ArgumentNames.INDEX, Integer.class);
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
-            ((FreeForAllEditor)result.get().getGamemodeEditor())
+            ((SpawnListEditor)result.get().getGamemodeEditor())
                 .deleteSpawn(point, player);
             return 1;
         }
         return 0;
     }
-    public static int setRedBlueSpawn(CommandContext<McmeCommandSender> c) {
+    public static int SetRedBlueSpawn(CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
@@ -240,6 +197,40 @@ public class EditExecutor {
             else
                 ((RedBlueTeamEditor)result.get().getGamemodeEditor())
                     .setRedSpawn(player);
+            return 1;
+        }
+        return 0;
+    }
+    public static int SetInfectedSurvivorSpawn(CommandContext<McmeCommandSender> c) {
+        Player player = (Player) c.getSource();
+        String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
+            String.class);
+        Optional<MapEditor> result = getMapEditor(player);
+
+        if(result.isPresent()) {
+            if(Objects.equals(spawn, "infected"))
+                ((InfectedEditor)result.get().getGamemodeEditor())
+                    .setInfectedSpawn(player);
+            else
+                ((InfectedEditor)result.get().getGamemodeEditor())
+                    .setSurvivorSpawn(player);
+            return 1;
+        }
+        return 0;
+    }
+    public static int SetRunnerDeathSpawn(CommandContext<McmeCommandSender> c) {
+        Player player = (Player) c.getSource();
+        String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
+            String.class);
+        Optional<MapEditor> result = getMapEditor(player);
+
+        if(result.isPresent()) {
+            if(Objects.equals(spawn, "runner"))
+                ((DeathRunEditor)result.get().getGamemodeEditor())
+                    .setRunnerSpawn(player);
+            else
+                ((DeathRunEditor)result.get().getGamemodeEditor())
+                    .setDeathSpawn(player);
             return 1;
         }
         return 0;

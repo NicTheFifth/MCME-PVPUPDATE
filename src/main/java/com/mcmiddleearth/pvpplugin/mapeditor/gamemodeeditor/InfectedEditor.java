@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONInfected;
+import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -20,15 +21,25 @@ public class InfectedEditor implements GamemodeEditor{
             map.setJSONInfected(new JSONInfected());
         this.jsonInfected = map.getJSONInfected();
     }
-    public List<String> setInfectedSpawn(Location infectedSpawn){
+    public void setInfectedSpawn(Player player){
+        Location infectedSpawn = player.getLocation();
         JSONLocation JSONInfectedSpawn = new JSONLocation(infectedSpawn);
         jsonInfected.setInfectedSpawn(JSONInfectedSpawn);
-        return List.of(Style.INFO + "Infected spawn set for Infected.");
+        sendBaseComponent(
+            new ComponentBuilder("Infected spawn set for Infected.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
-    public List<String> setSurvivorSpawn(Location survivorSpawn){
+    public void setSurvivorSpawn(Player player){
+        Location survivorSpawn = player.getLocation();
         JSONLocation JSONSurvivorSpawn = new JSONLocation(survivorSpawn);
         jsonInfected.setSurvivorSpawn(JSONSurvivorSpawn);
-        return List.of(Style.INFO + "Survivor spawn set for Infected.");
+        sendBaseComponent(
+            new ComponentBuilder("Survivor spawn set for Infected.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     public void setMaxPlayers(Integer maxPlayers, Player player) {
         jsonInfected.setMaximumPlayers(maxPlayers);
@@ -39,7 +50,7 @@ public class InfectedEditor implements GamemodeEditor{
                 .create(),
             player);
     }
-    public String getGamemode(){return "Infected";}
+    public String getGamemode(){return Gamemodes.INFECTED;}
 
     @Override
     public void setMap(JSONMap map) {

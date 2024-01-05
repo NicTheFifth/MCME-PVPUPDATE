@@ -2,6 +2,8 @@ package com.mcmiddleearth.pvpplugin.command.commandParser;
 
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.InfectedEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.RedBlueTeamEditor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.command.argumentTypes.*;
@@ -45,22 +47,26 @@ public class Arguments {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
             CapturePointIndexes());
     }
-
     private static CapturePointIndexArgument CapturePointIndexes() {
         return new CapturePointIndexArgument();
     }
-
-    public static HelpfulRequiredArgumentBuilder<Integer> GetSpawnsFFA() {
+    public static HelpfulRequiredArgumentBuilder<Integer> GetSpawns() {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
-            FFASpawnIndexes());
+            SpawnIndexes());
     }
-
-    private static FFASpawnIndexArgument FFASpawnIndexes(){
-        return new FFASpawnIndexArgument();
+    private static SpawnIndexArgument SpawnIndexes(){
+        return new SpawnIndexArgument();
     }
-
     public static HelpfulRequiredArgumentBuilder<String> RedBlueSpawnArgument() {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
             new SpawnArgument<>(RedBlueTeamEditor.class,"blue", "red"));
+    }
+    public static HelpfulRequiredArgumentBuilder<String> InfectedSurvivorSpawnArgument() {
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
+            new SpawnArgument<>(InfectedEditor.class,"infected", "survivor"));
+    }
+    public static HelpfulRequiredArgumentBuilder<String> RunnerDeathSpawnArgument() {
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
+            new SpawnArgument<>(DeathRunEditor.class,"runner", "death"));
     }
 }

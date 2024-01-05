@@ -3,7 +3,6 @@ package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
-import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONFreeForAll;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -11,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class FreeForAllEditor implements GamemodeEditor{
+public class FreeForAllEditor implements GamemodeEditor,SpawnListEditor{
     JSONFreeForAll jsonFreeForAll;
     private FreeForAllEditor(){}
     public FreeForAllEditor(JSONMap map){
@@ -19,7 +18,7 @@ public class FreeForAllEditor implements GamemodeEditor{
             map.setJSONFreeForAll(new JSONFreeForAll());
         this.jsonFreeForAll = map.getJSONFreeForAll();
     }
-
+    @Override
     public void addSpawn(Player player){
         JSONLocation JSONSpawn = new JSONLocation(player.getLocation());
         jsonFreeForAll.getSpawns().add(JSONSpawn);
@@ -29,7 +28,7 @@ public class FreeForAllEditor implements GamemodeEditor{
             player);
 
     }
-
+    @Override
     public void deleteSpawn(int toDelete, Player player){
         jsonFreeForAll.getSpawns().remove(toDelete);
         sendBaseComponent(
@@ -68,7 +67,7 @@ public class FreeForAllEditor implements GamemodeEditor{
     public String[] getInfo() {
         return new String[0];
     }
-
+    @Override
     public Integer amountOfSpawns(){
         return this.jsonFreeForAll.getSpawns().size();
     }
