@@ -8,11 +8,9 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class CaptureTheFlagEditor implements GamemodeEditor{
+public class CaptureTheFlagEditor implements GamemodeEditor, RedBlueTeamEditor {
     JSONCaptureTheFlag jsonCaptureTheFlag;
     private CaptureTheFlagEditor(){}
     public CaptureTheFlagEditor(JSONMap map){
@@ -21,15 +19,25 @@ public class CaptureTheFlagEditor implements GamemodeEditor{
         this.jsonCaptureTheFlag = map.getJSONCaptureTheFlag();
 
     }
-    public List<String> setBlueSpawn(Location blueSpawn){
+    public void setBlueSpawn(Player player){
+        Location blueSpawn = player.getLocation();
         JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
         jsonCaptureTheFlag.setBlueSpawn(JSONBlueSpawn);
-        return List.of(Style.INFO + "Blue spawn set for Capture the Flag.");
+        sendBaseComponent(
+            new ComponentBuilder("Blue spawn set for Capture the Flag.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
-    public List<String> setRedSpawn(Location redSpawn){
+    public void setRedSpawn(Player player){
+        Location redSpawn = player.getLocation();
         JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
         jsonCaptureTheFlag.setRedSpawn(JSONRedSpawn);
-        return List.of(Style.INFO + "Red spawn set for Capture the Flag.");
+        sendBaseComponent(
+            new ComponentBuilder("Red spawn set for Capture the Flag.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     @Override
     public void setMaxPlayers(Integer maxPlayers, Player player) {

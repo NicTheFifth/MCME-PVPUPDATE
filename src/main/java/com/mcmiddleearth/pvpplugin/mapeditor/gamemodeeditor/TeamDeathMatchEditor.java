@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class TeamDeathMatchEditor implements GamemodeEditor{
+public class TeamDeathMatchEditor implements GamemodeEditor, RedBlueTeamEditor {
     JSONTeamDeathMatch jsonTeamDeathMatch;
     private TeamDeathMatchEditor(){}
     public TeamDeathMatchEditor(JSONMap map){
@@ -28,15 +28,25 @@ public class TeamDeathMatchEditor implements GamemodeEditor{
                 .create(),
             player);
     }
-    public String[] setBlueSpawn(Location blueSpawn){
+    public void setBlueSpawn(Player player){
+        Location blueSpawn = player.getLocation();
         JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
         jsonTeamDeathMatch.setBlueSpawn(JSONBlueSpawn);
-        return new String[]{Style.INFO + "Blue spawn set for Team Deathmatch."};
+        sendBaseComponent(
+            new ComponentBuilder("Blue spawn set for Team Death Match.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
-    public String[] setRedSpawn(Location redSpawn){
+    public void setRedSpawn(Player player){
+        Location redSpawn = player.getLocation();
         JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
         jsonTeamDeathMatch.setRedSpawn(JSONRedSpawn);
-        return new String[]{Style.INFO + "Red spawn set for Team Deathmatch."};
+        sendBaseComponent(
+            new ComponentBuilder("Blue spawn set for Team Death Match.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     @Override
     public String getGamemode(){return "Team Deathmatch";}

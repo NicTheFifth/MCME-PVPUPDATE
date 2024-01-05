@@ -97,8 +97,8 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
     }
 
     private static HelpfulRequiredArgumentBuilder<String> setSpawn() {
-        return Arguments.SpawnArgument()
-            .executes(EditExecutor::setSpawn);
+        return Arguments.RedBlueSpawnArgument()
+            .executes(EditExecutor::setRedBlueSpawn);
     }
 
     private static LiteralArgumentBuilder<McmeCommandSender> addSpawnFFA() {

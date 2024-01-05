@@ -2,11 +2,11 @@ package com.mcmiddleearth.pvpplugin.command.commandParser;
 
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.RedBlueTeamEditor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.command.argumentTypes.*;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.statics.Resourcepacks;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 
 import java.util.HashSet;
 
@@ -26,10 +26,6 @@ public class Arguments {
     }
     private static CommandStringArgument ResourcePacks(){
         return new CommandStringArgument(Resourcepacks.getAll);
-    }
-    public static HelpfulRequiredArgumentBuilder<String> SpawnArgument(){
-        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
-            new SpawnArgument());
     }
     public static HelpfulRequiredArgumentBuilder<String> GetGamemodes(){
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE,
@@ -61,5 +57,10 @@ public class Arguments {
 
     private static FFASpawnIndexArgument FFASpawnIndexes(){
         return new FFASpawnIndexArgument();
+    }
+
+    public static HelpfulRequiredArgumentBuilder<String> RedBlueSpawnArgument() {
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
+            new SpawnArgument<>(RedBlueTeamEditor.class,"blue", "red"));
     }
 }

@@ -8,11 +8,9 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class RingBearerEditor implements GamemodeEditor{
+public class RingBearerEditor implements GamemodeEditor, RedBlueTeamEditor {
     JSONRingBearer jsonRingBearer;
     private RingBearerEditor(){}
     public RingBearerEditor(JSONMap map){
@@ -20,15 +18,25 @@ public class RingBearerEditor implements GamemodeEditor{
             map.setJSONRingBearer(new JSONRingBearer());
         jsonRingBearer = map.getJSONRingBearer();
     }
-    public List<String> setBlueSpawn(Location blueSpawn){
+    public void setBlueSpawn(Player player){
+        Location blueSpawn = player.getLocation();
         JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
         jsonRingBearer.setBlueSpawn(JSONBlueSpawn);
-        return List.of(Style.INFO + "Blue spawn set for Ringbearer.");
+        sendBaseComponent(
+            new ComponentBuilder("Blue spawn set for Ringbearer.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
-    public List<String> setRedSpawn(Location redSpawn){
+    public void setRedSpawn(Player player){
+        Location redSpawn = player.getLocation();
         JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
         jsonRingBearer.setRedSpawn(JSONRedSpawn);
-        return List.of(Style.INFO + "Red spawn set for Ringbearer.");
+        sendBaseComponent(
+            new ComponentBuilder("Red spawn set for Ringbearer.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     @Override
     public void setMaxPlayers(Integer maxPlayers, Player player) {

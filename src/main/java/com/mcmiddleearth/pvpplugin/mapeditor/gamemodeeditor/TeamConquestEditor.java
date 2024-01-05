@@ -9,11 +9,10 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class TeamConquestEditor implements GamemodeEditor{
+public class TeamConquestEditor implements GamemodeEditor, RedBlueTeamEditor {
     JSONTeamConquest jsonTeamConquest;
     private TeamConquestEditor(){}
 
@@ -34,15 +33,25 @@ public class TeamConquestEditor implements GamemodeEditor{
                 .create(),
             player);
     }
-    public String[] setBlueSpawn(Location blueSpawn){
+    public void setBlueSpawn(Player player){
+        Location blueSpawn = player.getLocation();
         JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
         jsonTeamConquest.setBlueSpawn(JSONBlueSpawn);
-        return new String[]{Style.INFO + "Blue spawn set for Team Conquest."};
+        sendBaseComponent(
+            new ComponentBuilder("Blue spawn set for Team Conquest.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
-    public String[] setRedSpawn(Location redSpawn) {
+    public void setRedSpawn(Player player) {
+        Location redSpawn = player.getLocation();
         JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
         jsonTeamConquest.setRedSpawn(JSONRedSpawn);
-        return new String[]{Style.INFO + "Red spawn set for Team Conquest."};
+        sendBaseComponent(
+            new ComponentBuilder("Red spawn set for Team Conquest.")
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     public void DeleteGoal(int toDelete, Player player){
         jsonTeamConquest.getCapturePoints().remove(toDelete);
