@@ -26,7 +26,7 @@ public class TeamHandler {
         }
     }
     public static void spawn(Player player, Team team) {
-        player.teleport(team.getSpawnLocations().get((new Random()).nextInt(0,team.getSpawnLocations().size())));
+        player.teleport(team.getSpawnLocations().get((new Random()).nextInt(team.getSpawnLocations().size())));
         player.setGameMode(team.getGameMode());
     }
 

@@ -16,7 +16,8 @@ public class ScoreboardEditor {
         Points.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
     public static void InitTeamDeathmatch(Scoreboard scoreboard, Team red, Team blue){
-        Objective Points = scoreboard.registerNewObjective("Remaining", "dummy");
+        Objective Points = scoreboard.registerNewObjective("Remaining",
+            "dummy", "Remaining");
         Points.getScore(ChatColor.BLUE + "Blue:").setScore(blue.getActiveMembers().size());
         Points.getScore(ChatColor.DARK_RED + "Red:").setScore(red.getActiveMembers().size());
         Points.setDisplaySlot(DisplaySlot.SIDEBAR);

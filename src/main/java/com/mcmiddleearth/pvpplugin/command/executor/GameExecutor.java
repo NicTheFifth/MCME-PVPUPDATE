@@ -24,7 +24,7 @@ public class GameExecutor {
 
     //TODO: Finish with above structure
     public static int getRule(CommandContext<McmeCommandSender> c){
-        Player source = CommandUtil.getPlayer(c.getSource());
+        Player source = (Player)c.getSource();
         String gamemode = c.getArgument("gamemode", String.class);
         if(source == null)
             return 0;
@@ -33,7 +33,7 @@ public class GameExecutor {
     }
 
     public static int joinGame(CommandContext<McmeCommandSender> c) {
-        Player source = CommandUtil.getPlayer(c.getSource());
+        Player source = (Player)c.getSource();
         GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
         if(source == null)
             return 0;
@@ -46,7 +46,7 @@ public class GameExecutor {
     }
 
     public static int listMaps(CommandContext<McmeCommandSender> c) {
-        Player source = CommandUtil.getPlayer(c.getSource());
+        Player source = (Player)c.getSource();
         if(source == null)
             return 0;
         PVPPlugin.getInstance().getMaps().values().forEach(m -> GameExecutor.printMap(source, m));
@@ -72,7 +72,7 @@ public class GameExecutor {
     }
 
     public static int createGame(CommandContext<McmeCommandSender> c) {
-        Player source = CommandUtil.getPlayer(c.getSource());
+        Player source = (Player)c.getSource();
         String map = null, gamemode = null;
         Integer var = null;
         if(source == null)
@@ -124,7 +124,7 @@ public class GameExecutor {
     }
 
     public static int loadPublic(CommandContext<McmeCommandSender> c) {
-        Player source = CommandUtil.getPlayer(c.getSource());
+        Player source = (Player)c.getSource();
         GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
         if(source == null)
             return 0;
@@ -142,7 +142,7 @@ public class GameExecutor {
     }
 
     public static int loadPrivate(CommandContext<McmeCommandSender> c) {
-        Player source = CommandUtil.getPlayer(c.getSource());
+        Player source = (Player)c.getSource();
         GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
         if(source == null)
             return 0;
@@ -160,7 +160,7 @@ public class GameExecutor {
     }
 
     public static int loadMap(CommandContext<McmeCommandSender> c) {
-        Player source = CommandUtil.getPlayer(c.getSource());
+        Player source = (Player)c.getSource();
         JSONMap map = PVPPlugin.getInstance().getMaps().get(c.getArgument("map", String.class));
         GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
         if(source == null)
@@ -183,7 +183,7 @@ public class GameExecutor {
     }
 
     public static int loadGamemode(CommandContext<McmeCommandSender> c) {
-        Player source = CommandUtil.getPlayer(c.getSource());
+        Player source = (Player)c.getSource();
         String gamemode = c.getArgument("gamemode", String.class);
         GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
         if(source == null)
@@ -202,7 +202,7 @@ public class GameExecutor {
     }
 
     public static int startGame(CommandContext<McmeCommandSender> c) {
-        Player source = CommandUtil.getPlayer(c.getSource());
+        Player source = (Player)c.getSource();
         if(source == null)
             return 0;
         if(PVPPlugin.getInstance().getActiveGame() == null){
@@ -219,7 +219,7 @@ public class GameExecutor {
     }
 
     public static int endGame(CommandContext<McmeCommandSender> c) {
-        Player source = CommandUtil.getPlayer(c.getSource());
+        Player source = (Player)c.getSource();
         if(source == null)
             return 0;
         if(PVPPlugin.getInstance().getActiveGame() == null){

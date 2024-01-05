@@ -6,6 +6,7 @@ import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.command.argumentTypes.*;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.statics.Resourcepacks;
+import com.mojang.brigadier.builder.ArgumentBuilder;
 
 import java.util.HashSet;
 
@@ -51,5 +52,14 @@ public class Arguments {
 
     private static CapturePointIndexArgument CapturePointIndexes() {
         return new CapturePointIndexArgument();
+    }
+
+    public static HelpfulRequiredArgumentBuilder<Integer> GetSpawnsFFA() {
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
+            FFASpawnIndexes());
+    }
+
+    private static FFASpawnIndexArgument FFASpawnIndexes(){
+        return new FFASpawnIndexArgument();
     }
 }

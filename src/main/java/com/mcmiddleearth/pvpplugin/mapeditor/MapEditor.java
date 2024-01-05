@@ -5,6 +5,7 @@ import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.*;
+import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
@@ -193,23 +194,35 @@ public class MapEditor {
     }
     public void setGamemodeEditor(String gamemode, Player player){
         switch(gamemode){
-            case "capturetheflag":
+            case Gamemodes.CAPTURETHEFLAG:
                 gamemodeEditor = new CaptureTheFlagEditor(map);
-            case "deathrun":
+                break;
+            case Gamemodes.DEATHRUN:
                 gamemodeEditor = new DeathRunEditor(map);
-            case "infected":
+                break;
+            case Gamemodes.FREEFORALL:
+                gamemodeEditor = new FreeForAllEditor(map);
+                break;
+            case Gamemodes.INFECTED:
                 gamemodeEditor = new InfectedEditor(map);
-            case "oneinthequiver":
+                break;
+            case Gamemodes.ONEINTHEQUIVER:
                 gamemodeEditor = new OneInTheQuiverEditor(map);
-            case "ringbearer":
+                break;
+            case Gamemodes.RINGBEARER:
                 gamemodeEditor = new RingBearerEditor(map);
-            case "teamconquest":
+                break;
+            case Gamemodes.TEAMCONQUEST:
                 gamemodeEditor = new TeamConquestEditor(map);
-            case "teamdeathmatch":
+                break;
+            case Gamemodes.TEAMDEATHMATCH:
                 gamemodeEditor = new TeamDeathMatchEditor(map);
-            case "teamslayer":
+                break;
+            case Gamemodes.TEAMSLAYER:
                 gamemodeEditor = new TeamSlayerEditor(map);
+                break;
         }
+        //TODO: add state of gamemode sending
         sendBaseComponent(
             new ComponentBuilder(String.format("Set the gamemode to %s.\n " +
                 "Current state of the gamemode is:", gamemode))

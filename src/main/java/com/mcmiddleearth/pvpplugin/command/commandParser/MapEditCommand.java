@@ -10,6 +10,7 @@ import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.command.executor.EditExecutor;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -31,33 +32,40 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
         commandNodeBuilder
             .requires(Requirements::isMapEditor)
             .requires(sender -> sender instanceof Player)
-                .then(
-                    CreateNewMap())
-                .then(
-                    RenameMap())
-                .then(
-                    SelectMap())
-                .then(
-                    SetArea())
-                .then(
-                    SetRP())
-                .then(
-                    SetMapSpawn()
-                        .then(
-                            setSpawn()))
-                .then(
-                    SelectGamemode())
-                .then(
-                    SetMax())
-                .then(
-                    SetGoal())
-                .then(
-                    SetCapture())
-                .then(
-                    DeleteCapture())
+            .then(
+                CreateNewMap())
+            .then(
+                RenameMap())
+            .then(
+                SelectMap())
+            .then(
+                SetArea())
+            .then(
+                SetRP())
+            .then(
+                SetMapSpawn()
+                    .then(
+                        setSpawn()))
+            .then(
+                addSpawnFFA())
+            .then(
+                removeSpawnFFA())
+            .then(
+                SelectGamemode())
+            .then(
+                SetMax())
+            .then(
+                SetGoal())
+            .then(
+                SetCapture())
+            .then(
+                DeleteCapture())
             ;
         return commandNodeBuilder;
     }
+
+
+
     //<editor-fold defaultstate="collapsed" desc="Individual Commands">
     private LiteralArgumentBuilder<McmeCommandSender> SelectMap() {
         return HelpfulLiteralBuilder.literal("select")
@@ -93,18 +101,30 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
             .executes(EditExecutor::setSpawn);
     }
 
-    private LiteralArgumentBuilder<McmeCommandSender> SelectGamemode(){
+    private static LiteralArgumentBuilder<McmeCommandSender> addSpawnFFA() {
+        return HelpfulLiteralBuilder.literal("addSpawn")
+            .requires(Requirements::canEditSpawn)
+            .executes(EditExecutor::addSpawnFFA);
+    }
+    private ArgumentBuilder<McmeCommandSender,?> removeSpawnFFA() {
+        return HelpfulLiteralBuilder.literal("removeSpawn")
+            .requires(Requirements::canEditSpawn)
+            .then(Arguments.GetSpawnsFFA()
+                .executes(EditExecutor::DelSpawnFFA));
+
+    }
+    private static LiteralArgumentBuilder<McmeCommandSender> SelectGamemode(){
         return HelpfulLiteralBuilder.literal("gamemode")
                 .then(Arguments.GetGamemodes()
                         .executes(EditExecutor::SetGamemode));
     }
-    private LiteralArgumentBuilder<McmeCommandSender> SetMax(){
+    private static LiteralArgumentBuilder<McmeCommandSender> SetMax(){
         return HelpfulLiteralBuilder.literal("setMax")
                 .requires(Requirements::allGamemode)
                 .then(HelpfulRequiredArgumentBuilder.argument("amount",IntegerArgumentType.integer(1))
                         .executes(EditExecutor::SetMax));
     }
-    private LiteralArgumentBuilder<McmeCommandSender> SetGoal(){
+    private static LiteralArgumentBuilder<McmeCommandSender> SetGoal(){
         return HelpfulLiteralBuilder.literal("setGoal")
                 .requires(Requirements::canEditGoal)
                 .executes(EditExecutor::EditGoal);

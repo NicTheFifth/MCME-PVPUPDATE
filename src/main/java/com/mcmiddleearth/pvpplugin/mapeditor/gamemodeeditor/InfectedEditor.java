@@ -4,9 +4,13 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONInfected;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.List;
+
+import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class InfectedEditor implements GamemodeEditor{
     JSONInfected jsonInfected;
@@ -26,9 +30,14 @@ public class InfectedEditor implements GamemodeEditor{
         jsonInfected.setSurvivorSpawn(JSONSurvivorSpawn);
         return List.of(Style.INFO + "Survivor spawn set for Infected.");
     }
-    public String[] setMaxPlayers(Integer maxPlayers) {
+    public void setMaxPlayers(Integer maxPlayers, Player player) {
         jsonInfected.setMaximumPlayers(maxPlayers);
-        return new String[]{String.format(Style.INFO + "Set the max players to %d.", maxPlayers)};
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Set the max players to %d.",
+                maxPlayers))
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     public String getGamemode(){return "Infected";}
 

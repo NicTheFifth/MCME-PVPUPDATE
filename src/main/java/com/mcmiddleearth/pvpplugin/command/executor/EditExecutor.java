@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.FreeForAllEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.TeamConquestEditor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
@@ -207,7 +208,28 @@ public class EditExecutor {
         }
         return 0;
     }
+    public static int addSpawnFFA(CommandContext<McmeCommandSender> c) {
+        Player player = (Player) c.getSource();
+        Optional<MapEditor> result = getMapEditor(player);
 
+        if(result.isPresent()) {
+            ((FreeForAllEditor)result.get().getGamemodeEditor()).addSpawn(player);
+            return 1;
+        }
+        return 0;
+    }
+    public static int DelSpawnFFA(CommandContext<McmeCommandSender> c) {
+        Player player = (Player) c.getSource();
+        Integer point = c.getArgument(ArgumentNames.INDEX, Integer.class);
+        Optional<MapEditor> result = getMapEditor(player);
+
+        if(result.isPresent()) {
+            ((FreeForAllEditor)result.get().getGamemodeEditor())
+                .deleteSpawn(point, player);
+            return 1;
+        }
+        return 0;
+    }
 
     /**
      *

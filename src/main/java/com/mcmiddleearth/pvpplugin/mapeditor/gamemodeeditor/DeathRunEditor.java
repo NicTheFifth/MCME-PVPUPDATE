@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
+import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -52,7 +53,7 @@ public class DeathRunEditor implements GamemodeEditor{
     }
     @Override
     public String getGamemode() {
-        return "Death Run";
+        return Gamemodes.DEATHRUN;
     }
 
     @Override
@@ -60,7 +61,6 @@ public class DeathRunEditor implements GamemodeEditor{
         if(map.getJSONDeathRun() == null)
             map.setJSONDeathRun(new JSONDeathRun());
         this.jsonDeathRun = map.getJSONDeathRun();
-
     }
 
     @Override

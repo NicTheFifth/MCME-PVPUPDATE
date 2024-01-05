@@ -8,6 +8,7 @@ import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.Permissions;
 import org.bukkit.entity.Player;
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 public class Requirements {
     public static boolean canRun(McmeCommandSender player){
@@ -46,5 +47,12 @@ public class Requirements {
         if(source == null)
             return false;
         return isState(source, Gamemodes.TEAMCONQUEST);
+    }
+
+    public static boolean canEditSpawn(McmeCommandSender c) {
+        Player source = (Player)c;
+        if(source == null)
+            return false;
+        return isState(source, Gamemodes.FREEFORALL);
     }
 }

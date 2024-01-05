@@ -2,6 +2,7 @@ package com.mcmiddleearth.pvpplugin.command.argumentTypes;
 
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
+import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -22,7 +23,7 @@ public class ExistingGamemodeArgument implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        String mapString = context.getArgument("map", String.class);
+        String mapString = context.getArgument(ArgumentNames.MAP_NAME, String.class);
         JSONMap map = PVPPlugin.getInstance().getMaps().get(mapString);
         Set<String> options = new java.util.HashSet<>(Collections.emptySet());
 
