@@ -4,13 +4,14 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamSlayer;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class TeamSlayerEditor implements GamemodeEditor{
+public class TeamSlayerEditor implements GamemodeEditor {
     JSONTeamSlayer jsonTeamSlayer;
     private TeamSlayerEditor(){}
     public TeamSlayerEditor(JSONMap map){
@@ -41,20 +42,13 @@ public class TeamSlayerEditor implements GamemodeEditor{
         jsonTeamSlayer.getRedSpawn().remove(toDelete);
         return new String[]{Style.INFO + "Spawn removed from One in the Quiver."};
     }
-    public String[] addRedSpawn(Location redSpawn){
+    public String[] AddRedSpawn(Location redSpawn){
         JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
         jsonTeamSlayer.getRedSpawn().add(JSONRedSpawn);
         return new String[]{Style.INFO + "Red spawn added to Team Slayer."};
     }
     @Override
     public String getGamemode(){return "Team Slayer";}
-
-    @Override
-    public void setMap(JSONMap map) {
-        if(map.getJSONTeamSlayer() == null)
-            map.setJSONTeamSlayer(new JSONTeamSlayer());
-        this.jsonTeamSlayer = map.getJSONTeamSlayer();
-    }
 
     @Override
     public String[] getInfo(){

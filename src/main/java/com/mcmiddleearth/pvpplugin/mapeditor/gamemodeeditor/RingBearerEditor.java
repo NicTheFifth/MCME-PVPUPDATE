@@ -4,13 +4,15 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONRingBearer;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class RingBearerEditor implements GamemodeEditor, RedBlueTeamEditor {
+public class RingBearerEditor extends RedBlueSpawnEditor {
     JSONRingBearer jsonRingBearer;
     private RingBearerEditor(){}
     public RingBearerEditor(JSONMap map){
@@ -50,13 +52,6 @@ public class RingBearerEditor implements GamemodeEditor, RedBlueTeamEditor {
     }
     @Override
     public String getGamemode() {return "Ringbearer";}
-
-    @Override
-    public void setMap(JSONMap map) {
-        if(map.getJSONRingBearer() == null)
-            map.setJSONRingBearer(new JSONRingBearer());
-        jsonRingBearer = map.getJSONRingBearer();
-    }
 
     @Override
     public String[] getInfo(){

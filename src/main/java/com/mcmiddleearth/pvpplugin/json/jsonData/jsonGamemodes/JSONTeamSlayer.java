@@ -1,10 +1,11 @@
 package com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes;
 
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
+import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONGamemode;
 
 import java.util.List;
 
-public class JSONTeamSlayer extends JSONGamemode{
+public class JSONTeamSlayer extends JSONGamemode {
     List<JSONLocation> blueSpawn;
     List<JSONLocation> redSpawn;
 

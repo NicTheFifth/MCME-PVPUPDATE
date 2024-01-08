@@ -4,12 +4,11 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.SpawnListEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.Permissions;
 import org.bukkit.entity.Player;
 import java.util.Arrays;
-import java.util.function.Predicate;
 
 public class Requirements {
     public static boolean canRun(McmeCommandSender player){

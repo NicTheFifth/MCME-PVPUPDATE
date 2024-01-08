@@ -23,7 +23,7 @@ public class CommandStringArgument implements ArgumentType<String> {
         options = new HashSet<>(Lists.newArrayList(examples));
     }
 
-    public CommandStringArgument(HashSet<String> examples) {
+    public CommandStringArgument(Set<String> examples) {
         options = examples;
     }
 

@@ -4,40 +4,29 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONCaptureTheFlag;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
+import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class CaptureTheFlagEditor implements GamemodeEditor, RedBlueTeamEditor {
+public class CaptureTheFlagEditor extends RedBlueSpawnEditor{
     JSONCaptureTheFlag jsonCaptureTheFlag;
     private CaptureTheFlagEditor(){}
     public CaptureTheFlagEditor(JSONMap map){
+        setDisplayString("Capture the Flag");
         if(map.getJSONCaptureTheFlag() == null)
             map.setJSONCaptureTheFlag(new JSONCaptureTheFlag());
         this.jsonCaptureTheFlag = map.getJSONCaptureTheFlag();
 
     }
-    public void setBlueSpawn(Player player){
-        Location blueSpawn = player.getLocation();
-        JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
-        jsonCaptureTheFlag.setBlueSpawn(JSONBlueSpawn);
-        sendBaseComponent(
-            new ComponentBuilder("Blue spawn set for Capture the Flag.")
-                .color(Style.INFO)
-                .create(),
-            player);
+    public void setBlueFlag(Player player){
+        //TODO: Implement setBlueFlag
     }
-    public void setRedSpawn(Player player){
-        Location redSpawn = player.getLocation();
-        JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
-        jsonCaptureTheFlag.setRedSpawn(JSONRedSpawn);
-        sendBaseComponent(
-            new ComponentBuilder("Red spawn set for Capture the Flag.")
-                .color(Style.INFO)
-                .create(),
-            player);
+    public void setRedFlag(Player player){
+        //TODO: Implement setRedFlag
     }
     @Override
     public void setMaxPlayers(Integer maxPlayers, Player player) {
@@ -50,14 +39,7 @@ public class CaptureTheFlagEditor implements GamemodeEditor, RedBlueTeamEditor {
             player);
     }
     @Override
-    public String getGamemode() {return "Capture the Flag";}
-
-    @Override
-    public void setMap(JSONMap map) {
-        if(map.getJSONCaptureTheFlag() == null)
-            map.setJSONCaptureTheFlag(new JSONCaptureTheFlag());
-        this.jsonCaptureTheFlag = map.getJSONCaptureTheFlag();
-    }
+    public String getGamemode() {return Gamemodes.CAPTURETHEFLAG;}
 
     @Override
     public String[] getInfo(){

@@ -4,16 +4,15 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONInfected;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class InfectedEditor implements GamemodeEditor{
+public class InfectedEditor implements GamemodeEditor {
     JSONInfected jsonInfected;
     private InfectedEditor(){}
     public InfectedEditor(JSONMap map){
@@ -51,13 +50,6 @@ public class InfectedEditor implements GamemodeEditor{
             player);
     }
     public String getGamemode(){return Gamemodes.INFECTED;}
-
-    @Override
-    public void setMap(JSONMap map) {
-        if(map.getJSONInfected() == null)
-            map.setJSONInfected(new JSONInfected());
-        this.jsonInfected = map.getJSONInfected();
-    }
 
     @Override
     public String[] getInfo(){

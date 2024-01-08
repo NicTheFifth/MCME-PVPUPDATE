@@ -49,9 +49,7 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                     .then(
                         SetInfectedSurvivorSpawn())
                     .then(
-                        SetRunnerDeathSpawn()
-                    )
-            )
+                        SetRunnerDeathSpawn()))
             .then(
                 AddSpawn())
             .then(
@@ -150,7 +148,7 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
         return HelpfulLiteralBuilder.literal("delCapture")
                 .requires(Requirements::canEditCapture)
                 .then(Arguments.CapturePointIndex()
-                        .executes(EditExecutor::DelCapture));
+                        .executes(EditExecutor::DeleteCapture));
     }
     private LiteralArgumentBuilder<McmeCommandSender> GetMapState(){
         return null; //TODO: Implement GetMapState command

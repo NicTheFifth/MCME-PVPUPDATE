@@ -5,6 +5,7 @@ import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.*;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
@@ -182,13 +183,11 @@ public class MapEditor {
     }
     public void setMap(String mapName, Player player){
         map = PVPPlugin.getInstance().getMaps().get(mapName);
-        if(gamemodeEditor != null)
-            gamemodeEditor.setMap(map);
+        gamemodeEditor = null;
         sendBaseComponent(new ComponentBuilder(String.format("Selected %s",
             mapName)).color(Style.INFO).create(), player);
 
     }
-
     public GamemodeEditor getGamemodeEditor(){
         return gamemodeEditor;
     }

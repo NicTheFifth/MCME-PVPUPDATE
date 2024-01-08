@@ -1,8 +1,9 @@
 package com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes;
 
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
+import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONGamemode;
 
-public class JSONDeathRun extends JSONGamemode{
+public class JSONDeathRun extends JSONGamemode {
     JSONLocation deathSpawn;
     JSONLocation runnerSpawn;
     JSONLocation goal;

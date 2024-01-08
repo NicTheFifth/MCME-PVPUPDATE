@@ -2,7 +2,7 @@ package com.mcmiddleearth.pvpplugin.command.argumentTypes;
 
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.GamemodeEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;

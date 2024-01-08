@@ -1,4 +1,4 @@
-package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
+package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions;
 
 import org.bukkit.entity.Player;
 

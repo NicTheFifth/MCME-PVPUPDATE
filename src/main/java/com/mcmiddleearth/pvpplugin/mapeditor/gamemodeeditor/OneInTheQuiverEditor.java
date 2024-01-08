@@ -4,6 +4,8 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONOneInTheQuiver;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class OneInTheQuiverEditor implements GamemodeEditor,SpawnListEditor{
+public class OneInTheQuiverEditor implements GamemodeEditor, SpawnListEditor {
     JSONOneInTheQuiver jsonOneInTheQuiver;
     private OneInTheQuiverEditor(){}
     public OneInTheQuiverEditor(JSONMap map){
@@ -55,14 +57,6 @@ public class OneInTheQuiverEditor implements GamemodeEditor,SpawnListEditor{
     }
     @Override
     public String getGamemode(){return "One in the Quiver";}
-    @Override
-    public void setMap(JSONMap map) {
-        if(map.getJSONOneInTheQuiver() == null)
-            map.setJSONOneInTheQuiver(new JSONOneInTheQuiver());
-        if(map.getJSONOneInTheQuiver().getSpawns() == null)
-            map.getJSONOneInTheQuiver().setSpawns(new ArrayList<>());
-        this.jsonOneInTheQuiver = map.getJSONOneInTheQuiver();
-    }
 
     @Override
     public String[] getInfo(){

@@ -4,7 +4,7 @@ import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.InfectedEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.RedBlueTeamEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.command.argumentTypes.*;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
@@ -17,7 +17,7 @@ public class Arguments {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAP_NAME, ExistingMaps());
     }
     private static CommandStringArgument ExistingMaps() {
-        return new CommandStringArgument((HashSet<String>) PVPPlugin.getInstance().getMaps().keySet());
+        return new CommandStringArgument(PVPPlugin.getInstance().getMaps().keySet());
     }
     public static HelpfulRequiredArgumentBuilder<String> NonExistingMap(){
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAP_NAME, new NonExistingMapArgument());
@@ -59,7 +59,7 @@ public class Arguments {
     }
     public static HelpfulRequiredArgumentBuilder<String> RedBlueSpawnArgument() {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
-            new SpawnArgument<>(RedBlueTeamEditor.class,"blue", "red"));
+            new SpawnArgument<>(RedBlueSpawnEditor.class,RedBlueSpawnEditor.getSpawns()));
     }
     public static HelpfulRequiredArgumentBuilder<String> InfectedSurvivorSpawnArgument() {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,

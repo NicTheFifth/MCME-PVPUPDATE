@@ -4,6 +4,8 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamConquest;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class TeamConquestEditor implements GamemodeEditor, RedBlueTeamEditor {
+public class TeamConquestEditor extends RedBlueSpawnEditor {
     JSONTeamConquest jsonTeamConquest;
     private TeamConquestEditor(){}
 
@@ -53,10 +55,10 @@ public class TeamConquestEditor implements GamemodeEditor, RedBlueTeamEditor {
                 .create(),
             player);
     }
-    public void DeleteGoal(int toDelete, Player player){
+    public void DeleteCapturePoint(int toDelete, Player player){
         jsonTeamConquest.getCapturePoints().remove(toDelete);
         sendBaseComponent(
-            new ComponentBuilder("Goal removed from Team Conquest.")
+            new ComponentBuilder("Capture point removed from Team Conquest.")
                 .color(Style.INFO)
                 .create(),
             player);
@@ -71,15 +73,6 @@ public class TeamConquestEditor implements GamemodeEditor, RedBlueTeamEditor {
     }
     @Override
     public String getGamemode(){return "Team Conquest";}
-
-    @Override
-    public void setMap(JSONMap map) {
-        if(map.getJSONTeamConquest() == null)
-            map.setJSONTeamConquest(new JSONTeamConquest());
-        if(map.getJSONTeamConquest().getCapturePoints() == null)
-            map.getJSONTeamConquest().setCapturePoints(new ArrayList<>());
-        this.jsonTeamConquest = map.getJSONTeamConquest();
-    }
 
     @Override
     public String[] getInfo(){

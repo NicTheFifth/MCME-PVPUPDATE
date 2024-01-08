@@ -4,12 +4,15 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.*;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mojang.brigadier.context.CommandContext;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -28,7 +31,7 @@ public class EditExecutor {
                 }
                 return 0;
             }*/
-    public static int CreateMap(CommandContext<McmeCommandSender> c){
+    public static int CreateMap(@NotNull CommandContext<McmeCommandSender> c){
         Player player = (Player) c.getSource();
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
 
@@ -38,7 +41,7 @@ public class EditExecutor {
             new MapEditor(newMap, player));
         return 1;
     }
-    public static int SelectMap(CommandContext<McmeCommandSender> c){
+    public static int SelectMap(@NotNull CommandContext<McmeCommandSender> c){
         Player player = (Player) c.getSource();
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
         Optional<MapEditor> result = getMapEditor(player);
@@ -52,7 +55,7 @@ public class EditExecutor {
             new MapEditor(map, player));
         return 1;
     }
-    public static int SetArea(CommandContext<McmeCommandSender> c){
+    public static int SetArea(@NotNull CommandContext<McmeCommandSender> c){
         Player player = (Player) c.getSource();
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -62,7 +65,7 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int SetTitle(CommandContext<McmeCommandSender> c) {
+    public static int SetTitle(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
         Optional<MapEditor> result = getMapEditor(player);
@@ -73,7 +76,7 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int SetRP(CommandContext<McmeCommandSender> c) {
+    public static int SetRP(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         String rpName = c.getArgument(ArgumentNames.RESOURCEPACK, String.class);
         Optional<MapEditor> result = getMapEditor(player);
@@ -84,7 +87,7 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int SetGamemode(CommandContext<McmeCommandSender> c) {
+    public static int SetGamemode(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         String gamemode = c.getArgument("gamemode", String.class);
         Optional<MapEditor> result = getMapEditor(player);
@@ -95,7 +98,7 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int SetMax(CommandContext<McmeCommandSender> c) {
+    public static int SetMax(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         Integer max = c.getArgument("amount", Integer.class);
         Optional<MapEditor> result = getMapEditor(player);
@@ -113,7 +116,7 @@ public class EditExecutor {
      * @param c context needed to do the required action.
      * @return int - 1 if finished successfully or 0 if failed.
      */
-    public static int EditGoal(CommandContext<McmeCommandSender> c) {
+    public static int EditGoal(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -129,7 +132,7 @@ public class EditExecutor {
      * @param c context needed to do the required action.
      * @return int - 1 if finished successfully or 0 if failed.
      */
-    public static int CreateCapture(CommandContext<McmeCommandSender> c) {
+    public static int CreateCapture(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -140,19 +143,19 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int DelCapture(CommandContext<McmeCommandSender> c) {
+    public static int DeleteCapture(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         Integer point = c.getArgument(ArgumentNames.INDEX, Integer.class);
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
             ((TeamConquestEditor)result.get().getGamemodeEditor())
-                .DeleteGoal(point, player);
+                .DeleteCapturePoint(point, player);
             return 1;
         }
         return 0;
     }
-    public static int setMapSpawn(CommandContext<McmeCommandSender> c){
+    public static int setMapSpawn(@NotNull CommandContext<McmeCommandSender> c){
         Player player = (Player) c.getSource();
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -162,7 +165,7 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int AddSpawn(CommandContext<McmeCommandSender> c) {
+    public static int AddSpawn(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -172,7 +175,7 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int DelSpawn(CommandContext<McmeCommandSender> c) {
+    public static int DelSpawn(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         Integer point = c.getArgument(ArgumentNames.INDEX, Integer.class);
         Optional<MapEditor> result = getMapEditor(player);
@@ -184,24 +187,24 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int SetRedBlueSpawn(CommandContext<McmeCommandSender> c) {
+    public static int SetRedBlueSpawn(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
-            if(Objects.equals(spawn, "blue"))
-                ((RedBlueTeamEditor)result.get().getGamemodeEditor())
+            if(Objects.equals(spawn, RedBlueSpawnEditor.BlueSpawn()))
+                ((RedBlueSpawnEditor)result.get().getGamemodeEditor())
                     .setBlueSpawn(player);
-            else
-                ((RedBlueTeamEditor)result.get().getGamemodeEditor())
+            if(Objects.equals(spawn, RedBlueSpawnEditor.RedSpawn()))
+                ((RedBlueSpawnEditor)result.get().getGamemodeEditor())
                     .setRedSpawn(player);
             return 1;
         }
         return 0;
     }
-    public static int SetInfectedSurvivorSpawn(CommandContext<McmeCommandSender> c) {
+    public static int SetInfectedSurvivorSpawn(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
@@ -218,7 +221,7 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int SetRunnerDeathSpawn(CommandContext<McmeCommandSender> c) {
+    public static int SetRunnerDeathSpawn(@NotNull CommandContext<McmeCommandSender> c) {
         Player player = (Player) c.getSource();
         String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
@@ -244,7 +247,7 @@ public class EditExecutor {
      * editor is found of the player or the found map editor.
      *
      */
-    public static Optional<MapEditor> getMapEditor(Player player) {
+    public static Optional<MapEditor> getMapEditor(@NotNull Player player) {
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(player.getUniqueId());
         if(me == null) {
             sendBaseComponent(new ComponentBuilder("Please select which map you " +

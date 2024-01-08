@@ -1,24 +1,24 @@
 package com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes;
 
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
+import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
 
-public class JSONCaptureTheFlag extends JSONGamemode{
-    JSONLocation blueSpawn;
-    JSONLocation redSpawn;
+public class JSONCaptureTheFlag extends JSONRedBlueSpawnGamemode {
+    JSONLocation blueFlag;
+    JSONLocation redFlag;
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
-    public JSONLocation getBlueSpawn() {
-        return this.blueSpawn;
+    public JSONLocation getBlueFlag() {
+        return this.blueFlag;
     }
-    public void setBlueSpawn(final JSONLocation blueSpawn) {
-        this.blueSpawn = blueSpawn;
+    public void setBlueFlag(final JSONLocation blueFlag) {
+        this.blueFlag = blueFlag;
     }
-
-    public JSONLocation getRedSpawn() {
-        return this.redSpawn;
+    public JSONLocation getRedFlag() {
+        return this.redFlag;
     }
-    public void setRedSpawn(final JSONLocation redSpawn) {
-        this.redSpawn = redSpawn;
+    public void setRedFlag(final JSONLocation redFlag) {
+        this.redFlag = redFlag;
     }
     //</editor-fold>
 }
