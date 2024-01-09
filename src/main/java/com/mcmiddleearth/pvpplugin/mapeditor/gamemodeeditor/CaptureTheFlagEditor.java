@@ -13,13 +13,12 @@ import org.bukkit.entity.Player;
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class CaptureTheFlagEditor extends RedBlueSpawnEditor{
-    JSONCaptureTheFlag jsonCaptureTheFlag;
     private CaptureTheFlagEditor(){}
     public CaptureTheFlagEditor(JSONMap map){
         setDisplayString("Capture the Flag");
         if(map.getJSONCaptureTheFlag() == null)
             map.setJSONCaptureTheFlag(new JSONCaptureTheFlag());
-        this.jsonCaptureTheFlag = map.getJSONCaptureTheFlag();
+        this.jsonGamemode = map.getJSONCaptureTheFlag();
 
     }
     public void setBlueFlag(Player player){
@@ -29,25 +28,18 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor{
         //TODO: Implement setRedFlag
     }
     @Override
-    public void setMaxPlayers(Integer maxPlayers, Player player) {
-        jsonCaptureTheFlag.setMaximumPlayers(maxPlayers);
-        sendBaseComponent(
-            new ComponentBuilder(String.format("Set the max players to %d.",
-                maxPlayers))
-                .color(Style.INFO)
-                .create(),
-            player);
-    }
-    @Override
     public String getGamemode() {return Gamemodes.CAPTURETHEFLAG;}
 
     @Override
     public String[] getInfo(){
         return new String[]{
                 String.format(Style.INFO + "Current selected gamemode: Capture the Flag."),
-                String.format(Style.INFO + "Max players: %d", jsonCaptureTheFlag.getMaximumPlayers()),
-                String.format(Style.INFO + "Blue spawn set: %b", jsonCaptureTheFlag.getBlueSpawn()),
-                String.format(Style.INFO + "Red spawn set: %b", jsonCaptureTheFlag.getRedSpawn())
+                String.format(Style.INFO + "Max players: %d",
+                    jsonGamemode.getMaximumPlayers()),
+                String.format(Style.INFO + "Blue spawn set: %b",
+                    jsonGamemode.getBlueSpawn()),
+                String.format(Style.INFO + "Red spawn set: %b",
+                    jsonGamemode.getRedSpawn())
         };
     }
 }

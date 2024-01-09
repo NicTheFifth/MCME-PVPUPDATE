@@ -2,8 +2,10 @@ package com.mcmiddleearth.pvpplugin.command.commandParser;
 
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.Permissions;
@@ -24,10 +26,16 @@ public class Requirements {
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(p.getUniqueId());
         if(me == null)
             return false;
-        return Arrays.stream(gamemodes).anyMatch(gamemode -> me.getGamemodeEditor().getGamemode().equals(gamemode));
+        return Arrays.stream(gamemodes).anyMatch(gamemode -> {
+            GamemodeEditor ge =
+                me.getGamemodeEditor();
+                    if(ge == null)
+                        return false;
+                    return ge.getGamemode().equals(gamemode);
+        });
     }
     public static boolean allGamemode(McmeCommandSender c) {
-        Player source = (Player)c;
+        Player source = CommandUtil.getPlayer(c);
         MapEditor me =
             PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         if(me == null)
@@ -35,16 +43,16 @@ public class Requirements {
         return (me.getGamemodeEditor() != null);
     }
     public static boolean canEditGoal(McmeCommandSender c) {
-        Player source = (Player)c;
+        Player source = CommandUtil.getPlayer(c);
         return isState(source, Gamemodes.DEATHRUN);
     }
     public static boolean canEditCapture(McmeCommandSender c) {
-        Player source = (Player)c;
+        Player source = CommandUtil.getPlayer(c);
         return isState(source, Gamemodes.TEAMCONQUEST);
     }
 
     public static boolean canEditSpawnList(McmeCommandSender c) {
-        Player source = (Player)c;
+        Player source = CommandUtil.getPlayer(c);
         MapEditor me =
             PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         if(me == null)

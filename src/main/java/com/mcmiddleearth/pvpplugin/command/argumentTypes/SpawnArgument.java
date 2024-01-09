@@ -1,6 +1,8 @@
 package com.mcmiddleearth.pvpplugin.command.argumentTypes;
 
+import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
 import com.mojang.brigadier.StringReader;
@@ -27,16 +29,19 @@ public class SpawnArgument<T> implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
-        Player source = (Player) context.getSource();
-        if(source == null)
+        Player source = CommandUtil.getPlayer((McmeCommandSender) context.getSource());
+        if(source == null) {
             return builder.buildFuture();
+        }
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-        if(me == null)
+        if(me == null) {
             return builder.buildFuture();
+        }
         GamemodeEditor gamemodeEditor = me.getGamemodeEditor();
         if(gamemodeEditor == null ||
-            !this.type.isInstance(gamemodeEditor.getClass()))
+            !this.type.isAssignableFrom(gamemodeEditor.getClass())) {
             return builder.buildFuture();
+        }
 //
 //        if(Objects.equals(map.getGamemode(), "Free For All"))
 //            options.add("spawn");

@@ -3,6 +3,7 @@ package com.mcmiddleearth.pvpplugin.command.executor;
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.*;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
@@ -32,7 +33,7 @@ public class EditExecutor {
                 return 0;
             }*/
     public static int CreateMap(@NotNull CommandContext<McmeCommandSender> c){
-        Player player = (Player) c.getSource();
+        Player player = CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
 
         JSONMap newMap = new JSONMap(mapName);
@@ -42,7 +43,7 @@ public class EditExecutor {
         return 1;
     }
     public static int SelectMap(@NotNull CommandContext<McmeCommandSender> c){
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -56,7 +57,7 @@ public class EditExecutor {
         return 1;
     }
     public static int SetArea(@NotNull CommandContext<McmeCommandSender> c){
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
@@ -66,7 +67,7 @@ public class EditExecutor {
         return 0;
     }
     public static int SetTitle(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -77,7 +78,7 @@ public class EditExecutor {
         return 0;
     }
     public static int SetRP(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         String rpName = c.getArgument(ArgumentNames.RESOURCEPACK, String.class);
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -88,7 +89,7 @@ public class EditExecutor {
         return 0;
     }
     public static int SetGamemode(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         String gamemode = c.getArgument("gamemode", String.class);
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -99,7 +100,7 @@ public class EditExecutor {
         return 0;
     }
     public static int SetMax(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         Integer max = c.getArgument("amount", Integer.class);
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -117,7 +118,7 @@ public class EditExecutor {
      * @return int - 1 if finished successfully or 0 if failed.
      */
     public static int EditGoal(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
@@ -133,7 +134,7 @@ public class EditExecutor {
      * @return int - 1 if finished successfully or 0 if failed.
      */
     public static int CreateCapture(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
@@ -144,7 +145,7 @@ public class EditExecutor {
         return 0;
     }
     public static int DeleteCapture(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         Integer point = c.getArgument(ArgumentNames.INDEX, Integer.class);
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -156,7 +157,7 @@ public class EditExecutor {
         return 0;
     }
     public static int setMapSpawn(@NotNull CommandContext<McmeCommandSender> c){
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
@@ -166,7 +167,7 @@ public class EditExecutor {
         return 0;
     }
     public static int AddSpawn(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
@@ -176,7 +177,7 @@ public class EditExecutor {
         return 0;
     }
     public static int DelSpawn(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         Integer point = c.getArgument(ArgumentNames.INDEX, Integer.class);
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -188,7 +189,7 @@ public class EditExecutor {
         return 0;
     }
     public static int SetRedBlueSpawn(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
         Optional<MapEditor> result = getMapEditor(player);
@@ -205,7 +206,7 @@ public class EditExecutor {
         return 0;
     }
     public static int SetInfectedSurvivorSpawn(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
         Optional<MapEditor> result = getMapEditor(player);
@@ -222,7 +223,7 @@ public class EditExecutor {
         return 0;
     }
     public static int SetRunnerDeathSpawn(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player = (Player) c.getSource();
+        Player player =  CommandUtil.getPlayer(c.getSource());
         String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
         Optional<MapEditor> result = getMapEditor(player);

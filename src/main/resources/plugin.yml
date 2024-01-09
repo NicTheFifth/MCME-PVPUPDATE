@@ -7,8 +7,8 @@ api-version: 1.19
 
 commands:
   mapedit:
-    description: edit/create new pvp maps
     usage: /mapedit <arguments>
+    description: edit/create new pvp maps
   pvp:
     description: main command used for running pvp
     usage: /pvp <arguments>

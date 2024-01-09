@@ -6,6 +6,9 @@ import org.bukkit.entity.Player;
 
 public class CommandUtil {
 
+    public static Player getPlayer(McmeCommandSender sender){
+       return ((Player)((PVPCommandSender) sender).getSender());
+    }
     public static void sendBaseComponent(BaseComponent[] baseComponents,
                                           Player player){
         player.sendMessage(BaseComponent.toLegacyText(baseComponents));

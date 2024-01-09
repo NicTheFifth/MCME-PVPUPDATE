@@ -19,7 +19,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MapEditCommand extends AbstractCommandHandler implements TabExecutor {
 
@@ -31,7 +34,7 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
             .requires(Requirements::isMapEditor)
-            .requires(sender -> sender instanceof Player)
+            .requires(sender -> ((PVPCommandSender)sender).getSender() instanceof Player)
             .then(
                 CreateNewMap())
             .then(
@@ -49,7 +52,8 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                     .then(
                         SetInfectedSurvivorSpawn())
                     .then(
-                        SetRunnerDeathSpawn()))
+                        SetRunnerDeathSpawn())
+                        )
             .then(
                 AddSpawn())
             .then(
@@ -163,7 +167,9 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
     //</editor-fold>
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        McmeCommandSender wrappedSender = new PVPCommandSender(sender);
+        Logger.getLogger("PVPPlugin").log(Level.INFO,
+            String.join(",", args));
+        PVPCommandSender wrappedSender = new PVPCommandSender(sender);
         execute(wrappedSender, args);
         return true;
     }

@@ -1,5 +1,7 @@
 package com.mcmiddleearth.pvpplugin.command.argumentTypes;
 
+import com.mcmiddleearth.command.McmeCommandSender;
+import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
 import com.mojang.brigadier.StringReader;
@@ -21,7 +23,7 @@ public class SpawnIndexArgument implements ArgumentType<Integer> {
     }
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        Player player = (Player) context.getSource();
+        Player player = CommandUtil.getPlayer((McmeCommandSender) context.getSource());
         Optional<MapEditor> mapEditor = getMapEditor(player);
         if(!mapEditor.isPresent())
             return builder.buildFuture();
