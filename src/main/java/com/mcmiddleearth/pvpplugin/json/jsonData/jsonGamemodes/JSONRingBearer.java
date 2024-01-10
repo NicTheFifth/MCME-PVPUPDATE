@@ -1,6 +1,6 @@
 package com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes;
 
-import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
+import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnListGamemode;
 
-public class JSONRingBearer extends JSONRedBlueSpawnGamemode {
+public class JSONRingBearer extends JSONRedBlueSpawnListGamemode {
 }

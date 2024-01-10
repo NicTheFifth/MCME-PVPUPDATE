@@ -6,6 +6,7 @@ import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnListEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.Permissions;
@@ -57,6 +58,7 @@ public class Requirements {
             PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         if(me == null)
             return false;
-        return me.getGamemodeEditor() instanceof SpawnListEditor;
+        return me.getGamemodeEditor() instanceof SpawnListEditor ||
+               me.getGamemodeEditor() instanceof RedBlueSpawnListEditor;
     }
 }

@@ -52,12 +52,18 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                     .then(
                         SetInfectedSurvivorSpawn())
                     .then(
-                        SetRunnerDeathSpawn())
-                        )
+                        SetRunnerDeathSpawn()))
             .then(
-                AddSpawn())
+                AddSpawn()
+                    .then(
+                        AddRedBlueSpawn()))
+            .then(HelpfulLiteralBuilder.literal("deletespawn")
+                .requires(Requirements::canEditSpawnList)
             .then(
                 DeleteSpawn())
+                    .then(
+                        DeleteRedBlueSpawn()
+                    ))
             .then(
                 SelectGamemode())
             .then(
@@ -120,12 +126,19 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
             .requires(Requirements::canEditSpawnList)
             .executes(EditExecutor::AddSpawn);
     }
-    private ArgumentBuilder<McmeCommandSender,?> DeleteSpawn() {
-        return HelpfulLiteralBuilder.literal("deletespawn")
-            .requires(Requirements::canEditSpawnList)
-            .then(Arguments.GetSpawns()
-                .executes(EditExecutor::DelSpawn));
+    private static HelpfulRequiredArgumentBuilder<String> AddRedBlueSpawn(){
+        return Arguments.RedBlueSpawnListArgument()
+            .executes(EditExecutor::AddRedBlueSpawn);
+    }
+    private static ArgumentBuilder<McmeCommandSender,?> DeleteSpawn() {
+        return Arguments.GetSpawns()
+                .executes(EditExecutor::DelSpawn);
 
+    }
+    private static ArgumentBuilder<McmeCommandSender,?> DeleteRedBlueSpawn(){
+        return Arguments.RedBlueSpawnListArgument()
+            .then(Arguments.GetRedBlueSpawns()
+                .executes(EditExecutor::DeleteRedBlueSpawn));
     }
     private static LiteralArgumentBuilder<McmeCommandSender> SelectGamemode(){
         return HelpfulLiteralBuilder.literal("gamemode")

@@ -5,6 +5,7 @@ import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.InfectedEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnListEditor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.command.argumentTypes.*;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
@@ -57,9 +58,21 @@ public class Arguments {
     private static SpawnIndexArgument SpawnIndexes(){
         return new SpawnIndexArgument();
     }
+    public static HelpfulRequiredArgumentBuilder<Integer> GetRedBlueSpawns(){
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
+            RedBlueSpawnIndexes());
+    }
+    private static RedBlueSpawnIndexArgument RedBlueSpawnIndexes(){
+        return new RedBlueSpawnIndexArgument();
+    }
     public static HelpfulRequiredArgumentBuilder<String> RedBlueSpawnArgument() {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
             new SpawnArgument<>(RedBlueSpawnEditor.class,RedBlueSpawnEditor.getSpawns()));
+    }
+    public static HelpfulRequiredArgumentBuilder<String> RedBlueSpawnListArgument() {
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
+            new SpawnArgument<>(RedBlueSpawnListEditor.class,
+                RedBlueSpawnListEditor.getSpawns()));
     }
     public static HelpfulRequiredArgumentBuilder<String> InfectedSurvivorSpawnArgument() {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,

@@ -9,25 +9,23 @@ import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public abstract class RedBlueSpawnEditor implements GamemodeEditor{
-    protected JSONRedBlueSpawnGamemode jsonGamemode;
+public abstract class RedBlueSpawnEditor extends GamemodeEditor{
     private String displayString;
     public void setBlueSpawn(Player player){
         Location blueSpawn = player.getLocation();
         JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
-        jsonGamemode.setBlueSpawn(JSONBlueSpawn);
+        ((JSONRedBlueSpawnGamemode)jsonGamemode).setBlueSpawn(JSONBlueSpawn);
         sendBaseComponent(
             new ComponentBuilder(String.format("Blue spawn set for %s.",
                 getDisplayString()))
                 .color(Style.INFO)
                 .create(),
             player);
-
     }
     public void setRedSpawn(Player player){
         Location redSpawn = player.getLocation();
         JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
-        jsonGamemode.setRedSpawn(JSONRedSpawn);
+        ((JSONRedBlueSpawnGamemode)jsonGamemode).setRedSpawn(JSONRedSpawn);
         sendBaseComponent(
             new ComponentBuilder(String.format("Red spawn set for %s.",
                 getDisplayString()))
@@ -35,6 +33,7 @@ public abstract class RedBlueSpawnEditor implements GamemodeEditor{
                 .create(),
             player);
     }
+
     @Override
     public void setMaxPlayers(Integer maxPlayers, Player player) {
         jsonGamemode.setMaximumPlayers(maxPlayers);
