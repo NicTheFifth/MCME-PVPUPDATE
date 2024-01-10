@@ -12,28 +12,18 @@ import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class DeathRunEditor implements GamemodeEditor {
-    JSONDeathRun jsonDeathRun;
+public class DeathRunEditor extends GamemodeEditor {
     private DeathRunEditor(){}
     public DeathRunEditor(JSONMap map){
         if(map.getJSONDeathRun() == null)
             map.setJSONDeathRun(new JSONDeathRun());
-        this.jsonDeathRun = map.getJSONDeathRun();
-    }
-    @Override
-    public void setMaxPlayers(Integer maxPlayers, Player player) {
-        jsonDeathRun.setMaximumPlayers(maxPlayers);
-        sendBaseComponent(
-            new ComponentBuilder(String.format("Set the max players to %d.",
-                maxPlayers))
-                .color(Style.INFO)
-                .create(),
-            player);
+        setDisplayString("Death Run");
+        this.jsonGamemode = map.getJSONDeathRun();
     }
     public void setDeathSpawn(Player player){
         Location deathSpawn = player.getLocation();
         JSONLocation JSONDeathSpawn = new JSONLocation(deathSpawn);
-        jsonDeathRun.setDeathSpawn(JSONDeathSpawn);
+        ((JSONDeathRun)jsonGamemode).setDeathSpawn(JSONDeathSpawn);
         sendBaseComponent(
             new ComponentBuilder("Death spawn set for Death Run.")
                 .color(Style.INFO)
@@ -44,7 +34,7 @@ public class DeathRunEditor implements GamemodeEditor {
     public void setRunnerSpawn(Player player){
         Location runnerSpawn = player.getLocation();
         JSONLocation JSONRunnerSpawn = new JSONLocation(runnerSpawn);
-        jsonDeathRun.setRunnerSpawn(JSONRunnerSpawn);
+        ((JSONDeathRun)jsonGamemode).setRunnerSpawn(JSONRunnerSpawn);
         sendBaseComponent(
             new ComponentBuilder("Runner spawn set for Death Run.")
                 .color(Style.INFO)
@@ -55,7 +45,7 @@ public class DeathRunEditor implements GamemodeEditor {
     public void setGoal(Player player){
         Location goal = player.getLocation();
         JSONLocation JSONGoal = new JSONLocation(goal);
-        jsonDeathRun.setGoal(JSONGoal);
+        ((JSONDeathRun)jsonGamemode).setGoal(JSONGoal);
 
         sendBaseComponent(
             new ComponentBuilder("Goal set for Death Run.")
@@ -73,9 +63,12 @@ public class DeathRunEditor implements GamemodeEditor {
     public String[] getInfo(){
         return new String[]{
                 String.format(Style.INFO + "Current selected gamemode: Death Run."),
-                String.format(Style.INFO + "Max players: %d", jsonDeathRun.getMaximumPlayers()),
-                String.format(Style.INFO + "Runner spawn set: %b", jsonDeathRun.getRunnerSpawn()),
-                String.format(Style.INFO + "Death spawn set: %b", jsonDeathRun.getDeathSpawn())
+                String.format(Style.INFO + "Max players: %d",
+                    jsonGamemode.getMaximumPlayers()),
+                String.format(Style.INFO + "Runner spawn set: %b",
+                    ((JSONDeathRun)jsonGamemode).getRunnerSpawn()),
+                String.format(Style.INFO + "Death spawn set: %b",
+                    ((JSONDeathRun)jsonGamemode).getDeathSpawn())
         };
     }
 }

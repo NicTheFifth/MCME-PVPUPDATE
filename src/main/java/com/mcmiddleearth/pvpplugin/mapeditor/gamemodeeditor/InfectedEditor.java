@@ -12,18 +12,18 @@ import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class InfectedEditor implements GamemodeEditor {
-    JSONInfected jsonInfected;
+public class InfectedEditor extends GamemodeEditor {
     private InfectedEditor(){}
     public InfectedEditor(JSONMap map){
         if(map.getJSONInfected() == null)
             map.setJSONInfected(new JSONInfected());
-        this.jsonInfected = map.getJSONInfected();
+        setDisplayString("Infected");
+        this.jsonGamemode = map.getJSONInfected();
     }
     public void setInfectedSpawn(Player player){
         Location infectedSpawn = player.getLocation();
         JSONLocation JSONInfectedSpawn = new JSONLocation(infectedSpawn);
-        jsonInfected.setInfectedSpawn(JSONInfectedSpawn);
+        ((JSONInfected)jsonGamemode).setInfectedSpawn(JSONInfectedSpawn);
         sendBaseComponent(
             new ComponentBuilder("Infected spawn set for Infected.")
                 .color(Style.INFO)
@@ -33,18 +33,9 @@ public class InfectedEditor implements GamemodeEditor {
     public void setSurvivorSpawn(Player player){
         Location survivorSpawn = player.getLocation();
         JSONLocation JSONSurvivorSpawn = new JSONLocation(survivorSpawn);
-        jsonInfected.setSurvivorSpawn(JSONSurvivorSpawn);
+        ((JSONInfected)jsonGamemode).setSurvivorSpawn(JSONSurvivorSpawn);
         sendBaseComponent(
             new ComponentBuilder("Survivor spawn set for Infected.")
-                .color(Style.INFO)
-                .create(),
-            player);
-    }
-    public void setMaxPlayers(Integer maxPlayers, Player player) {
-        jsonInfected.setMaximumPlayers(maxPlayers);
-        sendBaseComponent(
-            new ComponentBuilder(String.format("Set the max players to %d.",
-                maxPlayers))
                 .color(Style.INFO)
                 .create(),
             player);
@@ -55,9 +46,12 @@ public class InfectedEditor implements GamemodeEditor {
     public String[] getInfo(){
         return new String[]{
                 String.format(Style.INFO + "Current selected gamemode: Infected."),
-                String.format(Style.INFO + "Max players: %d", jsonInfected.getMaximumPlayers()),
-                String.format(Style.INFO + "Survivor spawn set: %b", jsonInfected.getSurvivorSpawn()),
-                String.format(Style.INFO + "Infected spawn set: %b", jsonInfected.getInfectedSpawn())
+                String.format(Style.INFO + "Max players: %d",
+                    jsonGamemode.getMaximumPlayers()),
+                String.format(Style.INFO + "Survivor spawn set: %b",
+                    ((JSONInfected)jsonGamemode).getSurvivorSpawn()),
+                String.format(Style.INFO + "Infected spawn set: %b",
+                    ((JSONInfected)jsonGamemode).getInfectedSpawn())
         };
     }
 }
