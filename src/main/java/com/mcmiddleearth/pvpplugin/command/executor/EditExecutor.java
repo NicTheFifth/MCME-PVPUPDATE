@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
@@ -194,6 +196,8 @@ public class EditExecutor {
         String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
         Optional<MapEditor> result = getMapEditor(player);
+
+        Logger.getLogger("[PVPPlugin]").log(Level.INFO, spawn);
 
         if(result.isPresent()) {
             if(Objects.equals(spawn, RedBlueSpawnEditor.BlueSpawn()))

@@ -9,6 +9,9 @@ import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.command.executor.EditExecutor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.InfectedEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -19,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,148 +38,81 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
             .requires(Requirements::isMapEditor)
             .requires(sender -> ((PVPCommandSender)sender).getSender() instanceof Player)
             .then(
-                CreateNewMap())
+                HelpfulLiteralBuilder.literal("create")
+                    .then(Arguments.NonExistingMap()
+                        .executes(EditExecutor::CreateMap)))
             .then(
-                RenameMap())
+                HelpfulLiteralBuilder.literal("rename")
+                    .then(Arguments.NonExistingMap()
+                        .executes(EditExecutor::SetTitle)))
             .then(
-                SelectMap())
+                HelpfulLiteralBuilder.literal("select")
+                    .then(Arguments.ExistingMap()
+                        .executes(EditExecutor::SelectMap)))
             .then(
-                SetArea())
+                HelpfulLiteralBuilder.literal("setarea")
+                    .executes(EditExecutor::SetArea))
             .then(
-                SetRP())
+                HelpfulLiteralBuilder.literal("setrp")
+                    .then(Arguments.RPArgument()
+                        .executes(EditExecutor::SetRP)))
             .then(
-                SetMapSpawn()
+                HelpfulLiteralBuilder.literal("setspawn")
+                    .executes(EditExecutor::setMapSpawn)
                     .then(
-                        SetRedBlueSpawn())
+                        Arguments.RedBlueSpawnArgument()
+                            .requires(c->Requirements.isGamemodeEditorOf(RedBlueSpawnEditor.class, c))
+                            .executes(EditExecutor::SetRedBlueSpawn))
                     .then(
-                        SetInfectedSurvivorSpawn())
+                        Arguments.RunnerDeathSpawnArgument()
+                            .requires(c->Requirements.isGamemodeEditorOf(DeathRunEditor.class, c))
+                            .executes(EditExecutor::SetRunnerDeathSpawn))
                     .then(
-                        SetRunnerDeathSpawn()))
+                        Arguments.InfectedSurvivorSpawnArgument()
+                            .requires(c->Requirements.isGamemodeEditorOf(InfectedEditor.class, c))
+                            .executes(EditExecutor::SetInfectedSurvivorSpawn)))
             .then(
-                AddSpawn()
+                HelpfulLiteralBuilder.literal("addspawn")
+                    .requires(Requirements::canEditSpawnList)
+                    .executes(EditExecutor::AddSpawn)
                     .then(
-                        AddRedBlueSpawn()))
+                        Arguments.RedBlueSpawnListArgument()
+                            .executes(EditExecutor::AddRedBlueSpawn)))
             .then(HelpfulLiteralBuilder.literal("deletespawn")
                 .requires(Requirements::canEditSpawnList)
+                .then(
+                    Arguments.GetSpawns()
+                        .executes(EditExecutor::DelSpawn))
+                        .then(
+                            Arguments.RedBlueSpawnListArgument()
+                                .then(Arguments.GetRedBlueSpawns()
+                                    .executes(EditExecutor::DeleteRedBlueSpawn))))
             .then(
-                DeleteSpawn())
-                    .then(
-                        DeleteRedBlueSpawn()
-                    ))
+                HelpfulLiteralBuilder.literal("gamemode")
+                    .then(Arguments.GetGamemodes()
+                        .executes(EditExecutor::SetGamemode)))
             .then(
-                SelectGamemode())
+                HelpfulLiteralBuilder.literal("setMax")
+                    .requires(Requirements::allGamemode)
+                    .then(HelpfulRequiredArgumentBuilder.argument("amount",IntegerArgumentType.integer(1))
+                        .executes(EditExecutor::SetMax)))
             .then(
-                SetMax())
+                HelpfulLiteralBuilder.literal("setGoal")
+                    .requires(Requirements::canEditGoal)
+                    .executes(EditExecutor::EditGoal))
             .then(
-                SetGoal())
+                HelpfulLiteralBuilder.literal("addCapture")
+                    .requires(Requirements::canEditCapture)
+                    .executes(EditExecutor::CreateCapture))
             .then(
-                SetCapture())
-            .then(
-                DeleteCapture())
+                HelpfulLiteralBuilder.literal("delCapture")
+                    .requires(Requirements::canEditCapture)
+                    .then(Arguments.CapturePointIndex()
+                        .executes(EditExecutor::DeleteCapture)))
             ;
         return commandNodeBuilder;
     }
 
-
-
-    //<editor-fold defaultstate="collapsed" desc="Individual Commands">
-    private LiteralArgumentBuilder<McmeCommandSender> SelectMap() {
-        return HelpfulLiteralBuilder.literal("select")
-                .then(Arguments.ExistingMap()
-                        .executes(EditExecutor::SelectMap));
-    }
-    private LiteralArgumentBuilder<McmeCommandSender> CreateNewMap() {
-        return HelpfulLiteralBuilder.literal("create")
-                .then(Arguments.NonExistingMap()
-                        .executes(EditExecutor::CreateMap));
-    }
-    private LiteralArgumentBuilder<McmeCommandSender> SetArea(){
-        return HelpfulLiteralBuilder.literal("setarea")
-                .executes(EditExecutor::SetArea);
-    }
-    private LiteralArgumentBuilder<McmeCommandSender> RenameMap() {
-        return HelpfulLiteralBuilder.literal("rename")
-                .then(Arguments.NonExistingMap()
-                        .executes(EditExecutor::SetTitle));
-    }
-    private LiteralArgumentBuilder<McmeCommandSender> SetRP(){
-        return HelpfulLiteralBuilder.literal("setrp")
-                .then(Arguments.RPArgument()
-                        .executes(EditExecutor::SetRP));
-    }
-    private LiteralArgumentBuilder<McmeCommandSender> SetMapSpawn(){
-        return HelpfulLiteralBuilder.literal("setSpawn")
-                .executes(EditExecutor::setMapSpawn);
-    }
-    private static HelpfulRequiredArgumentBuilder<String> SetRedBlueSpawn() {
-        return Arguments.RedBlueSpawnArgument()
-            .executes(EditExecutor::SetRedBlueSpawn);
-    }
-    private static HelpfulRequiredArgumentBuilder<String> SetInfectedSurvivorSpawn() {
-        return Arguments.InfectedSurvivorSpawnArgument()
-            .executes(EditExecutor::SetInfectedSurvivorSpawn);
-    }
-    private static HelpfulRequiredArgumentBuilder<String> SetRunnerDeathSpawn() {
-        return Arguments.RunnerDeathSpawnArgument()
-            .executes(EditExecutor::SetRunnerDeathSpawn);
-    }
-    private static LiteralArgumentBuilder<McmeCommandSender> AddSpawn() {
-        return HelpfulLiteralBuilder.literal("addspawn")
-            .requires(Requirements::canEditSpawnList)
-            .executes(EditExecutor::AddSpawn);
-    }
-    private static HelpfulRequiredArgumentBuilder<String> AddRedBlueSpawn(){
-        return Arguments.RedBlueSpawnListArgument()
-            .executes(EditExecutor::AddRedBlueSpawn);
-    }
-    private static ArgumentBuilder<McmeCommandSender,?> DeleteSpawn() {
-        return Arguments.GetSpawns()
-                .executes(EditExecutor::DelSpawn);
-
-    }
-    private static ArgumentBuilder<McmeCommandSender,?> DeleteRedBlueSpawn(){
-        return Arguments.RedBlueSpawnListArgument()
-            .then(Arguments.GetRedBlueSpawns()
-                .executes(EditExecutor::DeleteRedBlueSpawn));
-    }
-    private static LiteralArgumentBuilder<McmeCommandSender> SelectGamemode(){
-        return HelpfulLiteralBuilder.literal("gamemode")
-                .then(Arguments.GetGamemodes()
-                        .executes(EditExecutor::SetGamemode));
-    }
-    private static LiteralArgumentBuilder<McmeCommandSender> SetMax(){
-        return HelpfulLiteralBuilder.literal("setMax")
-                .requires(Requirements::allGamemode)
-                .then(HelpfulRequiredArgumentBuilder.argument("amount",IntegerArgumentType.integer(1))
-                        .executes(EditExecutor::SetMax));
-    }
-    private static LiteralArgumentBuilder<McmeCommandSender> SetGoal(){
-        return HelpfulLiteralBuilder.literal("setGoal")
-                .requires(Requirements::canEditGoal)
-                .executes(EditExecutor::EditGoal);
-    }
-    private LiteralArgumentBuilder<McmeCommandSender> SetCapture(){
-        return HelpfulLiteralBuilder.literal("addCapture")
-                .requires(Requirements::canEditCapture)
-                .executes(EditExecutor::CreateCapture);
-    }
-    private LiteralArgumentBuilder<McmeCommandSender> DeleteCapture(){
-        return HelpfulLiteralBuilder.literal("delCapture")
-                .requires(Requirements::canEditCapture)
-                .then(Arguments.CapturePointIndex()
-                        .executes(EditExecutor::DeleteCapture));
-    }
-    private LiteralArgumentBuilder<McmeCommandSender> GetMapState(){
-        return null; //TODO: Implement GetMapState command
-    }
-    private LiteralArgumentBuilder<McmeCommandSender> GetGamemodeState(){
-        return null; //TODO: Implement GetGamemodeState command
-    }
-
-    /* private LiteralArgumentBuilder<McmeCommandSender> ???(){
-        return
-    }*/
-    //</editor-fold>
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         Logger.getLogger("PVPPlugin").log(Level.INFO,

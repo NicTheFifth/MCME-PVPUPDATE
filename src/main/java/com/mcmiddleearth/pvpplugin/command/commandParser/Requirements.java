@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
+import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONGamemode;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnListEditor;
@@ -60,5 +61,16 @@ public class Requirements {
             return false;
         return me.getGamemodeEditor() instanceof SpawnListEditor ||
                me.getGamemodeEditor() instanceof RedBlueSpawnListEditor;
+    }
+    public static <T> boolean isGamemodeEditorOf(Class<T> checkedClass,
+                                               McmeCommandSender c){
+        Player source = CommandUtil.getPlayer(c);
+        MapEditor me =
+            PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null)
+            return false;
+        if(!checkedClass.isInstance(JSONGamemode.class))
+            return false;
+        return checkedClass.isAssignableFrom(me.getGamemodeEditor().getClass());
     }
 }
