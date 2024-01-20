@@ -89,23 +89,14 @@ public class MapEditor {
         File f = new File(PVPPlugin.getInstance().getMapDirectory() +
                 System.getProperty("file.separator") +
                 oldName);
+        map.setTitle(newName);
+        PVPPlugin.getInstance().getMaps().put(newName, map);
         try {
-            if(f.delete()){
-                map.setTitle(newName);
-                PVPPlugin.getInstance().getMaps().put(newName, map);
-                sendBaseComponent(
-                    new ComponentBuilder(String.format("%s has been renamed to %s.",
-                        oldName, newName))
-                        .color(Style.INFO)
-                        .create(),
-                    player);
-                sendShortStatus(player);
-                return;
-            }
+            f.delete();
             sendBaseComponent(
-                new ComponentBuilder(String.format("%s couldn't be deleted.",
-                    oldName))
-                    .color(Style.ERROR)
+                new ComponentBuilder(String.format("%s has been renamed to %s.",
+                    oldName, newName))
+                    .color(Style.INFO)
                     .create(),
                 player);
             sendShortStatus(player);

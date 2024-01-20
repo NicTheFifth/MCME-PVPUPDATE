@@ -13,6 +13,8 @@ import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.Permissions;
 import org.bukkit.entity.Player;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Requirements {
     public static boolean canRun(McmeCommandSender player){
@@ -69,7 +71,9 @@ public class Requirements {
             PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         if(me == null)
             return false;
-        if(!checkedClass.isInstance(JSONGamemode.class))
+        if(!GamemodeEditor.class.isAssignableFrom(checkedClass))
+            return false;
+        if(me.getGamemodeEditor() == null)
             return false;
         return checkedClass.isAssignableFrom(me.getGamemodeEditor().getClass());
     }

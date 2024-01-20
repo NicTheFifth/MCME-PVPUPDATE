@@ -8,6 +8,7 @@ import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
+import com.mcmiddleearth.pvpplugin.command.commandParser.gamemodeEditCommands.TeamSlayerEditCommand;
 import com.mcmiddleearth.pvpplugin.command.executor.EditExecutor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.InfectedEditor;
@@ -58,58 +59,13 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                         .executes(EditExecutor::SetRP)))
             .then(
                 HelpfulLiteralBuilder.literal("setspawn")
-                    .executes(EditExecutor::setMapSpawn)
-                    .then(
-                        Arguments.RedBlueSpawnArgument()
-                            .requires(c->Requirements.isGamemodeEditorOf(RedBlueSpawnEditor.class, c))
-                            .executes(EditExecutor::SetRedBlueSpawn))
-                    .then(
-                        Arguments.RunnerDeathSpawnArgument()
-                            .requires(c->Requirements.isGamemodeEditorOf(DeathRunEditor.class, c))
-                            .executes(EditExecutor::SetRunnerDeathSpawn))
-                    .then(
-                        Arguments.InfectedSurvivorSpawnArgument()
-                            .requires(c->Requirements.isGamemodeEditorOf(InfectedEditor.class, c))
-                            .executes(EditExecutor::SetInfectedSurvivorSpawn)))
-            .then(
-                HelpfulLiteralBuilder.literal("addspawn")
-                    .requires(Requirements::canEditSpawnList)
-                    .executes(EditExecutor::AddSpawn)
-                    .then(
-                        Arguments.RedBlueSpawnListArgument()
-                            .executes(EditExecutor::AddRedBlueSpawn)))
-            .then(HelpfulLiteralBuilder.literal("deletespawn")
-                .requires(Requirements::canEditSpawnList)
-                .then(
-                    Arguments.GetSpawns()
-                        .executes(EditExecutor::DelSpawn))
-                        .then(
-                            Arguments.RedBlueSpawnListArgument()
-                                .then(Arguments.GetRedBlueSpawns()
-                                    .executes(EditExecutor::DeleteRedBlueSpawn))))
+                    .executes(EditExecutor::setMapSpawn))
             .then(
                 HelpfulLiteralBuilder.literal("gamemode")
                     .then(Arguments.GetGamemodes()
                         .executes(EditExecutor::SetGamemode)))
-            .then(
-                HelpfulLiteralBuilder.literal("setMax")
-                    .requires(Requirements::allGamemode)
-                    .then(HelpfulRequiredArgumentBuilder.argument("amount",IntegerArgumentType.integer(1))
-                        .executes(EditExecutor::SetMax)))
-            .then(
-                HelpfulLiteralBuilder.literal("setGoal")
-                    .requires(Requirements::canEditGoal)
-                    .executes(EditExecutor::EditGoal))
-            .then(
-                HelpfulLiteralBuilder.literal("addCapture")
-                    .requires(Requirements::canEditCapture)
-                    .executes(EditExecutor::CreateCapture))
-            .then(
-                HelpfulLiteralBuilder.literal("delCapture")
-                    .requires(Requirements::canEditCapture)
-                    .then(Arguments.CapturePointIndex()
-                        .executes(EditExecutor::DeleteCapture)))
             ;
+        TeamSlayerEditCommand.addToCommandTree(commandNodeBuilder);
         return commandNodeBuilder;
     }
 

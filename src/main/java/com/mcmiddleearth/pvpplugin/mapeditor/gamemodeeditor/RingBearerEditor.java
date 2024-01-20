@@ -14,9 +14,9 @@ public class RingBearerEditor extends RedBlueSpawnListEditor {
     public RingBearerEditor(JSONMap map){
         if(map.getJSONRingBearer() == null)
             map.setJSONRingBearer(new JSONRingBearer());
-        if(map.getJSONRingBearer().getBlueSpawns().isEmpty())
+        if(map.getJSONRingBearer().getBlueSpawns() == null)
             map.getJSONRingBearer().setBlueSpawns(new ArrayList<>());
-        if(map.getJSONRingBearer().getRedSpawns().isEmpty())
+        if(map.getJSONRingBearer().getRedSpawns() == null)
             map.getJSONRingBearer().setRedSpawns(new ArrayList<>());
         setDisplayString("Ringbearer");
         jsonGamemode = map.getJSONRingBearer();
