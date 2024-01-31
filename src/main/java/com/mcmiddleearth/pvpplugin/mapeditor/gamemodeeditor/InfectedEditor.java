@@ -4,7 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONInfected;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
@@ -12,13 +12,14 @@ import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class InfectedEditor extends GamemodeEditor {
+public class InfectedEditor extends TeamSpawnEditor {
     private InfectedEditor(){}
     public InfectedEditor(JSONMap map){
         if(map.getJSONInfected() == null)
             map.setJSONInfected(new JSONInfected());
         setDisplayString("Infected");
         this.jsonGamemode = map.getJSONInfected();
+        initSpawnNames();
     }
     public void setInfectedSpawn(Player player){
         Location infectedSpawn = player.getLocation();
@@ -53,5 +54,11 @@ public class InfectedEditor extends GamemodeEditor {
                 String.format(Style.INFO + "Infected spawn set: %b",
                     ((JSONInfected)jsonGamemode).getInfectedSpawn())
         };
+    }
+
+    @Override
+    protected void initSpawnNames() {
+        getSpawnNames().put("infected", this::setInfectedSpawn);
+        getSpawnNames().put("survivor", this::setSurvivorSpawn);
     }
 }

@@ -4,7 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
@@ -12,13 +12,14 @@ import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class DeathRunEditor extends GamemodeEditor {
+public class DeathRunEditor extends TeamSpawnEditor {
     private DeathRunEditor(){}
     public DeathRunEditor(JSONMap map){
         if(map.getJSONDeathRun() == null)
             map.setJSONDeathRun(new JSONDeathRun());
         setDisplayString("Death Run");
         this.jsonGamemode = map.getJSONDeathRun();
+        initSpawnNames();
     }
     public void setDeathSpawn(Player player){
         Location deathSpawn = player.getLocation();
@@ -58,7 +59,6 @@ public class DeathRunEditor extends GamemodeEditor {
     public String getGamemode() {
         return Gamemodes.DEATHRUN;
     }
-
     @Override
     public String[] getInfo(){
         return new String[]{
@@ -70,5 +70,11 @@ public class DeathRunEditor extends GamemodeEditor {
                 String.format(Style.INFO + "Death spawn set: %b",
                     ((JSONDeathRun)jsonGamemode).getDeathSpawn())
         };
+    }
+
+    @Override
+    protected void initSpawnNames() {
+        getSpawnNames().put("death", this::setDeathSpawn);
+        getSpawnNames().put("runner", this::setRunnerSpawn);
     }
 }

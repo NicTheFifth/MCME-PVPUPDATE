@@ -5,8 +5,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.*;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnListEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.RedBlueSpawnEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
@@ -227,7 +226,7 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int SetRunnerDeathSpawn(@NotNull CommandContext<McmeCommandSender> c) {
+    public static int SetDeathrunSpawn(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
@@ -244,42 +243,6 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int AddRedBlueSpawn(CommandContext<McmeCommandSender> c) {
-        Player player = CommandUtil.getPlayer(c.getSource());
-        String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
-            String.class);
-        Optional<MapEditor> result = getMapEditor(player);
-
-        if(result.isPresent()) {
-            if(Objects.equals(spawn, RedBlueSpawnListEditor.BlueSpawn()))
-                ((RedBlueSpawnListEditor)result.get().getGamemodeEditor())
-                    .AddBlueSpawn(player);
-            if(Objects.equals(spawn, RedBlueSpawnListEditor.RedSpawn()))
-                ((RedBlueSpawnListEditor)result.get().getGamemodeEditor())
-                    .AddRedSpawn(player);
-            return 1;
-        }
-        return 0;
-    }
-public static int DeleteRedBlueSpawn(CommandContext<McmeCommandSender> c) {
-    Player player =  CommandUtil.getPlayer(c.getSource());
-    String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
-        String.class);
-    Integer point = c.getArgument(ArgumentNames.INDEX, Integer.class);
-    Optional<MapEditor> result = getMapEditor(player);
-
-    if(result.isPresent()) {
-        if(Objects.equals(spawn, RedBlueSpawnListEditor.BlueSpawn()))
-            ((RedBlueSpawnListEditor)result.get().getGamemodeEditor())
-                .DeleteBlueSpawn(point, player);
-        if(Objects.equals(spawn, RedBlueSpawnListEditor.RedSpawn()))
-            ((RedBlueSpawnListEditor)result.get().getGamemodeEditor())
-                .DeleteRedSpawn(point, player);
-        return 1;
-    }
-    return 0;
-
-}
     /**
      *
      * @param player A player of whom their map editor is requested.

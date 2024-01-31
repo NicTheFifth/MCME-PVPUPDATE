@@ -1,15 +1,20 @@
-package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions;
+package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
 
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnListGamemode;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnListEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public abstract class RedBlueSpawnListEditor extends GamemodeEditor{
+public class RedBlueSpawnListEditor extends TeamSpawnListEditor {
+
+    protected RedBlueSpawnListEditor(){
+        initSpawnListNames();
+    }
 
     public void AddBlueSpawn(Player player) {
         Location blueSpawn = player.getLocation();
@@ -21,7 +26,7 @@ public abstract class RedBlueSpawnListEditor extends GamemodeEditor{
                 .create(),
             player);
     }
-    public void DeleteBlueSpawn(int toDelete, Player player){
+    public void DeleteBlueSpawn(Player player, int toDelete){
         ((JSONRedBlueSpawnListGamemode)jsonGamemode).getBlueSpawns().remove(toDelete);
         sendBaseComponent(new ComponentBuilder(String.format("Blue spawn " +
                 "removed from %s.", getDisplayString()))
@@ -47,19 +52,27 @@ public abstract class RedBlueSpawnListEditor extends GamemodeEditor{
                 .create(),
             player);
     }
-    public static String[] getSpawns(){
-        return new String[]{BlueSpawn(), RedSpawn()};
-    }
-    public static String BlueSpawn(){
-        return "blue";
-    }
-    public static String RedSpawn(){
-        return "red";
-    }
     public Integer amountOfBlueSpawns(){
         return ((JSONRedBlueSpawnListGamemode)jsonGamemode).getBlueSpawns().size();
     }
     public Integer amountOfRedSpawns(){
         return ((JSONRedBlueSpawnListGamemode)jsonGamemode).getRedSpawns().size();
+    }
+    @Override
+    public String[] getInfo() {
+        return new String[0];
+    }
+    protected void initSpawnListNames() {
+        getSpawnListNames().put("blue",
+            new AddRemoveIndexTrio(
+                this::AddBlueSpawn,
+                player->index->DeleteBlueSpawn(player,index),
+                this::amountOfBlueSpawns));
+        getSpawnListNames().put("red",
+            new AddRemoveIndexTrio(
+                this::AddRedSpawn,
+                player -> index -> DeleteBlueSpawn(player,index),
+                this::amountOfRedSpawns
+            ));
     }
 }

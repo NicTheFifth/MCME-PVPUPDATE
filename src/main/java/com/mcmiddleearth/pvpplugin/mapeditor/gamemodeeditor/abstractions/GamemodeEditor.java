@@ -9,6 +9,7 @@ import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public abstract class GamemodeEditor {
     protected JSONGamemode jsonGamemode;
+    protected String gamemode;
     private String displayString;
     public void setMaxPlayers(Integer maxPlayers, Player player){
         jsonGamemode.setMaximumPlayers(maxPlayers);
@@ -25,6 +26,8 @@ public abstract class GamemodeEditor {
     protected String getDisplayString(){
         return this.displayString;
     }
-    public abstract String getGamemode();
+    public String getGamemode() {
+        return gamemode;
+    }
     public abstract String[] getInfo();
 }

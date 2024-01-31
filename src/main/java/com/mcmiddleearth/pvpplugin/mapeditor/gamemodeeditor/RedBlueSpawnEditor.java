@@ -1,16 +1,22 @@
-package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions;
+package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
 
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public abstract class RedBlueSpawnEditor extends GamemodeEditor{
+public class RedBlueSpawnEditor extends TeamSpawnEditor {
     private String displayString;
+
+    protected RedBlueSpawnEditor(){
+        initSpawnNames();
+    }
+
     public void setBlueSpawn(Player player){
         Location blueSpawn = player.getLocation();
         JSONLocation JSONBlueSpawn = new JSONLocation(blueSpawn);
@@ -44,10 +50,6 @@ public abstract class RedBlueSpawnEditor extends GamemodeEditor{
                 .create(),
             player);
     }
-
-    public static String[] getSpawns(){
-        return new String[]{BlueSpawn(), RedSpawn()};
-    }
     public static String BlueSpawn(){
         return "blue";
     }
@@ -60,5 +62,13 @@ public abstract class RedBlueSpawnEditor extends GamemodeEditor{
     }
     protected String getDisplayString(){
         return this.displayString;
+    }
+    @Override
+    public String[] getInfo() {
+        return new String[0];
+    }
+    protected void initSpawnNames() {
+        getSpawnNames().put("red", this::setBlueSpawn);
+        getSpawnNames().put("blue", this::setBlueSpawn);
     }
 }

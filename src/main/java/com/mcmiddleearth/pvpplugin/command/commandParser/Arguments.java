@@ -2,16 +2,10 @@ package com.mcmiddleearth.pvpplugin.command.commandParser;
 
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.InfectedEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnListEditor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.command.argumentTypes.*;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.statics.Resourcepacks;
-
-import java.util.HashSet;
 
 public class Arguments {
     public static HelpfulRequiredArgumentBuilder<String> ExistingMap() {
@@ -43,43 +37,5 @@ public class Arguments {
     }
     public static ExistingGamemodeArgument ExistingGamemodes() {
         return new ExistingGamemodeArgument();
-    }
-    public static HelpfulRequiredArgumentBuilder<Integer> CapturePointIndex(){
-        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
-            CapturePointIndexes());
-    }
-    private static CapturePointIndexArgument CapturePointIndexes() {
-        return new CapturePointIndexArgument();
-    }
-    public static HelpfulRequiredArgumentBuilder<Integer> GetSpawns() {
-        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
-            SpawnIndexes());
-    }
-    private static SpawnIndexArgument SpawnIndexes(){
-        return new SpawnIndexArgument();
-    }
-    public static HelpfulRequiredArgumentBuilder<Integer> GetRedBlueSpawns(){
-        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
-            RedBlueSpawnIndexes());
-    }
-    private static RedBlueSpawnIndexArgument RedBlueSpawnIndexes(){
-        return new RedBlueSpawnIndexArgument();
-    }
-    public static HelpfulRequiredArgumentBuilder<String> RedBlueSpawnArgument() {
-        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
-            new SpawnArgument<>(RedBlueSpawnEditor.class,RedBlueSpawnEditor.getSpawns()));
-    }
-    public static HelpfulRequiredArgumentBuilder<String> RedBlueSpawnListArgument() {
-        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
-            new SpawnArgument<>(RedBlueSpawnListEditor.class,
-                RedBlueSpawnListEditor.getSpawns()));
-    }
-    public static HelpfulRequiredArgumentBuilder<String> InfectedSurvivorSpawnArgument() {
-        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
-            new SpawnArgument<>(InfectedEditor.class,"infected", "survivor"));
-    }
-    public static HelpfulRequiredArgumentBuilder<String> RunnerDeathSpawnArgument() {
-        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
-            new SpawnArgument<>(DeathRunEditor.class,"runner", "death"));
     }
 }

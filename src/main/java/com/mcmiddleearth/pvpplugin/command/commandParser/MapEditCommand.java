@@ -6,15 +6,8 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
-import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
-import com.mcmiddleearth.pvpplugin.command.commandParser.gamemodeEditCommands.TeamSlayerEditCommand;
 import com.mcmiddleearth.pvpplugin.command.executor.EditExecutor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.InfectedEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.RedBlueSpawnEditor;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -43,7 +36,7 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                     .then(Arguments.NonExistingMap()
                         .executes(EditExecutor::CreateMap)))
             .then(
-                HelpfulLiteralBuilder.literal("rename")
+                ActiveGamemodeLiteral("rename")
                     .then(Arguments.NonExistingMap()
                         .executes(EditExecutor::SetTitle)))
             .then(
@@ -51,22 +44,27 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                     .then(Arguments.ExistingMap()
                         .executes(EditExecutor::SelectMap)))
             .then(
-                HelpfulLiteralBuilder.literal("setarea")
+                ActiveGamemodeLiteral("setarea")
                     .executes(EditExecutor::SetArea))
             .then(
-                HelpfulLiteralBuilder.literal("setrp")
+                ActiveGamemodeLiteral("setrp")
                     .then(Arguments.RPArgument()
                         .executes(EditExecutor::SetRP)))
             .then(
-                HelpfulLiteralBuilder.literal("setspawn")
+                ActiveGamemodeLiteral("mapspawn")
                     .executes(EditExecutor::setMapSpawn))
             .then(
-                HelpfulLiteralBuilder.literal("gamemode")
+                ActiveGamemodeLiteral("gamemode")
                     .then(Arguments.GetGamemodes()
                         .executes(EditExecutor::SetGamemode)))
             ;
-        TeamSlayerEditCommand.addToCommandTree(commandNodeBuilder);
+
         return commandNodeBuilder;
+    }
+
+    private LiteralArgumentBuilder<McmeCommandSender> ActiveGamemodeLiteral(String literal){
+        return HelpfulLiteralBuilder.literal(literal)
+            .requires(Requirements::hasActiveGamemodeEditor);
     }
 
     @Override

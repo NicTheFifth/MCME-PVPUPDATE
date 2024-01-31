@@ -17,12 +17,9 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class SpawnArgument<T> implements ArgumentType<String> {
-
-    private final Class<T> type;
+public class SpawnArgument implements ArgumentType<String> {
     Set<String> options;
-    public SpawnArgument(Class<T> type, String... options){
-        this.type = type;
+    public SpawnArgument(String... options){
         this.options = Set.of(options);
     }
     @Override
@@ -49,8 +46,7 @@ public class SpawnArgument<T> implements ArgumentType<String> {
             return builder.buildFuture();
         }
         GamemodeEditor gamemodeEditor = me.getGamemodeEditor();
-        if(gamemodeEditor == null ||
-            !this.type.isAssignableFrom(gamemodeEditor.getClass())) {
+        if(gamemodeEditor == null) {
             return builder.buildFuture();
         }
 //
