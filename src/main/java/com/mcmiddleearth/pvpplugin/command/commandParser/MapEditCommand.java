@@ -6,8 +6,11 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
+import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.command.executor.EditExecutor;
+import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -17,8 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MapEditCommand extends AbstractCommandHandler implements TabExecutor {
 
@@ -36,7 +37,7 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                     .then(Arguments.NonExistingMap()
                         .executes(EditExecutor::CreateMap)))
             .then(
-                ActiveGamemodeLiteral("rename")
+                ActiveMapEditorLiteral("rename")
                     .then(Arguments.NonExistingMap()
                         .executes(EditExecutor::SetTitle)))
             .then(
@@ -44,33 +45,58 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                     .then(Arguments.ExistingMap()
                         .executes(EditExecutor::SelectMap)))
             .then(
-                ActiveGamemodeLiteral("setarea")
+                ActiveMapEditorLiteral("setarea")
                     .executes(EditExecutor::SetArea))
             .then(
-                ActiveGamemodeLiteral("setrp")
+                ActiveMapEditorLiteral("setrp")
                     .then(Arguments.RPArgument()
                         .executes(EditExecutor::SetRP)))
             .then(
-                ActiveGamemodeLiteral("mapspawn")
+                ActiveMapEditorLiteral("setmapspawn")
                     .executes(EditExecutor::setMapSpawn))
             .then(
-                ActiveGamemodeLiteral("gamemode")
+                ActiveMapEditorLiteral("gamemode")
                     .then(Arguments.GetGamemodes()
                         .executes(EditExecutor::SetGamemode)))
+            .then(ActiveGamemodeEditorLiteral("setmax")
+                .then(HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAX, IntegerArgumentType.integer(0))
+                    .executes(EditExecutor::SetMax)))
+            .then(ActiveGamemodeEditorLiteral("spawn")
+                .then(HelpfulLiteralBuilder.literal("add")
+                    .requires(Requirements::instanceOfSpawnListEditor)
+                    .executes(EditExecutor::SpawnListAddSpawn))
+                .then(HelpfulLiteralBuilder.literal("delete")
+                    .requires(Requirements::instanceOfSpawnListEditor)
+                    .then(Arguments.spawnIndexArgument()
+                        .executes(EditExecutor::SpawnListDeleteSpawn)))
+                .then(Arguments.spawnNameArgument()
+                    .requires(Requirements::NotInstanceOfSpawnListEditor)
+                    .then(HelpfulLiteralBuilder.literal("set")
+                        .requires(Requirements::InstanceOfTeamSpawnEditor)
+                        .executes(EditExecutor::TeamSpawnSetSpawn))
+                    .then(HelpfulLiteralBuilder.literal("add")
+                        .requires(Requirements::InstanceOfTeamSpawnListEditor)
+                        .executes(EditExecutor::TeamSpawnListAddSpawn))
+                    .then(HelpfulLiteralBuilder.literal("delete")
+                        .requires(Requirements::InstanceOfTeamSpawnListEditor)
+                        .then(Arguments.spawnIndexArgument()
+                            .executes(EditExecutor::TeamSpawnListDeleteSpawn)))))
             ;
 
         return commandNodeBuilder;
     }
 
-    private LiteralArgumentBuilder<McmeCommandSender> ActiveGamemodeLiteral(String literal){
+    private LiteralArgumentBuilder<McmeCommandSender> ActiveMapEditorLiteral(String literal){
+        return HelpfulLiteralBuilder.literal(literal)
+            .requires(Requirements::hasActiveMapEditor);
+    }
+    private LiteralArgumentBuilder<McmeCommandSender> ActiveGamemodeEditorLiteral(String literal){
         return HelpfulLiteralBuilder.literal(literal)
             .requires(Requirements::hasActiveGamemodeEditor);
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        Logger.getLogger("PVPPlugin").log(Level.INFO,
-            String.join(",", args));
         PVPCommandSender wrappedSender = new PVPCommandSender(sender);
         execute(wrappedSender, args);
         return true;

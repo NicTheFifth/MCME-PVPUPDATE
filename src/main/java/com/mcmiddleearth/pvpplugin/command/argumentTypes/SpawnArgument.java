@@ -5,6 +5,8 @@ import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnListEditor;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -19,8 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class SpawnArgument implements ArgumentType<String> {
     Set<String> options;
-    public SpawnArgument(String... options){
-        this.options = Set.of(options);
+    public SpawnArgument(){
     }
     @Override
     public String parse(StringReader reader) throws CommandSyntaxException{
@@ -49,19 +50,10 @@ public class SpawnArgument implements ArgumentType<String> {
         if(gamemodeEditor == null) {
             return builder.buildFuture();
         }
-//
-//        if(Objects.equals(map.getGamemode(), "Free For All"))
-//            options.add("spawn");
-//
-//        if(Objects.equals(map.getGamemode(), "Deathrun")){
-//            options.add("death");
-//            options.add("runner");
-//        }
-//        if(Objects.equals(map.getGamemode(), "Infected")){
-//            options.add("infected");
-//            options.add("survivor");
-//        }
-
+        if(gamemodeEditor instanceof TeamSpawnEditor)
+            options = ((TeamSpawnEditor) gamemodeEditor).getSpawnNames().keySet();
+        if(gamemodeEditor instanceof TeamSpawnListEditor)
+            options = ((TeamSpawnListEditor) gamemodeEditor).getSpawnListNames().keySet();
 
         for (String option : options) {
             if (option.startsWith(builder.getRemaining())) {

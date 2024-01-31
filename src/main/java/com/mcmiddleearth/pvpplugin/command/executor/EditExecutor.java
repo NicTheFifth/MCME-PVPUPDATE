@@ -7,6 +7,8 @@ import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.*;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.RedBlueSpawnEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnListEditor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
@@ -92,7 +94,7 @@ public class EditExecutor {
     }
     public static int SetGamemode(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
-        String gamemode = c.getArgument("gamemode", String.class);
+        String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
@@ -103,7 +105,7 @@ public class EditExecutor {
     }
     public static int SetMax(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
-        Integer max = c.getArgument("amount", Integer.class);
+        Integer max = c.getArgument(ArgumentNames.MAX, Integer.class);
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
@@ -168,7 +170,7 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int AddSpawn(@NotNull CommandContext<McmeCommandSender> c) {
+    public static int SpawnListAddSpawn(CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player);
 
@@ -178,67 +180,56 @@ public class EditExecutor {
         }
         return 0;
     }
-    public static int DelSpawn(@NotNull CommandContext<McmeCommandSender> c) {
+    public static int SpawnListDeleteSpawn(CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
-        Integer point = c.getArgument(ArgumentNames.INDEX, Integer.class);
+        Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
             ((SpawnListEditor)result.get().getGamemodeEditor())
-                .deleteSpawn(point, player);
+                .deleteSpawn(index, player);
             return 1;
         }
         return 0;
     }
-    public static int SetRedBlueSpawn(@NotNull CommandContext<McmeCommandSender> c) {
+    public static int TeamSpawnSetSpawn(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
-        String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
+        String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
         Optional<MapEditor> result = getMapEditor(player);
 
-        Logger.getLogger("[PVPPlugin]").log(Level.INFO, spawn);
-
         if(result.isPresent()) {
-            if(Objects.equals(spawn, RedBlueSpawnEditor.BlueSpawn()))
-                ((RedBlueSpawnEditor)result.get().getGamemodeEditor())
-                    .setBlueSpawn(player);
-            if(Objects.equals(spawn, RedBlueSpawnEditor.RedSpawn()))
-                ((RedBlueSpawnEditor)result.get().getGamemodeEditor())
-                    .setRedSpawn(player);
+            ((TeamSpawnEditor)result.get().getGamemodeEditor())
+                .getSpawnNames().get(spawnName).accept(player);
             return 1;
         }
         return 0;
     }
-    public static int SetInfectedSurvivorSpawn(@NotNull CommandContext<McmeCommandSender> c) {
+    public static int TeamSpawnListAddSpawn(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
-        String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
+        String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
-            if(Objects.equals(spawn, "infected"))
-                ((InfectedEditor)result.get().getGamemodeEditor())
-                    .setInfectedSpawn(player);
-            else
-                ((InfectedEditor)result.get().getGamemodeEditor())
-                    .setSurvivorSpawn(player);
+            ((TeamSpawnListEditor)result.get().getGamemodeEditor())
+                .getSpawnListNames().get(spawnName)
+                .addSpawn.accept(player);
             return 1;
         }
         return 0;
     }
-    public static int SetDeathrunSpawn(@NotNull CommandContext<McmeCommandSender> c) {
+    public static int TeamSpawnListDeleteSpawn(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
-        String spawn = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
+        String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
+        Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
         Optional<MapEditor> result = getMapEditor(player);
 
         if(result.isPresent()) {
-            if(Objects.equals(spawn, "runner"))
-                ((DeathRunEditor)result.get().getGamemodeEditor())
-                    .setRunnerSpawn(player);
-            else
-                ((DeathRunEditor)result.get().getGamemodeEditor())
-                    .setDeathSpawn(player);
+            ((TeamSpawnListEditor)result.get().getGamemodeEditor())
+                .getSpawnListNames().get(spawnName)
+                .deleteSpawn.apply(player).accept(index);
             return 1;
         }
         return 0;

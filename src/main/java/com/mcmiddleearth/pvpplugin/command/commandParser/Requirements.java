@@ -6,6 +6,9 @@ import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnListEditor;
 import com.mcmiddleearth.pvpplugin.util.Permissions;
 import org.bukkit.entity.Player;
 
@@ -33,10 +36,43 @@ public class Requirements {
         return checkedClass.isAssignableFrom(me.getGamemodeEditor().getClass());
     }
 
-    public static boolean hasActiveGamemodeEditor(McmeCommandSender c) {
+    public static boolean hasActiveMapEditor(McmeCommandSender c) {
         Player source = CommandUtil.getPlayer(c);
         MapEditor me =
             PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         return me != null;
+    }
+    public static boolean hasActiveGamemodeEditor(McmeCommandSender c) {
+        Player source = CommandUtil.getPlayer(c);
+        MapEditor me =
+            PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null)
+            return false;
+        return me.getGamemodeEditor() != null;
+    }
+
+    public static boolean instanceOfSpawnListEditor(McmeCommandSender c) {
+        Player source = CommandUtil.getPlayer(c);
+        MapEditor me =
+            PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        return me.getGamemodeEditor() instanceof SpawnListEditor;
+    }
+
+    public static boolean NotInstanceOfSpawnListEditor(McmeCommandSender c) {
+        return ! instanceOfSpawnListEditor(c);
+    }
+
+    public static boolean InstanceOfTeamSpawnEditor(McmeCommandSender c) {
+        Player source = CommandUtil.getPlayer(c);
+        MapEditor me =
+            PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        return me.getGamemodeEditor() instanceof TeamSpawnEditor;
+    }
+
+    public static boolean InstanceOfTeamSpawnListEditor(McmeCommandSender c) {
+        Player source = CommandUtil.getPlayer(c);
+        MapEditor me =
+            PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        return me.getGamemodeEditor() instanceof TeamSpawnListEditor;
     }
 }

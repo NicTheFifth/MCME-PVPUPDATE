@@ -1,11 +1,13 @@
 package com.mcmiddleearth.pvpplugin.command.commandParser;
 
+import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.command.argumentTypes.*;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.statics.Resourcepacks;
+import com.mojang.brigadier.builder.ArgumentBuilder;
 
 public class Arguments {
     public static HelpfulRequiredArgumentBuilder<String> ExistingMap() {
@@ -37,5 +39,15 @@ public class Arguments {
     }
     public static ExistingGamemodeArgument ExistingGamemodes() {
         return new ExistingGamemodeArgument();
+    }
+
+    public static HelpfulRequiredArgumentBuilder<Integer> spawnIndexArgument() {
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
+            new SpawnIndexArgument());
+    }
+
+    public static HelpfulRequiredArgumentBuilder<String> spawnNameArgument() {
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
+            new SpawnArgument());
     }
 }

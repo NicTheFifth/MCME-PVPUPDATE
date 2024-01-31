@@ -15,14 +15,14 @@ public abstract class TeamSpawnListEditor extends GamemodeEditor{
         return spawnListNames;
     }
 
-    protected class AddRemoveIndexTrio{
-        final Consumer<Player> addSpawn;
-        final Function<Player, Consumer<Integer>> removeSpawn;
-        final Supplier<Integer> getIndex;
+    public static class AddRemoveIndexTrio{
+        final public Consumer<Player> addSpawn;
+        final public Function<Player, Consumer<Integer>> deleteSpawn;
+        final public Supplier<Integer> getIndex;
         public AddRemoveIndexTrio(Consumer<Player> addSpawn, Function<Player,
             Consumer<Integer>> removeSpawn, Supplier<Integer> getIndex){
             this.addSpawn = addSpawn;
-            this.removeSpawn = removeSpawn;
+            this.deleteSpawn = removeSpawn;
             this.getIndex = getIndex;
         }
     }

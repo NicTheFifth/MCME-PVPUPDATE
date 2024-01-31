@@ -6,4 +6,5 @@ public class ArgumentNames {
     public static final String GAMEMODE_SPAWN = "gamemode_spawn";
     public static final String GAMEMODE = "gamemode";
     public static final String INDEX = "index";
+    public static final String MAX = "max";
 }
