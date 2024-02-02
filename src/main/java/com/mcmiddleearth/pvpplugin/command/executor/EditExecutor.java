@@ -4,8 +4,6 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.*;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.RedBlueSpawnEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnListEditor;
@@ -17,10 +15,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
@@ -110,52 +105,6 @@ public class EditExecutor {
 
         if(result.isPresent()) {
             result.get().getGamemodeEditor().setMaxPlayers(max, player);
-            return 1;
-        }
-        return 0;
-    }
-
-    /**
-     * This is used with the condition that the gamemode editor is set to the
-     * deathrun editor.
-     * @param c context needed to do the required action.
-     * @return int - 1 if finished successfully or 0 if failed.
-     */
-    public static int EditGoal(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player =  CommandUtil.getPlayer(c.getSource());
-        Optional<MapEditor> result = getMapEditor(player);
-
-        if(result.isPresent()) {
-            ((DeathRunEditor)result.get().getGamemodeEditor()).setGoal(player);
-            return 1;
-        }
-        return 0;
-    }
-    /**
-     * This is used with the condition that the gamemode editor is set to the
-     * deathrun editor.
-     * @param c context needed to do the required action.
-     * @return int - 1 if finished successfully or 0 if failed.
-     */
-    public static int CreateCapture(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player =  CommandUtil.getPlayer(c.getSource());
-        Optional<MapEditor> result = getMapEditor(player);
-
-        if(result.isPresent()) {
-            ((TeamConquestEditor)result.get().getGamemodeEditor())
-                .AddCapturePoint(player);
-            return 1;
-        }
-        return 0;
-    }
-    public static int DeleteCapture(@NotNull CommandContext<McmeCommandSender> c) {
-        Player player =  CommandUtil.getPlayer(c.getSource());
-        Integer point = c.getArgument(ArgumentNames.INDEX, Integer.class);
-        Optional<MapEditor> result = getMapEditor(player);
-
-        if(result.isPresent()) {
-            ((TeamConquestEditor)result.get().getGamemodeEditor())
-                .DeleteCapturePoint(point, player);
             return 1;
         }
         return 0;

@@ -10,6 +10,7 @@ PVP Plugin version 2
 * Kit implementation
 * Functionality to assign team before game start
 * Spawn display functionality
+* Teleport to spawns
 
 ## Implemented
 * JSON structure

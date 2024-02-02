@@ -50,4 +50,14 @@ public class Arguments {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE_SPAWN,
             new SpawnArgument());
     }
+
+    public static HelpfulRequiredArgumentBuilder<String> SpecialPointArgument() {
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.SPECIAL_POINT,
+        new SpecialPointArgument());
+    }
+
+    public static ArgumentBuilder<McmeCommandSender,?> SpecialPointListIndexArgument() {
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
+            new SpecialPointIndexArgument());
+    }
 }

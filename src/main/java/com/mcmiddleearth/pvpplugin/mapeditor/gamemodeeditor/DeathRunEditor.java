@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpecialPointEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -12,7 +13,7 @@ import org.bukkit.entity.Player;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class DeathRunEditor extends TeamSpawnEditor {
+public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEditor {
     private DeathRunEditor(){}
     public DeathRunEditor(JSONMap map){
         if(map.getJSONDeathRun() == null)
@@ -20,6 +21,7 @@ public class DeathRunEditor extends TeamSpawnEditor {
         setDisplayString("Death Run");
         this.jsonGamemode = map.getJSONDeathRun();
         initSpawnNames();
+        initSpecialPointNames();
     }
     public void setDeathSpawn(Player player){
         Location deathSpawn = player.getLocation();
@@ -76,5 +78,10 @@ public class DeathRunEditor extends TeamSpawnEditor {
     protected void initSpawnNames() {
         getSpawnNames().put("death", this::setDeathSpawn);
         getSpawnNames().put("runner", this::setRunnerSpawn);
+    }
+
+    @Override
+    public void initSpecialPointNames() {
+        getSpecialPointNames().put("goal", this::setGoal);
     }
 }

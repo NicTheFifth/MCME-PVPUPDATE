@@ -40,23 +40,6 @@ public class RedBlueSpawnEditor extends TeamSpawnEditor {
             player);
     }
 
-    @Override
-    public void setMaxPlayers(Integer maxPlayers, Player player) {
-        jsonGamemode.setMaximumPlayers(maxPlayers);
-        sendBaseComponent(
-            new ComponentBuilder(String.format("Set the max players to %d.",
-                maxPlayers))
-                .color(Style.INFO)
-                .create(),
-            player);
-    }
-    public static String BlueSpawn(){
-        return "blue";
-    }
-    public static String RedSpawn(){
-        return "red";
-    }
-
     protected void setDisplayString(String displayString){
         this.displayString = displayString;
     }
@@ -68,7 +51,7 @@ public class RedBlueSpawnEditor extends TeamSpawnEditor {
         return new String[0];
     }
     protected void initSpawnNames() {
-        getSpawnNames().put("red", this::setBlueSpawn);
+        getSpawnNames().put("red", this::setRedSpawn);
         getSpawnNames().put("blue", this::setBlueSpawn);
     }
 }

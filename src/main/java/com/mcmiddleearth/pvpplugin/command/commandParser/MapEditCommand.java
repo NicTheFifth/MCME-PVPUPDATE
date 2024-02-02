@@ -7,6 +7,7 @@ import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
+import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.command.executor.EditExecutor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
@@ -81,6 +82,36 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                         .requires(Requirements::InstanceOfTeamSpawnListEditor)
                         .then(Arguments.spawnIndexArgument()
                             .executes(EditExecutor::TeamSpawnListDeleteSpawn)))))
+            .then(Arguments.SpecialPointArgument()
+                .requires(Requirements::hasSpecialPoints)
+                .then(HelpfulLiteralBuilder.literal("set")
+                    .requires(Requirements::isInstanceOfSpecialPointEditor)
+                    .executes(c ->{
+                        CommandUtil.getPlayer(c.getSource()).sendMessage(
+                            c.getArgument(ArgumentNames.SPECIAL_POINT,
+                                String.class) + " set received");
+                        return 1;
+                    }))
+                .then(HelpfulLiteralBuilder.literal("add")
+                    .requires(Requirements::isInstanceOfSpecialPointListEditor)
+                    .executes(c ->{
+                        CommandUtil.getPlayer(c.getSource()).sendMessage(
+                            c.getArgument(ArgumentNames.SPECIAL_POINT,
+                                String.class) + " add received");
+                        return 1;
+                    }))
+                .then(HelpfulLiteralBuilder.literal("delete")
+                    .requires(Requirements::isInstanceOfSpecialPointListEditor)
+                    .then(Arguments.SpecialPointListIndexArgument())
+                    .executes(c ->{
+                        CommandUtil.getPlayer(c.getSource()).sendMessage(
+                            c.getArgument(ArgumentNames.SPECIAL_POINT, String.class) +
+                                " delete "+
+                                c.getArgument(ArgumentNames.INDEX,
+                                    Integer.class)+ " received");
+                        return 1;
+                    })))
+
             ;
 
         return commandNodeBuilder;

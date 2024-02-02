@@ -5,10 +5,7 @@ import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnListEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.*;
 import com.mcmiddleearth.pvpplugin.util.Permissions;
 import org.bukkit.entity.Player;
 
@@ -59,7 +56,7 @@ public class Requirements {
     }
 
     public static boolean NotInstanceOfSpawnListEditor(McmeCommandSender c) {
-        return ! instanceOfSpawnListEditor(c);
+        return !instanceOfSpawnListEditor(c);
     }
 
     public static boolean InstanceOfTeamSpawnEditor(McmeCommandSender c) {
@@ -74,5 +71,32 @@ public class Requirements {
         MapEditor me =
             PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         return me.getGamemodeEditor() instanceof TeamSpawnListEditor;
+    }
+
+    public static boolean hasSpecialPoints(McmeCommandSender c) {
+        Player source = CommandUtil.getPlayer(c);
+        MapEditor me =
+            PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null)
+            return false;
+        if(me.getGamemodeEditor() == null)
+            return false;
+        return me.getGamemodeEditor() instanceof SpecialPointListEditor ||
+            me.getGamemodeEditor() instanceof SpecialPointEditor;
+
+    }
+
+    public static boolean isInstanceOfSpecialPointEditor(McmeCommandSender c) {
+        Player source = CommandUtil.getPlayer(c);
+        MapEditor me =
+            PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        return me.getGamemodeEditor() instanceof SpecialPointEditor;
+    }
+
+    public static boolean isInstanceOfSpecialPointListEditor(McmeCommandSender c) {
+        Player source = CommandUtil.getPlayer(c);
+        MapEditor me =
+            PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        return me.getGamemodeEditor() instanceof SpecialPointListEditor;
     }
 }
