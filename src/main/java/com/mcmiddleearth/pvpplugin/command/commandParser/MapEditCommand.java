@@ -86,31 +86,14 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                 .requires(Requirements::hasSpecialPoints)
                 .then(HelpfulLiteralBuilder.literal("set")
                     .requires(Requirements::isInstanceOfSpecialPointEditor)
-                    .executes(c ->{
-                        CommandUtil.getPlayer(c.getSource()).sendMessage(
-                            c.getArgument(ArgumentNames.SPECIAL_POINT,
-                                String.class) + " set received");
-                        return 1;
-                    }))
+                    .executes(EditExecutor::SetSpecialPoint))
                 .then(HelpfulLiteralBuilder.literal("add")
                     .requires(Requirements::isInstanceOfSpecialPointListEditor)
-                    .executes(c ->{
-                        CommandUtil.getPlayer(c.getSource()).sendMessage(
-                            c.getArgument(ArgumentNames.SPECIAL_POINT,
-                                String.class) + " add received");
-                        return 1;
-                    }))
+                    .executes(EditExecutor::AddSpecialPoint))
                 .then(HelpfulLiteralBuilder.literal("delete")
                     .requires(Requirements::isInstanceOfSpecialPointListEditor)
                     .then(Arguments.SpecialPointListIndexArgument())
-                    .executes(c ->{
-                        CommandUtil.getPlayer(c.getSource()).sendMessage(
-                            c.getArgument(ArgumentNames.SPECIAL_POINT, String.class) +
-                                " delete "+
-                                c.getArgument(ArgumentNames.INDEX,
-                                    Integer.class)+ " received");
-                        return 1;
-                    })))
+                    .executes(EditExecutor::DeleteSpecialPoint)))
 
             ;
 

@@ -5,6 +5,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamConquest;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpecialPointListEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.entity.Player;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class TeamConquestEditor extends RedBlueSpawnEditor {
+public class TeamConquestEditor extends RedBlueSpawnEditor implements SpecialPointListEditor {
     private TeamConquestEditor(){}
 
     public TeamConquestEditor(JSONMap map){
@@ -23,8 +24,9 @@ public class TeamConquestEditor extends RedBlueSpawnEditor {
             map.getJSONTeamConquest().setCapturePoints(new ArrayList<>());
         setDisplayString("Team Conquest");
         this.jsonGamemode = map.getJSONTeamConquest();
+        initSpecialPointListNames();
     }
-    public void DeleteCapturePoint(int toDelete, Player player){
+    public void DeleteCapturePoint(Player player, int toDelete){
         ((JSONTeamConquest)jsonGamemode).getCapturePoints().remove(toDelete);
         sendBaseComponent(
             new ComponentBuilder("Capture point removed from Team Conquest.")
@@ -59,5 +61,15 @@ public class TeamConquestEditor extends RedBlueSpawnEditor {
     }
     public Integer amountOfCapturePoints(){
         return ((JSONTeamConquest)jsonGamemode).getCapturePoints().size();
+    }
+
+    @Override
+    public void initSpecialPointListNames() {
+        getSpecialPointListNames().put("capturePoint",
+            new AddRemoveIndexTrio(
+                this::AddCapturePoint,
+                (player -> index -> DeleteCapturePoint(player, index)),
+                ((JSONTeamConquest)jsonGamemode).getCapturePoints()::size
+            ));
     }
 }

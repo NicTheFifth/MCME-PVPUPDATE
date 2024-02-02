@@ -4,9 +4,7 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpawnListEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
-import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnListEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.*;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
@@ -179,6 +177,48 @@ public class EditExecutor {
             ((TeamSpawnListEditor)result.get().getGamemodeEditor())
                 .getSpawnListNames().get(spawnName)
                 .deleteSpawn.apply(player).accept(index);
+            return 1;
+        }
+        return 0;
+    }
+    public static int SetSpecialPoint(CommandContext<McmeCommandSender> c) {
+        Player player =  CommandUtil.getPlayer(c.getSource());
+        String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
+            String.class);
+        Optional<MapEditor> result = getMapEditor(player);
+
+        if(result.isPresent()) {
+            ((SpecialPointEditor)result.get().getGamemodeEditor())
+                .getSpecialPointNames().get(pointName).accept(player);
+            return 1;
+        }
+        return 0;
+    }
+    public static int AddSpecialPoint(CommandContext<McmeCommandSender> c) {
+        Player player =  CommandUtil.getPlayer(c.getSource());
+        String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
+            String.class);
+        Optional<MapEditor> result = getMapEditor(player);
+
+        if(result.isPresent()) {
+            ((SpecialPointListEditor)result.get().getGamemodeEditor())
+                .getSpecialPointListNames().get(pointName)
+                .addPoint.accept(player);
+            return 1;
+        }
+        return 0;
+    }
+    public static int DeleteSpecialPoint(CommandContext<McmeCommandSender> c) {
+        Player player =  CommandUtil.getPlayer(c.getSource());
+        String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
+            String.class);
+        Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
+        Optional<MapEditor> result = getMapEditor(player);
+
+        if(result.isPresent()) {
+            ((SpecialPointListEditor)result.get().getGamemodeEditor())
+                .getSpecialPointListNames().get(pointName)
+                .deletePoint.apply(player).accept(index);
             return 1;
         }
         return 0;
