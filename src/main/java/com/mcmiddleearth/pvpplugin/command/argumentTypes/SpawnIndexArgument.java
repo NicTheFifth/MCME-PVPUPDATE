@@ -28,7 +28,7 @@ public class SpawnIndexArgument implements ArgumentType<Integer> {
     public Integer parse(StringReader reader) throws CommandSyntaxException {
         int value = reader.readInt();
         if(value < maxInt)
-            return Integer.valueOf(reader.readUnquotedString());
+            return value;
         LiteralMessage message = new LiteralMessage(
             value + " is a not a valid index, please select a valid index.");
         throw new CommandSyntaxException(

@@ -92,8 +92,8 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                     .executes(EditExecutor::AddSpecialPoint))
                 .then(HelpfulLiteralBuilder.literal("delete")
                     .requires(Requirements::isInstanceOfSpecialPointListEditor)
-                    .then(Arguments.SpecialPointListIndexArgument())
-                    .executes(EditExecutor::DeleteSpecialPoint)))
+                    .then(Arguments.SpecialPointListIndexArgument()
+                        .executes(EditExecutor::DeleteSpecialPoint))))
 
             ;
 

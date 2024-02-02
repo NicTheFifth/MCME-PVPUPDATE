@@ -11,9 +11,15 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEditor {
+    //SpecialPointNames is a map of <name, setter of said point>
+    Map<String, Consumer<Player>> specialPointNames = new HashMap<>();
     private DeathRunEditor(){}
     public DeathRunEditor(JSONMap map){
         if(map.getJSONDeathRun() == null)
@@ -83,5 +89,8 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
     @Override
     public void initSpecialPointNames() {
         getSpecialPointNames().put("goal", this::setGoal);
+    }
+    public Map<String, Consumer<Player>> getSpecialPointNames(){
+        return specialPointNames;
     }
 }

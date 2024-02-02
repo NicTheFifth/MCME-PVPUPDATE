@@ -227,8 +227,7 @@ public class EditExecutor {
      *
      * @param player A player of whom their map editor is requested.
      * @return Optional&lt;MapEditor&gt; - Returns the empty optional when no
-     * map
-     * editor is found of the player or the found map editor.
+     * map editor is found of the player or the found map editor.
      *
      */
     public static Optional<MapEditor> getMapEditor(@NotNull Player player) {

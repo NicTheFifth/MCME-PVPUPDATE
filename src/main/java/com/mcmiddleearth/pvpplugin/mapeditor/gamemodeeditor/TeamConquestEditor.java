@@ -11,10 +11,14 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class TeamConquestEditor extends RedBlueSpawnEditor implements SpecialPointListEditor {
+    Map<String, AddRemoveIndexTrio> specialPointListNames =
+        new HashMap<>();
     private TeamConquestEditor(){}
 
     public TeamConquestEditor(JSONMap map){
@@ -71,5 +75,8 @@ public class TeamConquestEditor extends RedBlueSpawnEditor implements SpecialPoi
                 (player -> index -> DeleteCapturePoint(player, index)),
                 ((JSONTeamConquest)jsonGamemode).getCapturePoints()::size
             ));
+    }
+    public Map<String, AddRemoveIndexTrio> getSpecialPointListNames(){
+        return specialPointListNames;
     }
 }

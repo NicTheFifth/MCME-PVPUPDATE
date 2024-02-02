@@ -11,9 +11,15 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialPointEditor {
+    //SpecialPointNames is a map of <name, setter of said point>
+    Map<String, Consumer<Player>> specialPointNames = new HashMap<>();
     private CaptureTheFlagEditor(){}
     public CaptureTheFlagEditor(JSONMap map){
         setDisplayString("Capture the Flag");
@@ -63,5 +69,8 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialP
     public void initSpecialPointNames() {
         getSpecialPointNames().put("blueflag", this::setBlueFlag);
         getSpecialPointNames().put("redflag", this::setRedFlag);
+    }
+    public Map<String, Consumer<Player>> getSpecialPointNames(){
+        return specialPointNames;
     }
 }
