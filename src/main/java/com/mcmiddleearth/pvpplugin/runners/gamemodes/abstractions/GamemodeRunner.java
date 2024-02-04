@@ -8,14 +8,20 @@ import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -169,4 +175,60 @@ public abstract class GamemodeRunner implements Listener {
     }
     protected abstract  void  initLeaveActions();
     //</editor-fold>
+
+    protected abstract class GamemodeListener implements Listener {
+        HashMap<UUID, Long> playerAreaLeaveTimer = new HashMap<>();
+        protected List<Consumer<PlayerDeathEvent>> onPlayerDeathActions = List.of();
+        @EventHandler
+        void onPlayerDeath(PlayerDeathEvent e){
+            Player player = e.getEntity();
+            if(!players.contains(player))
+                return;
+            PlayerStatEditor.addDeath(player);
+            Player killer = player.getKiller();
+            if(killer != null)
+                PlayerStatEditor.addKill(killer);
+            onPlayerDeathActions.forEach(action -> action.accept(e));
+        }
+        protected abstract void initOnPlayerDeathActions();
+        @EventHandler
+        void onPlayerLeave(PlayerQuitEvent e){
+            Player player = e.getPlayer();
+            spectator.getMembers().remove(player);
+            player.getInventory().clear();
+            player.setGameMode(GameMode.ADVENTURE);
+            player.teleport(PVPPlugin.getInstance().getSpawn());
+            leaveGame(player, true);
+        }
+        @EventHandler
+        void onPlayerMove(PlayerMoveEvent e){
+            Location from = e.getFrom();
+            Location to = e.getTo();
+
+            Player player = e.getPlayer();
+            UUID uuid = player.getUniqueId();
+
+            if(gameState == State.QUEUED || to == null)
+                return;
+            if(gameState == State.COUNTDOWN &&
+                    !spectator.getMembers().contains(e.getPlayer()) &&
+                    (from.getX() != to.getX() || from.getZ() != to.getZ())) {
+                e.setCancelled(true);
+                return;
+            }
+
+            if(!region.contains(BlockVector3.at(to.getX(), to.getY(), to.getZ()))){
+                e.setCancelled(true);
+                if(!playerAreaLeaveTimer.containsKey(uuid)){
+                    player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
+                    playerAreaLeaveTimer.put(uuid, System.currentTimeMillis());
+                    return;
+                }
+                if(System.currentTimeMillis() - playerAreaLeaveTimer.get(uuid) > 3000){
+                    player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
+                    playerAreaLeaveTimer.put(uuid, System.currentTimeMillis());
+                }
+            }
+        }
+    }
 }

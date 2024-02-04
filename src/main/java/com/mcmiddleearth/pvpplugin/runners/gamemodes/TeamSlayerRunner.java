@@ -1,6 +1,7 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
 import com.mcmiddleearth.command.Style;
+import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.exceptions.InvalidTeamSlayerException;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamSlayer;
@@ -116,7 +117,8 @@ public class TeamSlayerRunner extends GamemodeRunner {
         //TODO:Match make
         startActions.add(() ->
             TeamHandler.spawnAll(redTeam, blueTeam, spectator));
-        //PVPPlugin.addEventListener(new TeamSlayerListener());
+        startActions.add(() ->
+            PVPPlugin.addEventListener(new TSListener()));
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="End actions">
@@ -134,21 +136,21 @@ public class TeamSlayerRunner extends GamemodeRunner {
     }
     private Set<Player> getLosingTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
-            return blueTeam.getOnlineMembers();
-        return redTeam.getOnlineMembers();
+            return blueTeam.getMembers();
+        return redTeam.getMembers();
     }
     private Set<Player> getWinningTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
-            return redTeam.getOnlineMembers();
-        return blueTeam.getOnlineMembers();
+            return redTeam.getMembers();
+        return blueTeam.getMembers();
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="End conditions">
-    private boolean emptyTeam(){
+    private boolean hasEmptyTeam(){
         return redTeam.getOnlineMembers().isEmpty() ||
                blueTeam.getOnlineMembers().isEmpty();
     }
-    private boolean scoreGoalReached(){
+    private boolean isScoreGoalReached(){
         return redTeam.getPoints() >= scoreGoal ||
                blueTeam.getPoints() >= scoreGoal;
     }
@@ -219,7 +221,7 @@ public class TeamSlayerRunner extends GamemodeRunner {
         } else {
             leaveBlueTeam(player);
         }
-        if(emptyTeam())
+        if(hasEmptyTeam())
             end(false);
     }
 
@@ -247,6 +249,23 @@ public class TeamSlayerRunner extends GamemodeRunner {
         return 20;
     }
 
+    private class TSListener extends GamemodeListener{
+        public TSListener(){
+            initOnPlayerDeathActions();
+        }
+        @Override
+        protected void initOnPlayerDeathActions() {
+            onPlayerDeathActions.add(e ->{
+                Player player = e.getEntity();
+                if(redTeam.getMembers().contains(player))
+                    blueTeam.points += 1;
+                else
+                    redTeam.points += 1;
+                if(isScoreGoalReached())
+                    end(false);
+            });
+        }
+    }
     private static class TSTeam extends Team{
         Set<Player> onlineMembers = new HashSet<>();
         int points = 0;
