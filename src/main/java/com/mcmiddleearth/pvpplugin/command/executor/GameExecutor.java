@@ -3,11 +3,10 @@ package com.mcmiddleearth.pvpplugin.command.executor;
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
-import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.exceptions.UnloadableGamemodeException;
 import com.mcmiddleearth.pvpplugin.exceptions.UnloadableMapException;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
-import com.mcmiddleearth.pvpplugin.runners.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mojang.brigadier.context.CommandContext;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -41,7 +40,7 @@ public class GameExecutor {
             source.sendMessage(Style.ERROR + "No game is running, please join again later.");
             return 0;
         }
-        runner.tryJoin(source).forEach(source::sendMessage);
+        //runner.tryJoin(source).forEach(source::sendMessage);
         return 1;
     }
 
@@ -209,12 +208,11 @@ public class GameExecutor {
             source.sendMessage(Style.ERROR + "Cannot start a game, if no game is running.");
             return 0;
         }
-        if(PVPPlugin.getInstance().getActiveGame().canStart()){
+        if(PVPPlugin.getInstance().getActiveGame().canStart(source)){
             PVPPlugin.getInstance().getActiveGame().start();
             source.sendMessage(Style.INFO + "Game started!");
             return 1;
         }
-        source.sendMessage(Style.ERROR + "Game cannot start, do you have enough players?");
         return 0;
     }
 

@@ -2,8 +2,6 @@ package com.mcmiddleearth.pvpplugin;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +12,7 @@ import com.mcmiddleearth.pvpplugin.command.commandParser.MapEditCommand;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
-import com.mcmiddleearth.pvpplugin.runners.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.util.*;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import net.md_5.bungee.api.CommandSender;
@@ -109,6 +107,15 @@ public class PVPPlugin extends JavaPlugin implements Listener {
         result.append(message.create());
         recipient.sendMessage(result.create());
     }
+
+    public static void addEventListener(Listener listener){
+        PVPPlugin pvpPlugin = PVPPlugin.getInstance();
+        PluginManager pm = pvpPlugin.getPluginManager();
+        pm.registerEvents(listener, pvpPlugin);
+    }
+    public static void removeEventListener(Listener listener){
+
+    }
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public WorldEditPlugin getWorldEditPlugin(){
         Plugin p = pluginManager.getPlugin("WorldEdit");
@@ -133,28 +140,22 @@ public class PVPPlugin extends JavaPlugin implements Listener {
     public HashMap<UUID, Playerstat> getPlayerstats() {
         return this.playerstats;
     }
-
     public Matchmaker getMatchmaker() {
         return this.matchmaker;
     }
-
     public GamemodeRunner getActiveGame() {
         return this.activeGame;
     }
     public void setActiveGame(final GamemodeRunner activeGame) {
         this.activeGame = activeGame;
     }
-
     public File getMapDirectory() {
         return this.mapDirectory;
     }
-
     public File getStatDirectory() {
         return this.statDirectory;
     }
-
     public HashMap<UUID,MapEditor> getMapEditors(){return this.mapEditors;}
-
     public Location getSpawn(){
         return spawn;
     }
