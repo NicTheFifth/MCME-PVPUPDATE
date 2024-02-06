@@ -37,6 +37,7 @@ public abstract class GamemodeRunner implements Listener {
     protected enum State{
         QUEUED, COUNTDOWN, RUNNING, ENDED
     }
+    protected String mapName;
     protected int maxPlayers;
     protected State gameState;
     protected long countDownTimer;//TODO: default countdown timer
@@ -45,6 +46,7 @@ public abstract class GamemodeRunner implements Listener {
     protected Set<Player> players = new HashSet<>();
     protected Team spectator = new Team();
     protected Region region;
+    protected Listener eventListener;
 
     public GamemodeRunner(){
         gameState = State.QUEUED;
@@ -92,6 +94,7 @@ public abstract class GamemodeRunner implements Listener {
     //<editor-fold defaultstate="collapsed" desc="Start game">
     protected List<Runnable> startActions = List.of();
     public void start(){
+        PVPPlugin.addEventListener(eventListener);
         startActions.forEach(Runnable::run);
         CountDown();
     }
@@ -119,6 +122,7 @@ public abstract class GamemodeRunner implements Listener {
         List.of(), false, List.of());
     public void end(boolean stopped){
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
+        PVPPlugin.removeEventListener(eventListener);
         players.forEach(player -> {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
@@ -175,6 +179,15 @@ public abstract class GamemodeRunner implements Listener {
     }
     protected abstract  void  initLeaveActions();
     //</editor-fold>
+
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+    public String getMapName() {
+        return mapName;
+    }
+    public abstract String getGamemode();
 
     protected abstract class GamemodeListener implements Listener {
         HashMap<UUID, Long> playerAreaLeaveTimer = new HashMap<>();

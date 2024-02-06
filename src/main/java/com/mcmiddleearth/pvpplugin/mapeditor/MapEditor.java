@@ -177,7 +177,6 @@ public class MapEditor {
         gamemodeEditor = null;
         sendBaseComponent(new ComponentBuilder(String.format("Selected %s",
             mapName)).color(Style.INFO).create(), player);
-
     }
     public GamemodeEditor getGamemodeEditor(){
         return gamemodeEditor;

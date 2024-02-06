@@ -2,16 +2,20 @@ package com.mcmiddleearth.pvpplugin.command.commandParser;
 
 import com.google.common.base.Joiner;
 import com.mcmiddleearth.command.AbstractCommandHandler;
+import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.command.executor.GameExecutor;
+import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,51 +28,28 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     @Override
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
-                //TODO: Fix perms
-                .then(HelpfulLiteralBuilder.literal("join")
-                    .executes(GameExecutor::joinGame))
-                .then(HelpfulLiteralBuilder.literal("rules")
-                    .then(Arguments.GetGamemodes()
-                        .executes(GameExecutor::getRule)))
-                .then(HelpfulLiteralBuilder.literal("stats")
-                    .then(HelpfulLiteralBuilder.literal("delete")
-                        .requires(Requirements::canRun)
-                        .then(HelpfulLiteralBuilder.literal("USER"))))
-                .then(HelpfulLiteralBuilder.literal("map")
-                    .then(HelpfulLiteralBuilder.literal("list")
-                        .executes(GameExecutor::listMaps)))
-                .then(HelpfulLiteralBuilder.literal("kick")
-                        .requires(Requirements::canRun))
-                .then(HelpfulLiteralBuilder.literal("create")
-                    .requires(Requirements::canRun)
-                    .executes(GameExecutor::createGame)
-                    .then(Arguments.ExistingMap()
-                        .executes(GameExecutor::createGame)
-                        .then(Arguments.ExistingGamemode()
-                            .executes(GameExecutor::createGame)
-                            .then(HelpfulRequiredArgumentBuilder.argument("var", IntegerArgumentType.integer(1))
-                                .executes(GameExecutor::createGame)))))
-                .then(HelpfulLiteralBuilder.literal("load")
-                    .requires(Requirements::canRun)
-                    .then(HelpfulLiteralBuilder.literal("public")
-                        .executes(GameExecutor::loadPublic))
-                    .then(HelpfulLiteralBuilder.literal("private")
-                        .executes(GameExecutor::loadPrivate))
-                    .then(HelpfulLiteralBuilder.literal("map")
-                        .then(Arguments.ExistingMap()
-                            .executes(GameExecutor::loadMap)))
-                    .then(HelpfulLiteralBuilder.literal("gamemode")
-                        .then(Arguments.ExistingGamemode()
-                            .executes(GameExecutor::loadGamemode))))
-                .then(HelpfulLiteralBuilder.literal("start")
-                    .requires(Requirements::canRun)
-                    .executes(GameExecutor::startGame))
-                .then(HelpfulLiteralBuilder.literal("end")
-                    .requires(Requirements::canRun)
-                    .executes(GameExecutor::endGame));
+            .requires(Requirements::isMapEditor)
+            .requires(sender -> ((PVPCommandSender)sender).getSender() instanceof Player)
+            .then(HelpfulLiteralBuilder.literal("create")
+                .requires(Requirements::canRun)
+                .then(Arguments.ValidMap()
+                    .then(Arguments.ValidGamemode()
+                        .executes(GameExecutor::CreateGame))))
+            .then(ActiveGameExistsLiteral("start")
+                .executes(GameExecutor::StartGame))
+            .then(ActiveGameExistsLiteral("join")
+                .executes(GameExecutor::JoinGame))
+            .then(HelpfulLiteralBuilder.literal("setgoal")
+                .requires(Requirements::hasScoreGoal)
+                .then(HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GOAL,
+                    IntegerArgumentType.integer(0))
+                    .executes(GameExecutor::SetGoal)));
         return commandNodeBuilder;
     }
-
+    private LiteralArgumentBuilder<McmeCommandSender> ActiveGameExistsLiteral(String literal){
+        return HelpfulLiteralBuilder.literal(literal)
+            .requires(Requirements::ActiveGameExists);
+    }
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         PVPCommandSender wrappedSender = new PVPCommandSender(sender);

@@ -3,11 +3,15 @@ package com.mcmiddleearth.pvpplugin.command.commandParser;
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.pvpplugin.command.Validator;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.command.argumentTypes.*;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.statics.Resourcepacks;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Arguments {
     public static HelpfulRequiredArgumentBuilder<String> ExistingMap() {
@@ -15,6 +19,19 @@ public class Arguments {
     }
     private static CommandStringArgument ExistingMaps() {
         return new CommandStringArgument(PVPPlugin.getInstance().getMaps().keySet());
+    }
+    public static HelpfulRequiredArgumentBuilder<String> ValidMap(){
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAP_NAME,
+            ValidMaps());
+    }
+    private static CommandStringArgument ValidMaps(){
+        return new CommandStringArgument(
+            PVPPlugin.getInstance().getMaps().entrySet().stream()
+                .filter(stringJSONMapEntry ->
+                    Validator.isMapValid(stringJSONMapEntry.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet())
+        );
     }
     public static HelpfulRequiredArgumentBuilder<String> NonExistingMap(){
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAP_NAME, new NonExistingMapArgument());
@@ -33,12 +50,12 @@ public class Arguments {
     private static CommandStringArgument Gamemodes(){
         return new CommandStringArgument(Gamemodes.getAll);
     }
-    public static HelpfulRequiredArgumentBuilder<String> ExistingGamemode(){
+    public static HelpfulRequiredArgumentBuilder<String> ValidGamemode(){
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE,
-            ExistingGamemodes());
+            ValidGamemodes());
     }
-    public static ExistingGamemodeArgument ExistingGamemodes() {
-        return new ExistingGamemodeArgument();
+    public static ValidGamemodeArgument ValidGamemodes() {
+        return new ValidGamemodeArgument();
     }
 
     public static HelpfulRequiredArgumentBuilder<Integer> spawnIndexArgument() {

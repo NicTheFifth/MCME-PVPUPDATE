@@ -1,16 +1,15 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
 import com.mcmiddleearth.command.Style;
-import com.mcmiddleearth.pvpplugin.PVPPlugin;
-import com.mcmiddleearth.pvpplugin.exceptions.InvalidTeamSlayerException;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamSlayer;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.Validator;
+import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
@@ -31,19 +30,21 @@ import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class TeamSlayerRunner extends GamemodeRunner {
+public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     TSTeam redTeam = new TSTeam();
     TSTeam blueTeam = new TSTeam();
     int scoreGoal;
+    public static int DefaultScoreGoal(){
+        return 20;
+    }
 
-    public TeamSlayerRunner(JSONMap map, int scoreGoal) throws InvalidTeamSlayerException{
-        //TODO: make validator part of requirement commandTree
-        if(!Validator.canRunTeamSlayer(map))
-            throw new InvalidTeamSlayerException(map);
+    public TeamSlayerRunner(JSONMap map, int scoreGoal){
         region = AreaTranscriber.TranscribeArea(map);
         this.scoreGoal = scoreGoal;
         JSONTeamSlayer teamSlayer = map.getJSONTeamSlayer();
         maxPlayers = teamSlayer.getMaximumPlayers();
+        mapName = map.getTitle();
+        eventListener = new TSListener();
         initTeams(map);
         initStartConditions();
         initStartActions();
@@ -117,8 +118,6 @@ public class TeamSlayerRunner extends GamemodeRunner {
         //TODO:Match make
         startActions.add(() ->
             TeamHandler.spawnAll(redTeam, blueTeam, spectator));
-        startActions.add(() ->
-            PVPPlugin.addEventListener(new TSListener()));
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="End actions">
@@ -245,10 +244,12 @@ public class TeamSlayerRunner extends GamemodeRunner {
         ));
     }
     //</editor-fold>
-    static int getDefaultScoreGoal(){
-        return 20;
-    }
 
+    public int getScoreGoal(){return scoreGoal;}
+    public void setScoreGoal(int scoreGoal){
+        this.scoreGoal = scoreGoal;
+    }
+    public String getGamemode(){return Gamemodes.TEAMSLAYER;}
     private class TSListener extends GamemodeListener{
         public TSListener(){
             initOnPlayerDeathActions();

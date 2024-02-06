@@ -6,6 +6,8 @@ import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.*;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.util.Permissions;
 import org.bukkit.entity.Player;
 
@@ -19,20 +21,6 @@ public class Requirements {
     public static boolean isAdmin(McmeCommandSender player){
         return ((PVPCommandSender) player).getSender().hasPermission(Permissions.PVP_ADMIN.getPermissionNode());
     }
-    public static <T> boolean isGamemodeEditorOf(Class<T> checkedClass,
-                                               McmeCommandSender c){
-        Player source = CommandUtil.getPlayer(c);
-        MapEditor me =
-            PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
-        if(me == null)
-            return false;
-        if(!GamemodeEditor.class.isAssignableFrom(checkedClass))
-            return false;
-        if(me.getGamemodeEditor() == null)
-            return false;
-        return checkedClass.isAssignableFrom(me.getGamemodeEditor().getClass());
-    }
-
     public static boolean hasActiveMapEditor(McmeCommandSender c) {
         Player source = CommandUtil.getPlayer(c);
         MapEditor me =
@@ -98,5 +86,16 @@ public class Requirements {
         MapEditor me =
             PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
         return me.getGamemodeEditor() instanceof SpecialPointListEditor;
+    }
+
+    public static boolean ActiveGameExists(McmeCommandSender c) {
+        return PVPPlugin.getInstance().getActiveGame() != null;
+    }
+
+    public static boolean hasScoreGoal(McmeCommandSender c) {
+        GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
+        if(runner == null)
+            return false;
+        return runner instanceof ScoreGoal;
     }
 }

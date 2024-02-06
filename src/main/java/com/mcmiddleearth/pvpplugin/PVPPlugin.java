@@ -2,6 +2,7 @@ package com.mcmiddleearth.pvpplugin;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -27,13 +29,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class PVPPlugin extends JavaPlugin implements Listener {
 
     PluginManager pluginManager;
+    HandlerList handlerList;
     HashMap<String, JSONMap> maps = new HashMap<>();
     HashMap<UUID, Playerstat> playerstats = new HashMap<>();
     final Location spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
+    Queue<GamemodeRunner> gameQueue;
     HashMap<UUID, MapEditor> mapEditors = new HashMap<>();
-    //HashMap<UUID, GameCreator> gameCreators = new HashMap<>();
     static PVPPlugin instance;
     //TODO: Implement switching between servermode and minigame mode.
     Boolean isPVPServer = true;
@@ -81,6 +84,7 @@ public class PVPPlugin extends JavaPlugin implements Listener {
         MapLoader.loadMaps();
         StatLoader.loadStats();
         pluginManager = this.getServer().getPluginManager();
+        handlerList = new HandlerList();
         matchmaker = new Matchmaker();
         MapEditCommand mapEditCommand = new MapEditCommand("mapedit");
         Bukkit.getServer().getPluginCommand("mapedit").setExecutor(mapEditCommand);
@@ -114,6 +118,8 @@ public class PVPPlugin extends JavaPlugin implements Listener {
         pm.registerEvents(listener, pvpPlugin);
     }
     public static void removeEventListener(Listener listener){
+        PVPPlugin pvpPlugin = PVPPlugin.getInstance();
+        pvpPlugin.getHandlerList().unregister(listener);
 
     }
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
@@ -132,7 +138,8 @@ public class PVPPlugin extends JavaPlugin implements Listener {
     public PluginManager getPluginManager() {
         return this.pluginManager;
     }
-
+    public HandlerList getHandlerList(){ return handlerList;
+    }
     public HashMap<String, JSONMap> getMaps() {
         return this.maps;
     }
@@ -140,12 +147,14 @@ public class PVPPlugin extends JavaPlugin implements Listener {
     public HashMap<UUID, Playerstat> getPlayerstats() {
         return this.playerstats;
     }
-    public Matchmaker getMatchmaker() {
-        return this.matchmaker;
-    }
     public GamemodeRunner getActiveGame() {
         return this.activeGame;
     }
+
+    public Queue<GamemodeRunner> getGameQueue() {
+        return gameQueue;
+    }
+
     public void setActiveGame(final GamemodeRunner activeGame) {
         this.activeGame = activeGame;
     }
@@ -162,9 +171,6 @@ public class PVPPlugin extends JavaPlugin implements Listener {
     public Boolean isPVPServer(){
         return isPVPServer;
     }
-    //public HashMap<UUID, GameCreator> getGameCreators() {
-    //    return gameCreators;
-    //}
 
     //</editor-fold>
 }
