@@ -8,6 +8,7 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.Kit;
@@ -21,11 +22,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
@@ -54,12 +60,12 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
         initLeaveActions();
     }
     //<editor-fold defaultstate="collapsed" desc="Teams">
-    public void initTeams(JSONMap map){
+    public void initTeams(@NotNull JSONMap map){
         initRedTeam(map.getJSONTeamSlayer());
         initBlueTeam(map.getJSONTeamSlayer());
         initSpectator(map.getSpawn());
     }
-    private void initRedTeam(JSONTeamSlayer teamSlayer){
+    private void initRedTeam(@NotNull JSONTeamSlayer teamSlayer){
         redTeam.setPrefix("Red");
         redTeam.setTeamColour(Color.RED);
         redTeam.setChatColor(ChatColor.RED);
@@ -70,18 +76,19 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
                 .collect(Collectors.toList()));
         redTeam.setGameMode(GameMode.ADVENTURE);
     }
-    public void initBlueTeam(JSONTeamSlayer teamSlayer){
+    public void initBlueTeam(@NotNull JSONTeamSlayer teamSlayer){
         blueTeam.setPrefix("Blue");
         blueTeam.setTeamColour(Color.BLUE);
         blueTeam.setChatColor(ChatColor.BLUE);
-        blueTeam.setKit(createKit(Color.BLUE));
+        blueTeam.setKit(createKit(blueTeam.getTeamColour()));
         blueTeam.setSpawnLocations(
             teamSlayer.getBlueSpawns()
                 .stream().map(LocationTranscriber::TranscribeFromJSON)
                 .collect(Collectors.toList()));
         blueTeam.setGameMode(GameMode.ADVENTURE);
     }
-    private Kit createKit(Color color){
+    @Contract(value = "_ -> new", pure = true)
+    private @NotNull Kit createKit(Color color){
         Consumer<Player> invFunc = (x -> {
             PlayerInventory returnInventory = x.getInventory();
             returnInventory.clear();
@@ -103,11 +110,13 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start conditions">
     protected void initStartConditions() {
-        startConditions.put(() -> !redTeam.getOnlineMembers().isEmpty(),
+        Supplier<Integer> totalInTeams = () ->
+            redTeam.onlineMembers.size() + blueTeam.getOnlineMembers().size();
+        startConditions.put(() -> totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
             new ComponentBuilder("Can't start, red team has to have at least " +
                 "one online player.")
                 .color(Style.ERROR).create());
-        startConditions.put(() -> !blueTeam.getOnlineMembers().isEmpty(),
+        startConditions.put(() -> totalInTeams.get() != players.size() ||!blueTeam.getOnlineMembers().isEmpty(),
             new ComponentBuilder("Can't start, blue team has to have at least" +
                 " one online player.")
                 .color(Style.ERROR).create());
@@ -115,9 +124,14 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start actions">
     protected void initStartActions() {
-        //TODO:Match make
+        startActions.add(() -> players.forEach(player ->
+            TeamHandler.addToTeam((team -> ((TSTeam)team).getOnlineMembers().size()),
+                Pair.of(redTeam, () -> joinRedTeam(player)),
+                Pair.of(blueTeam, () -> joinBlueTeam(player)))));
         startActions.add(() ->
             TeamHandler.spawnAll(redTeam, blueTeam, spectator));
+        startActions.add(()-> ScoreboardEditor.InitTeamSlayer(scoreboard,
+            scoreGoal));
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="End actions">
@@ -132,6 +146,21 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
                 PlayerStatEditor.addLost(player);
                 PlayerStatEditor.addPlayed(player);
             }));
+        endActions.get(false).add(() ->{
+            if(redTeam.getPoints() == scoreGoal)
+                players.forEach(player ->
+                sendBaseComponent(
+                    new ComponentBuilder("Red Won!!!").color(ChatColor.RED)
+                        .create(), player)) ;
+            else
+                players.forEach(player ->
+                sendBaseComponent(
+                    new ComponentBuilder("Blue Won!!!").color(ChatColor.BLUE)
+                        .create(), player));});
+        endActions.get(false).add(() ->
+            PlayerRespawnEvent.getHandlerList().unregister(eventListener));
+        endActions.get(true).add(()->
+            PlayerRespawnEvent.getHandlerList().unregister(eventListener));
     }
     private Set<Player> getLosingTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
@@ -163,6 +192,12 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
         joinActions.add(this::join);
     }
     private void join(Player player){
+        if(gameState == State.QUEUED) {
+            sendBaseComponent(
+                new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
+                player);
+            return;
+        }
         if(redTeam.getMembers().contains(player)) {
             joinRedTeam(player);
             return;
@@ -180,10 +215,6 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
         redTeam.getOnlineMembers().add(player);
         Matchmaker.addMember(player, redTeam);
         TeamHandler.spawn(player, redTeam);
-        BaseComponent[] joinMessage = new ComponentBuilder("You have joined " +
-            "the red team.")
-            .color(redTeam.getChatColor()).create();
-        sendBaseComponent(joinMessage, player);
         BaseComponent[] publicJoinMessage = new ComponentBuilder(
             String.format("%s has joined the red team!", player.getName()))
             .color(redTeam.getChatColor()).create();
@@ -196,10 +227,6 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
         blueTeam.getOnlineMembers().add(player);
         Matchmaker.addMember(player, blueTeam);
         TeamHandler.spawn(player, blueTeam);
-        BaseComponent[] joinMessage = new ComponentBuilder("You have joined " +
-            "the blue team.")
-            .color(blueTeam.getChatColor()).create();
-        sendBaseComponent(joinMessage, player);
         BaseComponent[] publicJoinMessage = new ComponentBuilder(
             String.format("%s has joined the blue team!", player.getName()))
             .color(blueTeam.getChatColor()).create();
@@ -262,12 +289,21 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
                     blueTeam.points += 1;
                 else
                     redTeam.points += 1;
+                ScoreboardEditor.updateValueTeamSlayer(scoreboard,redTeam,blueTeam);
                 if(isScoreGoalReached())
                     end(false);
             });
         }
+        @EventHandler
+        public void onPlayerRespawn(PlayerRespawnEvent e){
+            Player player = e.getPlayer();
+            if(redTeam.getMembers().contains(player))
+                TeamHandler.respawn(e, redTeam);
+            if(blueTeam.getMembers().contains(player))
+                TeamHandler.respawn(e, blueTeam);
+        }
     }
-    private static class TSTeam extends Team{
+    public static class TSTeam extends Team{
         Set<Player> onlineMembers = new HashSet<>();
         int points = 0;
 

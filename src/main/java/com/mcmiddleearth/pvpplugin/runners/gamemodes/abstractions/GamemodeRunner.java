@@ -12,10 +12,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +20,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -40,24 +39,30 @@ public abstract class GamemodeRunner implements Listener {
     protected String mapName;
     protected int maxPlayers;
     protected State gameState;
-    protected long countDownTimer;//TODO: default countdown timer
-    protected boolean isPrivate;
-    protected Set<Player> whiteList = new HashSet<>();
+    protected long countDownTimer = 5;//TODO: default countdown timer
+    //protected boolean isPrivate;
+    //protected Set<Player> whiteList = new HashSet<>();
     protected Set<Player> players = new HashSet<>();
     protected Team spectator = new Team();
+    protected Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
     protected Region region;
     protected Listener eventListener;
 
     public GamemodeRunner(){
         gameState = State.QUEUED;
-        startConditions.put(()-> players.size() < 2,
+        startConditions.put(()-> players.size() >= 2,
             new ComponentBuilder("Can't start the game with less than two " +
                 "players.").color(Style.ERROR).create());
 
-        joinConditions.put(player -> players.size() >= maxPlayers,
+        startActions.add(() ->
+            players.forEach(player -> player.setScoreboard(scoreboard)));
+        startActions.add(() ->
+            spectator.getMembers().forEach(player -> player.setScoreboard(scoreboard)));
+
+        joinConditions.put(player -> players.size() < maxPlayers,
             new ComponentBuilder("Can't join the game as it is full.")
                 .color(Style.ERROR).create());
-        joinConditions.put(player -> gameState == State.COUNTDOWN,
+        joinConditions.put(player -> gameState != State.COUNTDOWN,
             new ComponentBuilder("Can't join the game during countdown, try " +
                 "again after the countdown is finished.")
                 .color(Style.ERROR).create());
@@ -92,7 +97,7 @@ public abstract class GamemodeRunner implements Listener {
     protected abstract void initStartConditions();
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start game">
-    protected List<Runnable> startActions = List.of();
+    protected List<Runnable> startActions = new ArrayList<>();
     public void start(){
         PVPPlugin.addEventListener(eventListener);
         startActions.forEach(Runnable::run);
@@ -119,24 +124,27 @@ public abstract class GamemodeRunner implements Listener {
     //<editor-fold defaultstate="collapsed" desc="End game">
     //EndActions is a map where the boolean indicates stopped state
     protected Map<Boolean, List<Runnable>> endActions = Map.of(true,
-        List.of(), false, List.of());
+        new ArrayList<>(), false, new ArrayList<>());
     public void end(boolean stopped){
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-        PVPPlugin.removeEventListener(eventListener);
+        PlayerDeathEvent.getHandlerList().unregister(eventListener);
+        PlayerQuitEvent.getHandlerList().unregister(eventListener);
+        PlayerMoveEvent.getHandlerList().unregister(eventListener);
         players.forEach(player -> {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
             player.setGameMode(GameMode.ADVENTURE);
-            player.teleport(pvpPlugin.getSpawn());
+            //player.teleport(pvpPlugin.getSpawn());
         });
+        scoreboard.getObjectives().forEach(Objective::unregister);
         gameState = State.ENDED;
-        pvpPlugin.setActiveGame(null);
         if(stopped){
             endActions.get(true).forEach(Runnable::run);
             return;
         }
         endActions.get(false).forEach(Runnable::run);
         spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
+        pvpPlugin.setActiveGame(pvpPlugin.getGameQueue().poll());
     }
     protected abstract void initEndActions();
     //</editor-fold>
@@ -155,14 +163,14 @@ public abstract class GamemodeRunner implements Listener {
         return false;
     }
     protected abstract void initJoinConditions();
-    protected List<Consumer<Player>> joinActions = List.of();
+    protected List<Consumer<Player>> joinActions = new ArrayList<>();
     public void Join(Player player){
         joinActions.forEach(joinAction -> joinAction.accept(player));
     }
     protected abstract void initJoinActions();
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Leave">
-    protected List<Consumer<Player>> leaveActions = List.of();
+    protected List<Consumer<Player>> leaveActions = new ArrayList<>();
     public void leaveGame(Player player, boolean hasLeftGame){
         leaveActions.forEach(leaveAction -> {
             if(gameState!=State.ENDED)
@@ -179,11 +187,6 @@ public abstract class GamemodeRunner implements Listener {
     }
     protected abstract  void  initLeaveActions();
     //</editor-fold>
-
-
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
     public String getMapName() {
         return mapName;
     }
@@ -191,9 +194,10 @@ public abstract class GamemodeRunner implements Listener {
 
     protected abstract class GamemodeListener implements Listener {
         HashMap<UUID, Long> playerAreaLeaveTimer = new HashMap<>();
-        protected List<Consumer<PlayerDeathEvent>> onPlayerDeathActions = List.of();
+        protected List<Consumer<PlayerDeathEvent>> onPlayerDeathActions =
+            new ArrayList<>();
         @EventHandler
-        void onPlayerDeath(PlayerDeathEvent e){
+        public void onPlayerDeath(PlayerDeathEvent e){
             Player player = e.getEntity();
             if(!players.contains(player))
                 return;
@@ -205,7 +209,7 @@ public abstract class GamemodeRunner implements Listener {
         }
         protected abstract void initOnPlayerDeathActions();
         @EventHandler
-        void onPlayerLeave(PlayerQuitEvent e){
+        public void onPlayerLeave(PlayerQuitEvent e){
             Player player = e.getPlayer();
             spectator.getMembers().remove(player);
             player.getInventory().clear();
@@ -214,7 +218,7 @@ public abstract class GamemodeRunner implements Listener {
             leaveGame(player, true);
         }
         @EventHandler
-        void onPlayerMove(PlayerMoveEvent e){
+        public void onPlayerMove(PlayerMoveEvent e){
             Location from = e.getFrom();
             Location to = e.getTo();
 

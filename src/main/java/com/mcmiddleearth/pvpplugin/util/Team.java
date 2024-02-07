@@ -21,10 +21,6 @@ public class Team {
     public Set<Player> getMembers() {
         return this.members;
     }
-    public void setMembers(final Set<Player> members) {
-        this.members = members;
-    }
-
     public Color getTeamColour() {
         return this.teamColour;
     }

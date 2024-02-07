@@ -1,9 +1,12 @@
 package com.mcmiddleearth.pvpplugin.runners.runnerUtil;
 
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamSlayerRunner;
 import com.mcmiddleearth.pvpplugin.util.Team;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,21 +39,9 @@ public class TeamHandler {
             .findAny().ifPresent(team -> spawn(player, team));
     }
     public static void spawn(Player player, Team team) {
-        player.teleport(team.getSpawnLocations().get((new Random()).nextInt(team.getSpawnLocations().size())));
+        player.teleport(team.getSpawnLocations().get(randomRespawnIndex(team)));
         player.setGameMode(team.getGameMode());
     }
-
-    public static void setGamemode(GameMode gamemode, Team...teams){
-        setGamemode(gamemode, Set.of(teams));
-    }
-
-    public static void setGamemode(GameMode gamemode, Set<Team> teams){
-        teams.forEach(team -> setGamemode(gamemode, team));
-    }
-    public static void setGamemode(GameMode gamemode, Team team){
-        team.getMembers().forEach(player -> player.setGameMode(gamemode));
-    }
-
     @SafeVarargs
     public static <T> void addToTeam(Function<Team, Comparable<? super T>> comparer,
                                      Pair<Team, Runnable>... teamAdderPairs){
@@ -58,8 +49,20 @@ public class TeamHandler {
             .map(teamAdderPair ->
                 Pair.of(comparer.apply(teamAdderPair.getKey()),
                     teamAdderPair.getValue()))
-            .min(Pair::compareTo)
+            .min((fst, snd) -> new CompareToBuilder().append(fst.getLeft(),
+                snd.getLeft()).toComparison())
             .ifPresent(teamAdderPair ->
                 teamAdderPair.getValue().run());
+    }
+
+    public static void respawn(PlayerRespawnEvent e, Team team) {
+        e.setRespawnLocation(
+            team.getSpawnLocations().get(randomRespawnIndex(team))
+        );
+    }
+
+    private static int randomRespawnIndex(Team team){
+        return (new Random())
+            .nextInt(team.getSpawnLocations().size());
     }
 }

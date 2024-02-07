@@ -1,9 +1,7 @@
 package com.mcmiddleearth.pvpplugin;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Queue;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,13 +18,16 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class PVPPlugin extends JavaPlugin implements Listener {
+public class PVPPlugin extends JavaPlugin {
 
     PluginManager pluginManager;
     HandlerList handlerList;
@@ -35,7 +36,7 @@ public class PVPPlugin extends JavaPlugin implements Listener {
     final Location spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
-    Queue<GamemodeRunner> gameQueue;
+    Queue<GamemodeRunner> gameQueue = new LinkedList<>();
     HashMap<UUID, MapEditor> mapEditors = new HashMap<>();
     static PVPPlugin instance;
     //TODO: Implement switching between servermode and minigame mode.
@@ -92,10 +93,12 @@ public class PVPPlugin extends JavaPlugin implements Listener {
         GameCommand gameCommand = new GameCommand("pvp");
         Bukkit.getServer().getPluginCommand("pvp").setExecutor(gameCommand);
         Bukkit.getServer().getPluginCommand("pvp").setTabCompleter(gameCommand);
+        addEventListener(new GlobalListeners());
     }
 
     @Override
     public void onDisable() {
+        activeGame.end(true);
         MapLoader.saveMaps();
         StatLoader.saveStats();
     }
@@ -173,4 +176,14 @@ public class PVPPlugin extends JavaPlugin implements Listener {
     }
 
     //</editor-fold>
+    private static class GlobalListeners implements Listener{
+        @EventHandler
+        public void onJoinEvent(PlayerJoinEvent e){
+            Player p = e.getPlayer();
+            HashMap<UUID, Playerstat> playerStats =
+                getInstance().getPlayerstats();
+            if(!playerStats.containsKey(p.getUniqueId()))
+                playerStats.put(p.getUniqueId(), new Playerstat());
+        }
+    }
 }
