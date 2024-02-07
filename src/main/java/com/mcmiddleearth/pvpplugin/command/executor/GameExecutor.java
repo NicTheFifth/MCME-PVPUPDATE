@@ -33,11 +33,9 @@ public class GameExecutor {
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
         GamemodeRunner runner = null;
         switch(gamemode){
-            case(Gamemodes
-                .CAPTURETHEFLAG):
+            case(Gamemodes.CAPTURETHEFLAG):
                 break;
-            case(Gamemodes.
-                DEATHRUN):
+            case(Gamemodes.DEATHRUN):
                 break;
             case(Gamemodes.FREEFORALL):
                 break;
@@ -115,5 +113,14 @@ public class GameExecutor {
             player);
         return 1;
 
+    }
+
+    public static int EndGame(CommandContext<McmeCommandSender> c) {
+        PVPPlugin pvpPlugin = PVPPlugin.getInstance();
+        GamemodeRunner runner = pvpPlugin.getActiveGame();
+
+        runner.end(true);
+        pvpPlugin.setActiveGame(pvpPlugin.getGameQueue().poll());
+        return 1;
     }
 }

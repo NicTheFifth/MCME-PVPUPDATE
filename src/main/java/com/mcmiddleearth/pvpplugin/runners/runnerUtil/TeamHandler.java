@@ -1,18 +1,14 @@
 package com.mcmiddleearth.pvpplugin.runners.runnerUtil;
 
-import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamSlayerRunner;
 import com.mcmiddleearth.pvpplugin.util.Team;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.tuple.Pair;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 

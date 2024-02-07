@@ -1,5 +1,6 @@
 package com.mcmiddleearth.pvpplugin.runners.runnerUtil;
 
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamSlayerRunner;
 import com.mcmiddleearth.pvpplugin.util.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -36,9 +37,20 @@ public class ScoreboardEditor {
         scoreboard.getObjective("Remaining").getScore(ChatColor.DARK_RED + "Red:").setScore(red.getMembers().size());
     }
 
-    public static void InitTeamSlayer(Scoreboard scoreboard, Team red, Team blue, Integer pointLimit) {
+    public static void InitTeamSlayer(Scoreboard scoreboard, Integer scoreGoal) {
+        Objective Points = scoreboard.registerNewObjective("Points",
+            "dummy", "Points");
+        Points.getScore(ChatColor.WHITE + "Goal:").setScore(scoreGoal);
+        Points.getScore(ChatColor.BLUE + "Blue:").setScore(0);
+        Points.getScore(ChatColor.DARK_RED + "Red:").setScore(0);
+        Points.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
-    public static void updateValueTeamSlayer(Scoreboard scoreboard, Team red, Team blue) {
+    public static void updateValueTeamSlayer(Scoreboard scoreboard, TeamSlayerRunner.TSTeam red
+        , TeamSlayerRunner.TSTeam blue) {
+        scoreboard.getObjective("Points")
+            .getScore(ChatColor.BLUE + "Blue:").setScore(blue.getPoints());
+        scoreboard.getObjective("Points")
+            .getScore(ChatColor.DARK_RED + "Red:").setScore(red.getPoints());
     }
 }

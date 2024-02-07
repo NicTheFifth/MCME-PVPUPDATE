@@ -19,7 +19,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     public GameCommand(String command){
@@ -28,27 +31,37 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     @Override
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
-            .requires(Requirements::isMapEditor)
             .requires(sender -> ((PVPCommandSender)sender).getSender() instanceof Player)
             .then(HelpfulLiteralBuilder.literal("create")
                 .requires(Requirements::canRun)
                 .then(Arguments.ValidMap()
                     .then(Arguments.ValidGamemode()
                         .executes(GameExecutor::CreateGame))))
-            .then(ActiveGameExistsLiteral("start")
+            .then(MultiReqLiteral("start",
+                    Requirements::canRun, Requirements::ActiveGameExists)
                 .executes(GameExecutor::StartGame))
-            .then(ActiveGameExistsLiteral("join")
+            .then(HelpfulLiteralBuilder.literal("join")
+                .requires(Requirements::ActiveGameExists)
                 .executes(GameExecutor::JoinGame))
-            .then(HelpfulLiteralBuilder.literal("setgoal")
-                .requires(Requirements::hasScoreGoal)
+            .then(MultiReqLiteral("setgoal",
+                Requirements::hasScoreGoal,
+                Requirements::canRun)
                 .then(HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GOAL,
                     IntegerArgumentType.integer(0))
-                    .executes(GameExecutor::SetGoal)));
+                    .executes(GameExecutor::SetGoal)))
+            .then(MultiReqLiteral("stop",
+                Requirements::ActiveGameExists,
+                Requirements::canRun)
+                .executes(GameExecutor::EndGame));
         return commandNodeBuilder;
     }
-    private LiteralArgumentBuilder<McmeCommandSender> ActiveGameExistsLiteral(String literal){
+    @SafeVarargs
+    private LiteralArgumentBuilder<McmeCommandSender> MultiReqLiteral(String literal, Predicate<McmeCommandSender>... predicates){
         return HelpfulLiteralBuilder.literal(literal)
-            .requires(Requirements::ActiveGameExists);
+            .requires(
+                sender -> Arrays.stream(predicates).map(predicate -> predicate.test(sender))
+                    .reduce(true, (x,y) -> x && y)
+            );
     }
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {

@@ -5,7 +5,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 
 public class CommandUtil {
-
     public static Player getPlayer(McmeCommandSender sender){
        return ((Player)((PVPCommandSender) sender).getSender());
     }
