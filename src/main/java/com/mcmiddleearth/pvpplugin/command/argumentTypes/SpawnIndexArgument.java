@@ -37,7 +37,7 @@ public class SpawnIndexArgument implements ArgumentType<Integer> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         Player player = CommandUtil.getPlayer((McmeCommandSender) context.getSource());
-        Optional<MapEditor> mapEditor = getMapEditor(player);
+        Optional<MapEditor> mapEditor = getMapEditor(player, false);
         if(!mapEditor.isPresent())
             return builder.buildFuture();
         GamemodeEditor gamemodeEditor = mapEditor.get().getGamemodeEditor();

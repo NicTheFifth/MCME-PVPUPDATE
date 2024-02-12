@@ -29,5 +29,5 @@ public abstract class GamemodeEditor {
     public String getGamemode() {
         return gamemode;
     }
-    public abstract String[] getInfo();
+    public abstract void sendStatus(Player player);
 }

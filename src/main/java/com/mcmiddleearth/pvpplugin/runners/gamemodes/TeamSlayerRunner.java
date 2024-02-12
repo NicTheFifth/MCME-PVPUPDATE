@@ -248,7 +248,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
             leaveBlueTeam(player);
         }
         if(hasEmptyTeam())
-            end(false);
+            end(true);
     }
 
     private void leaveRedTeam(Player player){

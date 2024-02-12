@@ -99,7 +99,6 @@ public class MapEditor {
                     .color(Style.INFO)
                     .create(),
                 player);
-            sendShortStatus(player);
         }
         catch(SecurityException e){
             sendBaseComponent(
@@ -137,35 +136,37 @@ public class MapEditor {
     public void sendStatus(Player player){
         BaseComponent[] message =
             new ComponentBuilder(String.format("Map name: %s", map.getTitle()))
+                .color(Style.INFO)
                 .append(String.format("\nResource pack: %s", map.getResourcePack()))
+                .color(Style.INFO)
                 .append("\nGamemodes:")
-                .append(String.format("\n\tCapture The Flag: %b",
+                .color(Style.INFO)
+                .append(String.format("\n  Capture The Flag: %b",
                     map.getJSONCaptureTheFlag() != null))
-                .append(String.format("\n\t Death Run: %b",
+                .color(Style.INFO)
+                .append(String.format("\n  Death Run: %b",
                     map.getJSONDeathRun() != null))
-                .append(String.format("\n\t Free for All: %b",
+                .color(Style.INFO)
+                .append(String.format("\n  Free for All: %b",
                     map.getJSONFreeForAll() != null))
-                .append(String.format("\n\t Infected: %b",
+                .color(Style.INFO)
+                .append(String.format("\n  Infected: %b",
                     map.getJSONInfected() != null))
-                .append(String.format("\n\t One in the Quiver: %b",
+                .color(Style.INFO)
+                .append(String.format("\n  One in the Quiver: %b",
                     map.getJSONOneInTheQuiver() != null))
-                .append(String.format("\n\t Ringbearer: %b",
+                .color(Style.INFO)
+                .append(String.format("\n  Ringbearer: %b",
                     map.getJSONRingBearer() != null))
-                .append(String.format("\n\t Team Conquest: %b",
+                .color(Style.INFO)
+                .append(String.format("\n  Team Conquest: %b",
                     map.getJSONTeamConquest() != null))
-                .append(String.format("\n\t Team Deathmatch: %b",
+                .color(Style.INFO)
+                .append(String.format("\n  Team Deathmatch: %b",
                     map.getJSONTeamDeathMatch() != null))
-                .append(String.format("\n\t Team Slayer: %b",
+                .color(Style.INFO)
+                .append(String.format("\n  Team Slayer: %b",
                     map.getJSONTeamSlayer() != null))
-                .color(Style.INFO).create();
-        sendBaseComponent(message, player);
-    }
-    public void sendShortStatus(Player player){
-        BaseComponent[] message =
-            new ComponentBuilder(String.format("Map name: %s", map.getTitle()))
-                .append(String.format("\nResource pack: %s", map.getResourcePack()))
-                .append(String.format("\nSelected Gamemode: %s",
-                    (gamemodeEditor == null ? "None": gamemodeEditor.getGamemode())))
                 .color(Style.INFO).create();
         sendBaseComponent(message, player);
     }
@@ -211,13 +212,12 @@ public class MapEditor {
                 gamemodeEditor = new TeamSlayerEditor(map);
                 break;
         }
-        //TODO: add state of gamemode sending
         sendBaseComponent(
             new ComponentBuilder(String.format("Set the gamemode to %s.\n " +
                 "Current state of the gamemode is:", gamemode))
                 .color(Style.INFO)
                 .create(),
             player);
-        sendStatus(player);
+        gamemodeEditor.sendStatus(player);
     }
 }

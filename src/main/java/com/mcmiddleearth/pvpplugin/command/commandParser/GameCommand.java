@@ -7,6 +7,7 @@ import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
+import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.command.executor.GameExecutor;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
@@ -19,10 +20,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     public GameCommand(String command){
@@ -59,8 +58,7 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     private LiteralArgumentBuilder<McmeCommandSender> MultiReqLiteral(String literal, Predicate<McmeCommandSender>... predicates){
         return HelpfulLiteralBuilder.literal(literal)
             .requires(
-                sender -> Arrays.stream(predicates).map(predicate -> predicate.test(sender))
-                    .reduce(true, (x,y) -> x && y)
+                CommandUtil.multiRequirements(predicates)
             );
     }
     @Override

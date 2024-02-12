@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class RedBlueSpawnEditor extends TeamSpawnEditor {
-    private String displayString;
 
     protected RedBlueSpawnEditor(){
         initSpawnNames();
@@ -39,16 +38,25 @@ public class RedBlueSpawnEditor extends TeamSpawnEditor {
                 .create(),
             player);
     }
-
-    protected void setDisplayString(String displayString){
-        this.displayString = displayString;
-    }
-    protected String getDisplayString(){
-        return this.displayString;
-    }
     @Override
-    public String[] getInfo() {
-        return new String[0];
+    public void sendStatus(Player player) {
+        sendBaseComponent(
+            new ComponentBuilder(
+                String.format("Current selected gamemode: %s.",
+                    getDisplayString()))
+                .color(Style.INFO)
+                .append(String.format("  Max players: %d",
+                    jsonGamemode.getMaximumPlayers()))
+                .color(Style.INFO)
+                .append(String.format("  Blue spawn set: %b",
+                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getBlueSpawn()))
+                .color(Style.INFO)
+                .append(String.format("  Red spawn set: %b",
+                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getRedSpawn()))
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
     protected void initSpawnNames() {
         getSpawnNames().put("red", this::setRedSpawn);

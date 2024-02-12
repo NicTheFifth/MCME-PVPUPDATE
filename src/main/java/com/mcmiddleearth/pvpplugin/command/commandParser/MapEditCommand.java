@@ -31,8 +31,9 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
     @Override
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
-            .requires(Requirements::isMapEditor)
-            .requires(sender -> ((PVPCommandSender)sender).getSender() instanceof Player)
+            .requires(
+                CommandUtil.multiRequirements(Requirements::isMapEditor,
+                    (sender -> ((PVPCommandSender)sender).getSender() instanceof Player)))
             .then(
                 HelpfulLiteralBuilder.literal("create")
                     .then(Arguments.NonExistingMap()
@@ -94,7 +95,10 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                     .requires(Requirements::isInstanceOfSpecialPointListEditor)
                     .then(Arguments.SpecialPointListIndexArgument()
                         .executes(EditExecutor::DeleteSpecialPoint))))
-
+            .then(ActiveMapEditorLiteral("info")
+                .executes(EditExecutor::SendInfo)
+                .then(ActiveGamemodeEditorLiteral("gamemode")
+                    .executes(EditExecutor::SendGamemodeInfo)))
             ;
 
         return commandNodeBuilder;
@@ -110,14 +114,20 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender,
+                             @NotNull Command command,
+                             @NotNull String s,
+                             @NotNull String[] args) {
         PVPCommandSender wrappedSender = new PVPCommandSender(sender);
         execute(wrappedSender, args);
         return true;
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender,
+                                                @NotNull Command command,
+                                                @NotNull String alias,
+                                                @NotNull String[] args) {
         TabCompleteRequest request = new SimpleTabCompleteRequest(PVPCommandSender.wrap(sender),
                 String.format("/%s %s", alias, Joiner.on(' ').join(args)));
         onTabComplete(request);

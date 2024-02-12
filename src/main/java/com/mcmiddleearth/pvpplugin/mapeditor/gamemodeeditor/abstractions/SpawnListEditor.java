@@ -31,4 +31,19 @@ public abstract class SpawnListEditor extends GamemodeEditor {
     public Integer amountOfSpawns(){
         return ((JSONSpawnListGamemode)jsonGamemode).getSpawns().size();
     }
+    public void sendStatus(Player player){
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Current selected gamemode: " +
+                "%s", getDisplayString()))
+                .color(Style.INFO)
+                .append(String.format(" Max players: %d",
+                    jsonGamemode.getMaximumPlayers()))
+                .color(Style.INFO)
+                .append(String.format("  Spawns: %d",
+                    ((JSONSpawnListGamemode)jsonGamemode).getSpawns().size()))
+                .color(Style.INFO)
+                .create(),
+            player
+        );
+    }
 }

@@ -19,7 +19,6 @@ import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 public class TeamConquestEditor extends RedBlueSpawnEditor implements SpecialPointListEditor {
     Map<String, AddRemoveIndexTrio> specialPointListNames =
         new HashMap<>();
-    private TeamConquestEditor(){}
 
     public TeamConquestEditor(JSONMap map){
         if(map.getJSONTeamConquest() == null)
@@ -50,21 +49,25 @@ public class TeamConquestEditor extends RedBlueSpawnEditor implements SpecialPoi
     public String getGamemode(){return Gamemodes.TEAMCONQUEST;}
 
     @Override
-    public String[] getInfo(){
-        return new String[]{
-                String.format(Style.INFO + "Current selected gamemode: Team Conquest."),
-                String.format(Style.INFO + "Max players: %d",
-                    jsonGamemode.getMaximumPlayers()),
-                String.format(Style.INFO + "Blue spawn set: %b",
-                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getBlueSpawn()),
-                String.format(Style.INFO + "Red spawn set: %b",
-                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getRedSpawn()),
-                String.format(Style.INFO + "Goal points: %s",
-                    ((JSONTeamConquest)jsonGamemode).getCapturePoints().size())
-        };
-    }
-    public Integer amountOfCapturePoints(){
-        return ((JSONTeamConquest)jsonGamemode).getCapturePoints().size();
+    public void sendStatus(Player player){
+        sendBaseComponent(
+            new ComponentBuilder("Current selected gamemode: Team Conquest.")
+                .color(Style.INFO)
+                .append(String.format("Max players: %d",
+                    jsonGamemode.getMaximumPlayers()))
+                .color(Style.INFO)
+                .append(String.format("Blue spawn set: %b",
+                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getBlueSpawn()))
+                .color(Style.INFO)
+                .append(String.format("Red spawn set: %b",
+                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getRedSpawn()))
+                .color(Style.INFO)
+                .append(String.format("Goal points: %s",
+                    ((JSONTeamConquest)jsonGamemode).getCapturePoints().size()))
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
 
     @Override

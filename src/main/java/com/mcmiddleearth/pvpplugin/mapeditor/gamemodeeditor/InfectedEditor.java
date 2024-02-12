@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class InfectedEditor extends TeamSpawnEditor {
-    private InfectedEditor(){}
     public InfectedEditor(JSONMap map){
         if(map.getJSONInfected() == null)
             map.setJSONInfected(new JSONInfected());
@@ -44,16 +43,22 @@ public class InfectedEditor extends TeamSpawnEditor {
     public String getGamemode(){return Gamemodes.INFECTED;}
 
     @Override
-    public String[] getInfo(){
-        return new String[]{
-                String.format(Style.INFO + "Current selected gamemode: Infected."),
-                String.format(Style.INFO + "Max players: %d",
-                    jsonGamemode.getMaximumPlayers()),
-                String.format(Style.INFO + "Survivor spawn set: %b",
-                    ((JSONInfected)jsonGamemode).getSurvivorSpawn()),
-                String.format(Style.INFO + "Infected spawn set: %b",
-                    ((JSONInfected)jsonGamemode).getInfectedSpawn())
-        };
+    public void sendStatus(Player player){
+        sendBaseComponent(
+            new ComponentBuilder("Current selected gamemode: Infected.")
+                .color(Style.INFO)
+                .append(String.format("  Max players: %d",
+                    jsonGamemode.getMaximumPlayers()))
+                .color(Style.INFO)
+                .append(String.format("  Survivor spawn set: %b",
+                    ((JSONInfected)jsonGamemode).getSurvivorSpawn()))
+                .color(Style.INFO)
+                .append(String.format("  Infected spawn set: %b",
+                    ((JSONInfected)jsonGamemode).getInfectedSpawn()))
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
 
     @Override

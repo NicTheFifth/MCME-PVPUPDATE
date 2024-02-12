@@ -44,7 +44,7 @@ public class RedBlueSpawnListEditor extends TeamSpawnListEditor {
                 .create(),
             player);
     }
-    public void DeleteRedSpawn(int toDelete, Player player){
+    public void DeleteRedSpawn(Player player, int toDelete){
         ((JSONRedBlueSpawnListGamemode)jsonGamemode).getRedSpawns().remove(toDelete);
         sendBaseComponent(new ComponentBuilder(String.format("Red spawn " +
                 "removed from %s.", getDisplayString()))
@@ -59,8 +59,24 @@ public class RedBlueSpawnListEditor extends TeamSpawnListEditor {
         return ((JSONRedBlueSpawnListGamemode)jsonGamemode).getRedSpawns().size();
     }
     @Override
-    public String[] getInfo() {
-        return new String[0];
+    public void sendStatus(Player player) {
+        sendBaseComponent(
+            new ComponentBuilder(
+                String.format("Current selected gamemode: %s.",
+                    getDisplayString()))
+                .color(Style.INFO)
+                .append(String.format("  Max players: %d",
+                    jsonGamemode.getMaximumPlayers()))
+                .color(Style.INFO)
+                .append(String.format("  Blue spawns: %d",
+                    amountOfBlueSpawns()))
+                .color(Style.INFO)
+                .append(String.format("  Red spawns: %d",
+                    amountOfRedSpawns()))
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
     protected void initSpawnListNames() {
         getSpawnListNames().put("blue",
@@ -71,7 +87,7 @@ public class RedBlueSpawnListEditor extends TeamSpawnListEditor {
         getSpawnListNames().put("red",
             new AddRemoveIndexTrio(
                 this::AddRedSpawn,
-                player -> index -> DeleteBlueSpawn(player,index),
+                player -> index -> DeleteRedSpawn(player,index),
                 this::amountOfRedSpawns
             ));
     }

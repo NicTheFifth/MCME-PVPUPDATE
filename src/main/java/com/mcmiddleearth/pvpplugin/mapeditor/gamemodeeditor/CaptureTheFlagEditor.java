@@ -18,9 +18,11 @@ import java.util.function.Consumer;
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialPointEditor {
-    //SpecialPointNames is a map of <name, setter of said point>
+    /**
+     * SpecialPointNames is a map of &lt;name, setter of said point&gt;
+     */
+
     Map<String, Consumer<Player>> specialPointNames = new HashMap<>();
-    private CaptureTheFlagEditor(){}
     public CaptureTheFlagEditor(JSONMap map){
         setDisplayString("Capture the Flag");
         if(map.getJSONCaptureTheFlag() == null)
@@ -54,16 +56,27 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialP
     public String getGamemode() {return Gamemodes.CAPTURETHEFLAG;}
 
     @Override
-    public String[] getInfo(){
-        return new String[]{
-                String.format(Style.INFO + "Current selected gamemode: Capture the Flag."),
-                String.format(Style.INFO + "Max players: %d",
-                    jsonGamemode.getMaximumPlayers()),
-                String.format(Style.INFO + "Blue spawn set: %b",
-                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getBlueSpawn()),
-                String.format(Style.INFO + "Red spawn set: %b",
-                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getRedSpawn())
-        };
+    public void sendStatus(Player player){
+        sendBaseComponent(
+            new ComponentBuilder("Current selected gamemode: Capture the Flag.")
+                .color(Style.INFO)
+                .append(String.format("\nMax players: %d",
+                    jsonGamemode.getMaximumPlayers()))
+                .color(Style.INFO)
+                .append(String.format("Blue spawn set: %b",
+                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getBlueSpawn()))
+                .color(Style.INFO)
+                .append(String.format("Blue flag set: %b",
+                            ((JSONCaptureTheFlag) jsonGamemode).getBlueFlag()))
+                .color(Style.INFO)
+                .append(String.format("Red spawn set: %b",
+                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getRedSpawn()))
+                .color(Style.INFO)
+                .append(String.format("Red flag set: %b",
+                    ((JSONCaptureTheFlag) jsonGamemode).getRedFlag()))
+                .color(Style.INFO)
+                .create(),
+            player);
     }
     @Override
     public void initSpecialPointNames() {

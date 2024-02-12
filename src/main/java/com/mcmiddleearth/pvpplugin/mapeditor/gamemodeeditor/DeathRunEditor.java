@@ -18,9 +18,11 @@ import java.util.function.Consumer;
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEditor {
-    //SpecialPointNames is a map of <name, setter of said point>
+
+    /**
+     * SpecialPointNames is a map of &lt;name, setter of said point&gt;
+     */
     Map<String, Consumer<Player>> specialPointNames = new HashMap<>();
-    private DeathRunEditor(){}
     public DeathRunEditor(JSONMap map){
         if(map.getJSONDeathRun() == null)
             map.setJSONDeathRun(new JSONDeathRun());
@@ -68,16 +70,21 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
         return Gamemodes.DEATHRUN;
     }
     @Override
-    public String[] getInfo(){
-        return new String[]{
-                String.format(Style.INFO + "Current selected gamemode: Death Run."),
-                String.format(Style.INFO + "Max players: %d",
-                    jsonGamemode.getMaximumPlayers()),
-                String.format(Style.INFO + "Runner spawn set: %b",
-                    ((JSONDeathRun)jsonGamemode).getRunnerSpawn()),
-                String.format(Style.INFO + "Death spawn set: %b",
-                    ((JSONDeathRun)jsonGamemode).getDeathSpawn())
-        };
+    public void sendStatus(Player player){
+        sendBaseComponent(
+            new ComponentBuilder("Current selected gamemode: Death Run.")
+                .color(Style.INFO)
+                .append(String.format("  Max players: %d",
+                    jsonGamemode.getMaximumPlayers()))
+                .color(Style.INFO)
+                .append(String.format("  Runner spawn set: %b",
+                    ((JSONDeathRun)jsonGamemode).getRunnerSpawn()))
+                .color(Style.INFO)
+                .append(String.format("  Death spawn set: %b",
+                    ((JSONDeathRun)jsonGamemode).getDeathSpawn()))
+                .color(Style.INFO)
+                .create(),
+            player);
     }
 
     @Override

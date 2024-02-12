@@ -8,7 +8,6 @@ import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import java.util.ArrayList;
 
 public class FreeForAllEditor extends SpawnListEditor {
-    private FreeForAllEditor(){}
     public FreeForAllEditor(JSONMap map){
         setDisplayString("Free for All");
         if(map.getJSONFreeForAll() == null)
@@ -21,10 +20,5 @@ public class FreeForAllEditor extends SpawnListEditor {
     @Override
     public String getGamemode() {
         return Gamemodes.FREEFORALL;
-    }
-
-    @Override
-    public String[] getInfo() {
-        return new String[0];
     }
 }

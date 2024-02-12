@@ -42,7 +42,7 @@ public class EditExecutor {
     public static int SelectMap(@NotNull CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, false);
 
         if(result.isPresent()) {
             result.get().setMap(mapName, player);
@@ -55,7 +55,7 @@ public class EditExecutor {
     }
     public static int SetArea(@NotNull CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             result.get().setArea(player);
@@ -66,7 +66,7 @@ public class EditExecutor {
     public static int SetTitle(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             result.get().setTitle(mapName, player);
@@ -77,7 +77,7 @@ public class EditExecutor {
     public static int SetRP(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String rpName = c.getArgument(ArgumentNames.RESOURCEPACK, String.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             result.get().setRP(rpName,player);
@@ -88,7 +88,7 @@ public class EditExecutor {
     public static int SetGamemode(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             result.get().setGamemodeEditor(gamemode, player);
@@ -99,7 +99,7 @@ public class EditExecutor {
     public static int SetMax(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         Integer max = c.getArgument(ArgumentNames.MAX, Integer.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             result.get().getGamemodeEditor().setMaxPlayers(max, player);
@@ -109,7 +109,7 @@ public class EditExecutor {
     }
     public static int setMapSpawn(@NotNull CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             result.get().setSpawn(player);
@@ -119,7 +119,7 @@ public class EditExecutor {
     }
     public static int SpawnListAddSpawn(CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             ((SpawnListEditor)result.get().getGamemodeEditor()).addSpawn(player);
@@ -130,7 +130,7 @@ public class EditExecutor {
     public static int SpawnListDeleteSpawn(CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             ((SpawnListEditor)result.get().getGamemodeEditor())
@@ -143,7 +143,7 @@ public class EditExecutor {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             ((TeamSpawnEditor)result.get().getGamemodeEditor())
@@ -156,7 +156,7 @@ public class EditExecutor {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             ((TeamSpawnListEditor)result.get().getGamemodeEditor())
@@ -171,7 +171,7 @@ public class EditExecutor {
         String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
             String.class);
         Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             ((TeamSpawnListEditor)result.get().getGamemodeEditor())
@@ -185,7 +185,7 @@ public class EditExecutor {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
             String.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             ((SpecialPointEditor)result.get().getGamemodeEditor())
@@ -198,7 +198,7 @@ public class EditExecutor {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
             String.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             ((SpecialPointListEditor)result.get().getGamemodeEditor())
@@ -213,7 +213,7 @@ public class EditExecutor {
         String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
             String.class);
         Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
-        Optional<MapEditor> result = getMapEditor(player);
+        Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             ((SpecialPointListEditor)result.get().getGamemodeEditor())
@@ -223,6 +223,28 @@ public class EditExecutor {
         }
         return 0;
     }
+    public static int SendInfo(CommandContext<McmeCommandSender> c) {
+        Player player = CommandUtil.getPlayer(c.getSource());
+        Optional<MapEditor> result = getMapEditor(player, true);
+
+        if(result.isPresent()) {
+            result.get().sendStatus(player);
+            return 1;
+        }
+        return 0;
+    }
+
+    public static int SendGamemodeInfo(CommandContext<McmeCommandSender> c) {
+        Player player = CommandUtil.getPlayer(c.getSource());
+        Optional<MapEditor> result = getMapEditor(player, true);
+
+        if(result.isPresent()) {
+            result.get().getGamemodeEditor().sendStatus(player);
+            return 1;
+        }
+        return 0;
+    }
+
     /**
      *
      * @param player A player of whom their map editor is requested.
@@ -230,12 +252,14 @@ public class EditExecutor {
      * map editor is found of the player or the found map editor.
      *
      */
-    public static Optional<MapEditor> getMapEditor(@NotNull Player player) {
+    public static Optional<MapEditor> getMapEditor(@NotNull Player player,
+                                                   boolean sendMessage) {
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(player.getUniqueId());
         if(me == null) {
-            sendBaseComponent(new ComponentBuilder("Please select which map you " +
+            if(sendMessage)
+                sendBaseComponent(new ComponentBuilder("Please select which map you " +
                 "wish to edit with /mapedit <map name>")
-                .color(Style.INFO)
+                .color(Style.ERROR)
                 .create(),player);
             return Optional.empty();
         }
