@@ -18,6 +18,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -45,7 +46,7 @@ public class PVPPlugin extends JavaPlugin {
     File statDirectory;
 
     @Override
-    public void onLoad() {
+    public void onEnable() {
         if(PVPPlugin.instance == null) {
             PVPPlugin.instance = this;
         }
@@ -54,6 +55,11 @@ public class PVPPlugin extends JavaPlugin {
         /*if(this.getConfig().contains("noHunger")){
             noHunger.addAll(this.getConfig().getStringList("noHunger"));
         }*/
+        if(this.getConfig().contains("worlds")){
+            for(String s : this.getConfig().getStringList("worlds")){
+                Bukkit.getServer().getWorlds().add(Bukkit.getServer().createWorld(new WorldCreator(s)));
+            }
+        }
         if (!getDataFolder().mkdir()) {
             if (!getDataFolder().exists()) {
                 Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Data folder doesn't exist and wasn't able to be created");
@@ -72,13 +78,8 @@ public class PVPPlugin extends JavaPlugin {
             }
         }
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
-    }
-
-    @Override
-    public void onEnable() {
         setup();
-        Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin enabled correctly");
+        Logger.getLogger("PVPPlugin").log(Level.INFO, "PVPPlugin loaded correctly");
     }
 
     private void setup() {
@@ -98,7 +99,8 @@ public class PVPPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        activeGame.end(true);
+        if(activeGame != null)
+            activeGame.end(true);
         MapLoader.saveMaps();
         StatLoader.saveStats();
     }

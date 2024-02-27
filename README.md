@@ -1,7 +1,5 @@
 PVP Plugin version 2
 ===========
-## Derps to be fixed
-* \t doesn't work for strings.
 ## To be Implemented
 * FBT tag whilst in lobby  
 * Multi spawns for every gamemode

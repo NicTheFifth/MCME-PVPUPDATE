@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONInfected;
+import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -41,7 +42,16 @@ public class InfectedEditor extends TeamSpawnEditor {
             player);
     }
     public String getGamemode(){return Gamemodes.INFECTED;}
+    @Override
+    public void ShowPoints(Player player) {
+        JSONLocation infectedSpawn =
+            ((JSONInfected)jsonGamemode).getInfectedSpawn();
+        MapEditor.SpawnMarker(infectedSpawn, "spawn infected");
+        JSONLocation survivorSpawn =
+            ((JSONInfected)jsonGamemode).getSurvivorSpawn();
+        MapEditor.SpawnMarker(survivorSpawn, "spawn survivor");
 
+    }
     @Override
     public void sendStatus(Player player){
         sendBaseComponent(

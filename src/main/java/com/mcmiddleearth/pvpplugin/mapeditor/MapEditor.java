@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
+import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.*;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.GamemodeEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
@@ -15,7 +16,11 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.Region;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -219,5 +224,38 @@ public class MapEditor {
                 .create(),
             player);
         gamemodeEditor.sendStatus(player);
+    }
+    public void showSpawns(Player player) {
+        SpawnMarker(map.getSpawn(), "Map spawn");
+        if(gamemodeEditor != null)
+            gamemodeEditor.ShowPoints(player);
+    }
+    public static void hideSpawns(Player player, boolean toMessage) {
+        ArmorStand toDelete;
+        for(Entity marker : Bukkit.getWorld("world").getEntities())
+            if(marker.getType() == EntityType.ARMOR_STAND){
+                toDelete = (ArmorStand) marker;
+                if(toDelete.isMarker())
+                    toDelete.remove();
+            }
+        if(toMessage)
+            sendBaseComponent(
+                new ComponentBuilder("Spawns hidden.")
+                    .color(Style.INFO)
+                    .create(),
+                player);
+    }
+
+    public static void SpawnMarker(JSONLocation loc, String name){
+        ArmorStand marker =
+            (ArmorStand) Bukkit.getWorld(loc.getWorld()).spawnEntity(
+                LocationTranscriber.TranscribeFromJSON(loc)
+                    .add(0, 1, 0),
+                EntityType.ARMOR_STAND);
+        marker.setGravity(false);
+        marker.setCustomName(name);
+        marker.setCustomNameVisible(true);
+        marker.setGlowing(true);
+        marker.setMarker(true);
     }
 }

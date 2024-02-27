@@ -5,6 +5,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONCaptureTheFlag;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
+import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpecialPointEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -54,7 +55,20 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialP
     }
     @Override
     public String getGamemode() {return Gamemodes.CAPTURETHEFLAG;}
+    @Override
+    public void ShowPoints(Player player) {
+        JSONLocation redFlag = ((JSONCaptureTheFlag)jsonGamemode).getRedFlag();
+        MapEditor.SpawnMarker(redFlag, "redflag");
+        JSONLocation blueFlag =
+            ((JSONCaptureTheFlag)jsonGamemode).getBlueFlag();
+        MapEditor.SpawnMarker(blueFlag, "blueflag");
+        JSONLocation redSpawn = ((JSONCaptureTheFlag)jsonGamemode).getRedSpawn();
+        MapEditor.SpawnMarker(redSpawn, "spawn red");
+        JSONLocation blueSpawn =
+            ((JSONCaptureTheFlag)jsonGamemode).getBlueSpawn();
+        MapEditor.SpawnMarker(blueSpawn, "spawn blue");
 
+    }
     @Override
     public void sendStatus(Player player){
         sendBaseComponent(

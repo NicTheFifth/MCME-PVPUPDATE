@@ -15,7 +15,9 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <jackson.version>2.15.1</jackson.version>
-        <bungeecord.version>1.16-R0.4</bungeecord.version>
+        <bungeecord.version>1.20-R0.1-SNAPSHOT</bungeecord.version>
+        <spigot.version>1.19-R0.1-SNAPSHOT</spigot.version>
+        <worldedit.version>7.2.18</worldedit.version>
     </properties>
 
     <build>
@@ -72,15 +74,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.vavr</groupId>
-            <artifactId>vavr</artifactId>
-            <version>0.9.0</version>
-        </dependency>
-        <dependency>
-        <groupId>com.sk89q.worldedit</groupId>
-        <artifactId>worldedit-bukkit</artifactId>
-        <version>7.2.18</version>
-        <scope>provided</scope>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>${worldedit.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.mcmiddleearth</groupId>
@@ -90,12 +87,12 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
-            <version>1.16-R0.4</version>
+            <version>${bungeecord.version}</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.19-R0.1-SNAPSHOT</version>
+            <version>${spigot.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

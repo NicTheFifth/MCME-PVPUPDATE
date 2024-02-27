@@ -30,4 +30,6 @@ public abstract class GamemodeEditor {
         return gamemode;
     }
     public abstract void sendStatus(Player player);
+
+    public abstract void ShowPoints(Player player);
 }

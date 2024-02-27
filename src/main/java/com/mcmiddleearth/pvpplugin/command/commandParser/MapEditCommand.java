@@ -99,6 +99,10 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                 .executes(EditExecutor::SendInfo)
                 .then(ActiveGamemodeEditorLiteral("gamemode")
                     .executes(EditExecutor::SendGamemodeInfo)))
+            .then(ActiveMapEditorLiteral("showpoints")
+                .executes(EditExecutor::ShowSpawns))
+            .then(ActiveMapEditorLiteral("hidepoints")
+                .executes(EditExecutor::HideSpawns))
             ;
 
         return commandNodeBuilder;

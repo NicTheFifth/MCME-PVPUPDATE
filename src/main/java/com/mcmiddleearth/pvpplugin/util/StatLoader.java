@@ -17,7 +17,9 @@ public class StatLoader {
         Arrays.stream(Objects.requireNonNull(statDirectory.listFiles())).forEach(mapFile -> {
             try {
                 Playerstat stat = objectMapper.readValue(mapFile, Playerstat.class);
-                PVPPlugin.getInstance().getPlayerstats().put(UUID.fromString(mapFile.getName()), stat);
+                PVPPlugin.getInstance().getPlayerstats().put(
+                    UUID.fromString(mapFile.getName().split("\\.")[0]),
+                    stat);
             } catch (Exception e) {
                 throw new StatLoadException(e);
             }
@@ -28,7 +30,8 @@ public class StatLoader {
         File statDirectory  = PVPPlugin.getInstance().getStatDirectory();
         PVPPlugin.getInstance().getPlayerstats().forEach((uuid,stat) ->{
             try {
-                File saveFile = new File(statDirectory + System.getProperty("file.separator") + uuid.toString());
+                File saveFile = new File(statDirectory + System.getProperty(
+                    "file.separator") + uuid.toString() + ".json");
                 objectMapper.writeValue(saveFile, stat);
             } catch (Exception e) {
                 throw new StatLoadException(e);

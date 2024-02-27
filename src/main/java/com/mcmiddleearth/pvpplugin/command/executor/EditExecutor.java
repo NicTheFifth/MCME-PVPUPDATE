@@ -244,7 +244,26 @@ public class EditExecutor {
         }
         return 0;
     }
+    public static int ShowSpawns(CommandContext<McmeCommandSender> c) {
+        Player player = CommandUtil.getPlayer(c.getSource());
+        Optional<MapEditor> result = getMapEditor(player, true);
 
+        if(result.isPresent()) {
+            result.get().showSpawns(player);
+            return 1;
+        }
+        return 0;
+    }
+    public static int HideSpawns(CommandContext<McmeCommandSender> c) {
+        Player player = CommandUtil.getPlayer(c.getSource());
+        Optional<MapEditor> result = getMapEditor(player, true);
+
+        if(result.isPresent()) {
+            MapEditor.hideSpawns(player, true);
+            return 1;
+        }
+        return 0;
+    }
     /**
      *
      * @param player A player of whom their map editor is requested.

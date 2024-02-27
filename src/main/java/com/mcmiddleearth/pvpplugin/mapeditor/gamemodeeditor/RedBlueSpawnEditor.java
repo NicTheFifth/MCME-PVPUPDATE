@@ -3,6 +3,7 @@ package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
+import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
@@ -37,6 +38,16 @@ public class RedBlueSpawnEditor extends TeamSpawnEditor {
                 .color(Style.INFO)
                 .create(),
             player);
+    }
+    @Override
+    public void ShowPoints(Player player) {
+        JSONLocation redSpawn = ((JSONRedBlueSpawnGamemode)jsonGamemode)
+            .getRedSpawn();
+        MapEditor.SpawnMarker(redSpawn, "spawn red");
+        JSONLocation blueSpawn =
+            ((JSONRedBlueSpawnGamemode)jsonGamemode).getBlueSpawn();
+        MapEditor.SpawnMarker(blueSpawn, "spawn blue");
+
     }
     @Override
     public void sendStatus(Player player) {

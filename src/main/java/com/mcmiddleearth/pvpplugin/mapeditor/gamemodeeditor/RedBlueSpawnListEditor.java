@@ -3,10 +3,14 @@ package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnListGamemode;
+import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnListEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
@@ -58,6 +62,23 @@ public class RedBlueSpawnListEditor extends TeamSpawnListEditor {
     public Integer amountOfRedSpawns(){
         return ((JSONRedBlueSpawnListGamemode)jsonGamemode).getRedSpawns().size();
     }
+    @Override
+    public void ShowPoints(Player player) {
+        AtomicInteger index = new AtomicInteger(0);
+        List<JSONLocation> redSpawns =
+            ((JSONRedBlueSpawnListGamemode)jsonGamemode).getRedSpawns();
+        redSpawns.forEach(spawn ->
+            MapEditor.SpawnMarker(spawn, String.format("spawn red %d",
+                index.getAndIncrement()))
+        );
+        index.set(0);
+        List<JSONLocation> blueSpawns =
+            ((JSONRedBlueSpawnListGamemode)jsonGamemode).getBlueSpawns();
+        blueSpawns.forEach(spawn ->
+            MapEditor.SpawnMarker(spawn, String.format("spawn blue %d",
+                index.getAndIncrement())));
+    }
+
     @Override
     public void sendStatus(Player player) {
         sendBaseComponent(

@@ -3,8 +3,12 @@ package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONSpawnListGamemode;
+import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
@@ -30,6 +34,15 @@ public abstract class SpawnListEditor extends GamemodeEditor {
     }
     public Integer amountOfSpawns(){
         return ((JSONSpawnListGamemode)jsonGamemode).getSpawns().size();
+    }
+    @Override
+    public void ShowPoints(Player player) {
+        AtomicInteger index = new AtomicInteger(0);
+        List<JSONLocation> spawns =
+            ((JSONSpawnListGamemode)jsonGamemode).getSpawns();
+        spawns.forEach(spawn ->
+            MapEditor.SpawnMarker(spawn, String.format("spawn %d",
+            index.getAndIncrement())));
     }
     public void sendStatus(Player player){
         sendBaseComponent(

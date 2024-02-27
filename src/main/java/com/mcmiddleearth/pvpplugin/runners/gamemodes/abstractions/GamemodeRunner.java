@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
+import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
@@ -58,6 +59,7 @@ public abstract class GamemodeRunner implements Listener {
             players.forEach(player -> player.setScoreboard(scoreboard)));
         startActions.add(() ->
             spectator.getMembers().forEach(player -> player.setScoreboard(scoreboard)));
+        startActions.add(() -> MapEditor.hideSpawns(null, false));
 
         joinConditions.put(player -> players.size() < maxPlayers,
             new ComponentBuilder("Can't join the game as it is full.")

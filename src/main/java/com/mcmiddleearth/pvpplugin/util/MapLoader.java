@@ -28,7 +28,8 @@ public class MapLoader {
         File mapDirectory  = PVPPlugin.getInstance().getMapDirectory();
         PVPPlugin.getInstance().getMaps().values().forEach(jsonMap -> {
             try {
-                File saveFile = new File(mapDirectory + System.getProperty("file.separator") + jsonMap.getTitle());
+                File saveFile = new File(mapDirectory + System.getProperty(
+                    "file.separator") + jsonMap.getTitle() + ".json");
                 objectMapper.writeValue(saveFile, jsonMap);
             } catch (Exception e) {
                 new MapLoadException(e).printStackTrace();

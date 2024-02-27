@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
+import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpecialPointEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
@@ -68,6 +69,15 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
     @Override
     public String getGamemode() {
         return Gamemodes.DEATHRUN;
+    }
+    @Override
+    public void ShowPoints(Player player) {
+        JSONLocation goal = ((JSONDeathRun)jsonGamemode).getGoal();
+        MapEditor.SpawnMarker(goal, "goal");
+        JSONLocation runnerSpawn = ((JSONDeathRun)jsonGamemode).getRunnerSpawn();
+        MapEditor.SpawnMarker(runnerSpawn, "spawn runner");
+        JSONLocation deathSpawn = ((JSONDeathRun)jsonGamemode).getDeathSpawn();
+        MapEditor.SpawnMarker(deathSpawn, "spawn death");
     }
     @Override
     public void sendStatus(Player player){
