@@ -34,7 +34,7 @@ public class PVPPlugin extends JavaPlugin {
     HandlerList handlerList;
     HashMap<String, JSONMap> maps = new HashMap<>();
     HashMap<UUID, Playerstat> playerstats = new HashMap<>();
-    final Location spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58, 0.3F, -24.15F);
+    Location spawn;
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
     Queue<GamemodeRunner> gameQueue = new LinkedList<>();
@@ -95,6 +95,8 @@ public class PVPPlugin extends JavaPlugin {
         Bukkit.getServer().getPluginCommand("pvp").setExecutor(gameCommand);
         Bukkit.getServer().getPluginCommand("pvp").setTabCompleter(gameCommand);
         addEventListener(new GlobalListeners());
+        spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58,
+            0.3F, -24.15F);
     }
 
     @Override
