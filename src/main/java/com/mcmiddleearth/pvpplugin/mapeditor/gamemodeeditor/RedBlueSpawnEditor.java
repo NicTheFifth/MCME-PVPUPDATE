@@ -3,6 +3,7 @@ package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
+import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -28,6 +29,17 @@ public class RedBlueSpawnEditor extends TeamSpawnEditor {
                 .create(),
             player);
     }
+    public void teleportToBlueSpawn(Player player){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONRedBlueSpawnGamemode)jsonGamemode).getBlueSpawn()));
+        sendBaseComponent(
+            new ComponentBuilder("Teleported to blue spawn")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
+    }
     public void setRedSpawn(Player player){
         Location redSpawn = player.getLocation();
         JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
@@ -38,6 +50,17 @@ public class RedBlueSpawnEditor extends TeamSpawnEditor {
                 .color(Style.INFO)
                 .create(),
             player);
+    }
+    public void teleportToRedSpawn(Player player){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONRedBlueSpawnGamemode)jsonGamemode).getRedSpawn()));
+        sendBaseComponent(
+            new ComponentBuilder("Teleported to red spawn")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
     @Override
     public void ShowPoints(Player player) {
@@ -70,7 +93,11 @@ public class RedBlueSpawnEditor extends TeamSpawnEditor {
         );
     }
     protected void initSpawnNames() {
-        getSpawnNames().put("red", this::setRedSpawn);
-        getSpawnNames().put("blue", this::setBlueSpawn);
+        getSpawnNames().put("red",
+            new SetterTeleporterPair(this::setRedSpawn,
+                this:: teleportToRedSpawn));
+        getSpawnNames().put("blue",
+            new SetterTeleporterPair(this::setBlueSpawn,
+                this::teleportToBlueSpawn));
     }
 }

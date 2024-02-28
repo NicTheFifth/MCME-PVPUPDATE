@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONInfected;
+import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
@@ -31,6 +32,17 @@ public class InfectedEditor extends TeamSpawnEditor {
                 .create(),
             player);
     }
+    public void teleportToInfectedSpawn(Player player){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONInfected)jsonGamemode).getInfectedSpawn()));
+        sendBaseComponent(
+            new ComponentBuilder("Teleported to infected spawn")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
+    }
     public void setSurvivorSpawn(Player player){
         Location survivorSpawn = player.getLocation();
         JSONLocation JSONSurvivorSpawn = new JSONLocation(survivorSpawn);
@@ -40,6 +52,17 @@ public class InfectedEditor extends TeamSpawnEditor {
                 .color(Style.INFO)
                 .create(),
             player);
+    }
+    public void teleportToSurvivorSpawn(Player player){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONInfected)jsonGamemode).getSurvivorSpawn()));
+        sendBaseComponent(
+            new ComponentBuilder("Teleported to survivor spawn")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
     public String getGamemode(){return Gamemodes.INFECTED;}
     @Override
@@ -73,7 +96,11 @@ public class InfectedEditor extends TeamSpawnEditor {
 
     @Override
     protected void initSpawnNames() {
-        getSpawnNames().put("infected", this::setInfectedSpawn);
-        getSpawnNames().put("survivor", this::setSurvivorSpawn);
+        getSpawnNames().put("infected",
+            new SetterTeleporterPair(this::setInfectedSpawn,
+                this::teleportToInfectedSpawn));
+        getSpawnNames().put("survivor",
+            new SetterTeleporterPair(this::setSurvivorSpawn,
+                this::teleportToSurvivorSpawn));
     }
 }

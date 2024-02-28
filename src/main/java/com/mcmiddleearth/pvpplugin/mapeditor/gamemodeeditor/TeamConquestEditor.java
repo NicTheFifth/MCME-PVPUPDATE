@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class TeamConquestEditor extends RedBlueSpawnEditor implements SpecialPointListEditor {
-    Map<String, AddRemoveIndexTrio> specialPointListNames =
+    Map<String, AddRemoveIndexTeleportQuartet> specialPointListNames =
         new HashMap<>();
 
     public TeamConquestEditor(JSONMap map){
@@ -47,6 +47,9 @@ public class TeamConquestEditor extends RedBlueSpawnEditor implements SpecialPoi
             .color(Style.INFO)
             .create(),
         player);
+    }
+    public void TeleportToPoint(Player player, Integer index){
+
     }
     @Override
     public String getGamemode(){return Gamemodes.TEAMCONQUEST;}
@@ -84,13 +87,14 @@ public class TeamConquestEditor extends RedBlueSpawnEditor implements SpecialPoi
     @Override
     public void initSpecialPointListNames() {
         getSpecialPointListNames().put("capturePoint",
-            new AddRemoveIndexTrio(
+            new AddRemoveIndexTeleportQuartet(
                 this::AddCapturePoint,
-                (player -> index -> DeleteCapturePoint(player, index)),
-                ((JSONTeamConquest)jsonGamemode).getCapturePoints()::size
+                this::DeleteCapturePoint,
+                ((JSONTeamConquest)jsonGamemode).getCapturePoints()::size,
+                this::TeleportToPoint
             ));
     }
-    public Map<String, AddRemoveIndexTrio> getSpecialPointListNames(){
+    public Map<String, AddRemoveIndexTeleportQuartet> getSpecialPointListNames(){
         return specialPointListNames;
     }
 }

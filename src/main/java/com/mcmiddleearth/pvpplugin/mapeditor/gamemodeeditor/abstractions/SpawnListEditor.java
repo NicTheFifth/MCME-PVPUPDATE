@@ -3,6 +3,7 @@ package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONSpawnListGamemode;
+import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.entity.Player;
@@ -54,6 +55,19 @@ public abstract class SpawnListEditor extends GamemodeEditor {
                 .color(Style.INFO)
                 .append(String.format("  Spawns: %d",
                     ((JSONSpawnListGamemode)jsonGamemode).getSpawns().size()))
+                .color(Style.INFO)
+                .create(),
+            player
+        );
+    }
+    public void teleportToSpawn(Player player, int index){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONSpawnListGamemode)jsonGamemode).getSpawns().get(index)
+            ));
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Teleported to spawn %d",
+                index))
                 .color(Style.INFO)
                 .create(),
             player

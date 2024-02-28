@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
+import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpecialPointEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
@@ -14,7 +15,6 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
@@ -23,7 +23,7 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
     /**
      * SpecialPointNames is a map of &lt;name, setter of said point&gt;
      */
-    Map<String, Consumer<Player>> specialPointNames = new HashMap<>();
+    Map<String, SpecialPointEditor.SetterTeleporterPair> specialPointNames = new HashMap<>();
     public DeathRunEditor(JSONMap map){
         if(map.getJSONDeathRun() == null)
             map.setJSONDeathRun(new JSONDeathRun());
@@ -43,12 +43,34 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
             player
         );
     }
+    public void teleportToDeathSpawn(Player player){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONDeathRun)jsonGamemode).getDeathSpawn()));
+        sendBaseComponent(
+            new ComponentBuilder("Teleported to death spawn")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
+    }
     public void setRunnerSpawn(Player player){
         Location runnerSpawn = player.getLocation();
         JSONLocation JSONRunnerSpawn = new JSONLocation(runnerSpawn);
         ((JSONDeathRun)jsonGamemode).setRunnerSpawn(JSONRunnerSpawn);
         sendBaseComponent(
             new ComponentBuilder("Runner spawn set for Death Run.")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
+    }
+    public void teleportToRunnerSpawn(Player player){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONDeathRun)jsonGamemode).getRunnerSpawn()));
+        sendBaseComponent(
+            new ComponentBuilder("Teleported to runner spawn")
                 .color(Style.INFO)
                 .create(),
             player
@@ -61,6 +83,17 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
 
         sendBaseComponent(
             new ComponentBuilder("Goal set for Death Run.")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
+    }
+    public void teleportToGoal(Player player){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONDeathRun)jsonGamemode).getGoal()));
+        sendBaseComponent(
+            new ComponentBuilder("Teleported to goal")
                 .color(Style.INFO)
                 .create(),
             player
@@ -99,15 +132,21 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
 
     @Override
     protected void initSpawnNames() {
-        getSpawnNames().put("death", this::setDeathSpawn);
-        getSpawnNames().put("runner", this::setRunnerSpawn);
+        getSpawnNames().put("death",
+            new TeamSpawnEditor.SetterTeleporterPair(this::setDeathSpawn,
+                this::teleportToDeathSpawn));
+        getSpawnNames().put("runner",
+            new TeamSpawnEditor.SetterTeleporterPair(this::setRunnerSpawn,
+                this::teleportToRunnerSpawn));
     }
 
     @Override
     public void initSpecialPointNames() {
-        getSpecialPointNames().put("goal", this::setGoal);
+        getSpecialPointNames().put("goal",
+            new SpecialPointEditor.SetterTeleporterPair(this::setGoal,
+            this::teleportToGoal));
     }
-    public Map<String, Consumer<Player>> getSpecialPointNames(){
+    public Map<String, SpecialPointEditor.SetterTeleporterPair> getSpecialPointNames(){
         return specialPointNames;
     }
 }

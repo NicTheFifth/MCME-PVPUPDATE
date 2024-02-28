@@ -139,6 +139,19 @@ public class EditExecutor {
         }
         return 0;
     }
+    public static int SpawnListTeleport(CommandContext<McmeCommandSender> c){
+        Player player =  CommandUtil.getPlayer(c.getSource());
+        Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
+        Optional<MapEditor> result = getMapEditor(player, true);
+
+        if(result.isPresent()) {
+            ((SpawnListEditor)result.get().getGamemodeEditor())
+                .teleportToSpawn(player, index);
+            return 1;
+        }
+        return 0;
+
+    }
     public static int TeamSpawnSetSpawn(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
@@ -147,9 +160,32 @@ public class EditExecutor {
 
         if(result.isPresent()) {
             ((TeamSpawnEditor)result.get().getGamemodeEditor())
-                .getSpawnNames().get(spawnName).accept(player);
+                .getSpawnNames().get(spawnName).setSpawn(player);
             return 1;
         }
+        return 0;
+    }
+    public static int TeamSpawnTeleporter(CommandContext<McmeCommandSender> c){
+        Player player =  CommandUtil.getPlayer(c.getSource());
+        String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
+            String.class);
+        Optional<MapEditor> result = getMapEditor(player, true);
+
+        if(!result.isPresent()) {
+            return 0;
+        }
+        if(result.get().getGamemodeEditor() instanceof TeamSpawnEditor) {
+            ((TeamSpawnEditor) result.get().getGamemodeEditor())
+                .getSpawnNames().get(spawnName).Teleport(player);
+            return 1;
+        }
+        sendBaseComponent(
+            new ComponentBuilder("Please add an index, you have a Team Spawn " +
+                "List editor")
+                .color(Style.ERROR)
+                .create(),
+            player
+        );
         return 0;
     }
     public static int TeamSpawnListAddSpawn(CommandContext<McmeCommandSender> c){
@@ -161,7 +197,7 @@ public class EditExecutor {
         if(result.isPresent()) {
             ((TeamSpawnListEditor)result.get().getGamemodeEditor())
                 .getSpawnListNames().get(spawnName)
-                .addSpawn.accept(player);
+                .addSpawn(player);
             return 1;
         }
         return 0;
@@ -176,7 +212,22 @@ public class EditExecutor {
         if(result.isPresent()) {
             ((TeamSpawnListEditor)result.get().getGamemodeEditor())
                 .getSpawnListNames().get(spawnName)
-                .deleteSpawn.apply(player).accept(index);
+                .deleteSpawn(player, index);
+            return 1;
+        }
+        return 0;
+    }
+    public static int TeamSpawnListTeleporter(CommandContext<McmeCommandSender> c){
+        Player player =  CommandUtil.getPlayer(c.getSource());
+        String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
+            String.class);
+        Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
+        Optional<MapEditor> result = getMapEditor(player, true);
+
+        if(result.isPresent()) {
+            ((TeamSpawnListEditor)result.get().getGamemodeEditor())
+                .getSpawnListNames().get(spawnName)
+                .teleport(player, index);
             return 1;
         }
         return 0;
@@ -189,10 +240,34 @@ public class EditExecutor {
 
         if(result.isPresent()) {
             ((SpecialPointEditor)result.get().getGamemodeEditor())
-                .getSpecialPointNames().get(pointName).accept(player);
+                .getSpecialPointNames().get(pointName).setPoint(player);
             return 1;
         }
         return 0;
+    }
+    public static int TeleportToSpecialPoint(CommandContext<McmeCommandSender> c){
+        Player player =  CommandUtil.getPlayer(c.getSource());
+        String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
+            String.class);
+        Optional<MapEditor> result = getMapEditor(player, true);
+
+        if(!result.isPresent()) {
+            return 0;
+        }
+        if(result.get() instanceof SpecialPointListEditor) {
+            sendBaseComponent(
+                new ComponentBuilder("Please add an index, you have a special " +
+                    "point list editor")
+                    .color(Style.ERROR)
+                    .create(),
+                player
+            );
+            return 0;
+        }
+        ((SpecialPointEditor)result.get().getGamemodeEditor())
+            .getSpecialPointNames().get(pointName).Teleport(player);
+        return 1;
+
     }
     public static int AddSpecialPoint(CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
@@ -203,7 +278,7 @@ public class EditExecutor {
         if(result.isPresent()) {
             ((SpecialPointListEditor)result.get().getGamemodeEditor())
                 .getSpecialPointListNames().get(pointName)
-                .addPoint.accept(player);
+                .addPoint(player);
             return 1;
         }
         return 0;
@@ -218,7 +293,22 @@ public class EditExecutor {
         if(result.isPresent()) {
             ((SpecialPointListEditor)result.get().getGamemodeEditor())
                 .getSpecialPointListNames().get(pointName)
-                .deletePoint.apply(player).accept(index);
+                .deletePoint(player, index);
+            return 1;
+        }
+        return 0;
+    }
+    public static int TeleportSpecialPointList(CommandContext<McmeCommandSender> c){
+        Player player =  CommandUtil.getPlayer(c.getSource());
+        String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
+            String.class);
+        Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
+        Optional<MapEditor> result = getMapEditor(player, true);
+
+        if(result.isPresent()) {
+            ((SpecialPointListEditor) result.get().getGamemodeEditor())
+                .getSpecialPointListNames().get(pointName)
+                .teleport(player, index);
             return 1;
         }
         return 0;

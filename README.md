@@ -7,7 +7,8 @@ PVP Plugin version 2
 * Toggle Auto-Join
 * Kit implementation
 * Functionality to assign team before game start
-* Spawn display functionality
+
+## To be tested
 * Teleport to spawns
 
 ## Implemented
@@ -15,3 +16,4 @@ PVP Plugin version 2
 * Mechanism for doing private games
 * Whitelist
 * Save and Load
+* Spawn display functionality

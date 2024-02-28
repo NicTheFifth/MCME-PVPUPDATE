@@ -5,6 +5,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONCaptureTheFlag;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
+import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpecialPointEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
@@ -14,7 +15,6 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
@@ -23,7 +23,7 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialP
      * SpecialPointNames is a map of &lt;name, setter of said point&gt;
      */
 
-    Map<String, Consumer<Player>> specialPointNames = new HashMap<>();
+    Map<String, SpecialPointEditor.SetterTeleporterPair> specialPointNames = new HashMap<>();
     public CaptureTheFlagEditor(JSONMap map){
         setDisplayString("Capture the Flag");
         if(map.getJSONCaptureTheFlag() == null)
@@ -42,6 +42,17 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialP
                 .create(),
             player);
     }
+    public void teleportToBlueFlag(Player player){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONCaptureTheFlag)jsonGamemode).getBlueFlag()));
+        sendBaseComponent(
+            new ComponentBuilder("Teleported to blueflag")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
+    }
     public void setRedFlag(Player player){
         Location redFlag = player.getLocation();
         JSONLocation JSONRedFlag = new JSONLocation(redFlag);
@@ -52,6 +63,17 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialP
                 .color(Style.INFO)
                 .create(),
             player);
+    }
+    public void teleportToRedFlag(Player player){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONCaptureTheFlag)jsonGamemode).getRedFlag()));
+        sendBaseComponent(
+            new ComponentBuilder("Teleported to redflag")
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
     @Override
     public String getGamemode() {return Gamemodes.CAPTURETHEFLAG;}
@@ -94,10 +116,14 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialP
     }
     @Override
     public void initSpecialPointNames() {
-        getSpecialPointNames().put("blueflag", this::setBlueFlag);
-        getSpecialPointNames().put("redflag", this::setRedFlag);
+        getSpecialPointNames().put("blueflag",
+            new SpecialPointEditor.SetterTeleporterPair(this::setBlueFlag,
+                this::teleportToBlueFlag));
+        getSpecialPointNames().put("redflag",
+            new SpecialPointEditor.SetterTeleporterPair(this::setRedFlag,
+                this::teleportToRedFlag));
     }
-    public Map<String, Consumer<Player>> getSpecialPointNames(){
+    public Map<String, SpecialPointEditor.SetterTeleporterPair> getSpecialPointNames(){
         return specialPointNames;
     }
 }

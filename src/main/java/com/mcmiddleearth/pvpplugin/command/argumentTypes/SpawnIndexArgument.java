@@ -48,7 +48,7 @@ public class SpawnIndexArgument implements ArgumentType<Integer> {
                 context.getArgument(ArgumentNames.GAMEMODE_SPAWN, String.class);
             maxInt =
                 ((TeamSpawnListEditor) gamemodeEditor).getSpawnListNames().get(spawnName)
-                    .getIndex.get();
+                    .getIndex();
         }
 
         for(int i = 0; i < maxInt; i++)

@@ -49,7 +49,8 @@ public class SpawnArgument implements ArgumentType<String> {
             return builder.buildFuture();
         }
         if(gamemodeEditor instanceof TeamSpawnEditor)
-            options = ((TeamSpawnEditor) gamemodeEditor).getSpawnNames().keySet();
+            options =
+                ((TeamSpawnEditor) gamemodeEditor).getSpawnNames().keySet();
         if(gamemodeEditor instanceof TeamSpawnListEditor)
             options = ((TeamSpawnListEditor) gamemodeEditor).getSpawnListNames().keySet();
 

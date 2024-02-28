@@ -44,7 +44,7 @@ public class SpecialPointIndexArgument implements ArgumentType<Integer> {
                 context.getArgument(ArgumentNames.SPECIAL_POINT, String.class);
             maxInt =
                 ((SpecialPointListEditor) gamemodeEditor).getSpecialPointListNames().get(pointName)
-                    .getIndex.get();
+                    .getIndex();
         }
 
         for(int i = 0; i < maxInt; i++)

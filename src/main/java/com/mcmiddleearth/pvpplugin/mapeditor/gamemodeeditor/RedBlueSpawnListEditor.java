@@ -3,6 +3,7 @@ package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnListGamemode;
+import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnListEditor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -38,6 +39,19 @@ public class RedBlueSpawnListEditor extends TeamSpawnListEditor {
                 .create(),
             player);
     }
+    public void teleportToBlueSpawn(Player player, int index){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONRedBlueSpawnListGamemode)jsonGamemode).getBlueSpawns().get(index)
+            ));
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Teleported to blue spawn %d",
+                index))
+                .color(Style.INFO)
+                .create(),
+            player
+        );
+    }
     public void AddRedSpawn(Player player){
         Location redSpawn = player.getLocation();
         JSONLocation JSONRedSpawn = new JSONLocation(redSpawn);
@@ -55,6 +69,19 @@ public class RedBlueSpawnListEditor extends TeamSpawnListEditor {
                 .color(Style.INFO)
                 .create(),
             player);
+    }
+    public void teleportToRedSpawn(Player player, int index){
+        player.teleport(
+            LocationTranscriber.TranscribeFromJSON(
+                ((JSONRedBlueSpawnListGamemode)jsonGamemode).getRedSpawns().get(index)
+            ));
+        sendBaseComponent(
+            new ComponentBuilder(String.format("Teleported to red spawn %d",
+                index))
+                .color(Style.INFO)
+                .create(),
+            player
+        );
     }
     public Integer amountOfBlueSpawns(){
         return ((JSONRedBlueSpawnListGamemode)jsonGamemode).getBlueSpawns().size();
@@ -101,15 +128,17 @@ public class RedBlueSpawnListEditor extends TeamSpawnListEditor {
     }
     protected void initSpawnListNames() {
         getSpawnListNames().put("blue",
-            new AddRemoveIndexTrio(
+            new AddRemoveIndexTeleportQuartet(
                 this::AddBlueSpawn,
-                player->index->DeleteBlueSpawn(player,index),
-                this::amountOfBlueSpawns));
+                this::DeleteBlueSpawn,
+                this::amountOfBlueSpawns,
+                this::teleportToBlueSpawn));
         getSpawnListNames().put("red",
-            new AddRemoveIndexTrio(
+            new AddRemoveIndexTeleportQuartet(
                 this::AddRedSpawn,
-                player -> index -> DeleteRedSpawn(player,index),
-                this::amountOfRedSpawns
+                this::DeleteRedSpawn,
+                this::amountOfRedSpawns,
+                this::teleportToRedSpawn
             ));
     }
 }
