@@ -60,6 +60,7 @@ public abstract class GamemodeRunner implements Listener {
         startActions.add(() ->
             spectator.getMembers().forEach(player -> player.setScoreboard(scoreboard)));
         startActions.add(() -> MapEditor.hideSpawns(null, false));
+        startActions.add(() ->TeamHandler.spawnAll(spectator));
 
         joinConditions.put(player -> players.size() < maxPlayers,
             new ComponentBuilder("Can't join the game as it is full.")

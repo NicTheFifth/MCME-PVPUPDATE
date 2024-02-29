@@ -26,7 +26,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -87,7 +86,6 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
                 .collect(Collectors.toList()));
         blueTeam.setGameMode(GameMode.ADVENTURE);
     }
-    @Contract(value = "_ -> new", pure = true)
     private @NotNull Kit createKit(Color color){
         Consumer<Player> invFunc = (x -> {
             PlayerInventory returnInventory = x.getInventory();
@@ -124,12 +122,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start actions">
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(player ->
-            TeamHandler.addToTeam((team -> ((TSTeam)team).getOnlineMembers().size()),
-                Pair.of(redTeam, () -> joinRedTeam(player)),
-                Pair.of(blueTeam, () -> joinBlueTeam(player)))));
-        startActions.add(() ->
-            TeamHandler.spawnAll(redTeam, blueTeam, spectator));
+        startActions.add(() -> players.forEach(this::join));
         startActions.add(()-> ScoreboardEditor.InitTeamSlayer(scoreboard,
             scoreGoal));
     }
@@ -186,6 +179,12 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     //<editor-fold defaultstate="collapsed" desc="Join">
     @Override
     protected void initJoinConditions() {
+        joinConditions.put(((player) ->
+                redTeam.getPoints() <=(scoreGoal *0.9) ||
+                    blueTeam.getPoints() <=(scoreGoal *0.9)),
+            new ComponentBuilder("The game is close to over, you cannot join.")
+                .color(Style.INFO)
+                .create());
     }
     @Override
     protected void initJoinActions(){
