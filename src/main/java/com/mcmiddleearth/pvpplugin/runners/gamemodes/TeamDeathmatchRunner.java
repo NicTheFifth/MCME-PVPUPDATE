@@ -105,11 +105,13 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     protected void initStartConditions() {
         Supplier<Integer> totalInTeams = () ->
             redTeam.onlineMembers.size() + blueTeam.getOnlineMembers().size();
-        startConditions.put(() -> totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
+        startConditions.put(() ->
+                totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
             new ComponentBuilder("Can't start, red team has to have at least " +
                 "one online player.")
                 .color(Style.ERROR).create());
-        startConditions.put(() -> totalInTeams.get() != players.size() ||!blueTeam.getOnlineMembers().isEmpty(),
+        startConditions.put(() ->
+                totalInTeams.get() != players.size() ||!blueTeam.getOnlineMembers().isEmpty(),
             new ComponentBuilder("Can't start, blue team has to have at least" +
                 " one online player.")
                 .color(Style.ERROR).create());
@@ -176,7 +178,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     @Override
     protected void initJoinConditions() {
         joinConditions.put(((player) ->
-                redTeam.AliveMembers() >= 3 || blueTeam.AliveMembers() >= 3),
+                redTeam.AliveMembers() >= 3 && blueTeam.AliveMembers() >= 3),
             new ComponentBuilder("The game is close to over, you cannot join.")
                 .color(Style.INFO)
                 .create());
@@ -208,6 +210,16 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     private void joinRedTeam(Player player){
         redTeam.getOnlineMembers().add(player);
         Matchmaker.addMember(player, redTeam);
+        if(redTeam.getDeadMembers().contains(player)) {
+            TeamHandler.spawn(player, spectator);
+            sendBaseComponent(
+                new ComponentBuilder("You've joined the red team, but were " +
+                    "already dead.")
+                    .color(Style.INFO)
+                    .create(),
+                player);
+            return;
+        }
         TeamHandler.spawn(player, redTeam);
         BaseComponent[] publicJoinMessage = new ComponentBuilder(
             String.format("%s has joined the red team!", player.getName()))
@@ -220,6 +232,16 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     private void joinBlueTeam(Player player){
         blueTeam.getOnlineMembers().add(player);
         Matchmaker.addMember(player, blueTeam);
+        if(redTeam.getDeadMembers().contains(player)) {
+            TeamHandler.spawn(player, spectator);
+            sendBaseComponent(
+                new ComponentBuilder("You've joined the blue team, but were " +
+                    "already dead.")
+                    .color(Style.INFO)
+                    .create(),
+                player);
+            return;
+        }
         TeamHandler.spawn(player, blueTeam);
         BaseComponent[] publicJoinMessage = new ComponentBuilder(
             String.format("%s has joined the blue team!", player.getName()))
@@ -280,6 +302,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
                     redTeam.deadMembers.add(player);
                 else
                     blueTeam.deadMembers.add(player);
+                player.setGameMode(spectator.getGameMode());
                 ScoreboardEditor.updateValueTeamDeathmatch(scoreboard,redTeam,blueTeam);
                 if(!redTeam.hasAliveMembers() || !blueTeam.hasAliveMembers())
                     end(false);
@@ -299,6 +322,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         public Set<Player> getOnlineMembers() {
             return onlineMembers;
         }
+        public Set<Player> getDeadMembers() {return  deadMembers;}
         public Integer AliveMembers(){
             Set<Player> aliveMembers = new HashSet<>(onlineMembers);
             aliveMembers.removeAll(deadMembers);
