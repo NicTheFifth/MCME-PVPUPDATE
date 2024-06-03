@@ -24,6 +24,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -92,7 +93,7 @@ public class MapEditor {
         String oldName = map.getTitle();
         PVPPlugin.getInstance().getMaps().remove(oldName);
         File f = new File(PVPPlugin.getInstance().getMapDirectory() +
-                System.getProperty("file.separator") +
+                FileSystems.getDefault().getSeparator() +
                 oldName);
         map.setTitle(newName);
         PVPPlugin.getInstance().getMaps().put(newName, map);

@@ -104,7 +104,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     @Override
     protected void initStartConditions() {
         Supplier<Integer> totalInTeams = () ->
-            redTeam.onlineMembers.size() + blueTeam.getOnlineMembers().size();
+            redTeam.getOnlineMembers().size() + blueTeam.getOnlineMembers().size();
         startConditions.put(() ->
                 totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
             new ComponentBuilder("Can't start, red team has to have at least " +
@@ -314,13 +314,9 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         }
     }
     public static class TDMTeam extends Team {
-        Set<Player> onlineMembers = new HashSet<>();
         Set<Player> deadMembers = new HashSet<>();
         public boolean hasAliveMembers(){
             return deadMembers.containsAll(onlineMembers);
-        }
-        public Set<Player> getOnlineMembers() {
-            return onlineMembers;
         }
         public Set<Player> getDeadMembers() {return  deadMembers;}
         public Integer AliveMembers(){

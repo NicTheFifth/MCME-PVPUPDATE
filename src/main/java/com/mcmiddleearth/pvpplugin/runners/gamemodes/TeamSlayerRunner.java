@@ -109,7 +109,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     //<editor-fold defaultstate="collapsed" desc="Start conditions">
     protected void initStartConditions() {
         Supplier<Integer> totalInTeams = () ->
-            redTeam.onlineMembers.size() + blueTeam.getOnlineMembers().size();
+            redTeam.getOnlineMembers().size() + blueTeam.getOnlineMembers().size();
         startConditions.put(() -> totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
             new ComponentBuilder("Can't start, red team has to have at least " +
                 "one online player.")
@@ -303,15 +303,10 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
         }
     }
     public static class TSTeam extends Team{
-        Set<Player> onlineMembers = new HashSet<>();
         int points = 0;
 
         public int getPoints() {
             return points;
-        }
-
-        public Set<Player> getOnlineMembers() {
-            return onlineMembers;
         }
     }
 }

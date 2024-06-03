@@ -10,6 +10,7 @@ import java.util.*;
 
 public class Team {
     protected Set<Player> members = new HashSet<>();
+    protected Set<Player> onlineMembers = new HashSet<>();
     Color teamColour;
     ChatColor chatColor;
     String Prefix;
@@ -20,6 +21,9 @@ public class Team {
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public Set<Player> getMembers() {
         return this.members;
+    }
+    public Set<Player> getOnlineMembers() {
+        return onlineMembers;
     }
     public Color getTeamColour() {
         return this.teamColour;
