@@ -202,7 +202,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
             joinBlueTeam(player);
             return;
         }
-        TeamHandler.addToTeam((team -> ((TeamSlayerRunner.TSTeam)team).getOnlineMembers().size()),
+        TeamHandler.addToTeam((team -> team.getOnlineMembers().size()),
             Pair.of(redTeam, () -> joinRedTeam(player)),
             Pair.of(blueTeam, () -> joinBlueTeam(player)));
 

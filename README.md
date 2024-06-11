@@ -7,6 +7,7 @@ PVP Plugin version 2
 * Toggle Auto-Join
 * Kit implementation
 * Functionality to assign team before game start
+* Team Conquest
 
 ## To be tested
 * Teleport to spawns

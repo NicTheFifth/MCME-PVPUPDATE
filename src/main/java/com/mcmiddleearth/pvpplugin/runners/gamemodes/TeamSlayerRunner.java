@@ -205,7 +205,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
             joinBlueTeam(player);
             return;
         }
-        TeamHandler.addToTeam((team -> ((TSTeam)team).getOnlineMembers().size()),
+        TeamHandler.addToTeam((team -> team.getOnlineMembers().size()),
             Pair.of(redTeam, () -> joinRedTeam(player)),
             Pair.of(blueTeam, () -> joinBlueTeam(player)));
 
@@ -272,10 +272,13 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     //</editor-fold>
 
     public int getScoreGoal(){return scoreGoal;}
+
     public void setScoreGoal(int scoreGoal){
         this.scoreGoal = scoreGoal;
     }
+
     public String getGamemode(){return Gamemodes.TEAMSLAYER;}
+
     private class TSListener extends GamemodeListener{
         public TSListener(){
             initOnPlayerDeathActions();
