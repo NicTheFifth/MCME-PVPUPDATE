@@ -5,6 +5,8 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamConquest;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamDeathmatchRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamSlayerRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
@@ -46,8 +48,10 @@ public class GameExecutor {
             case(Gamemodes.RINGBEARER):
                 break;
             case(Gamemodes.TEAMCONQUEST):
+                runner = new TeamConquest(map, TeamConquest.DefaultScoreGoal());
                 break;
             case(Gamemodes.TEAMDEATHMATCH):
+                runner = new TeamDeathmatchRunner(map);
                 break;
             case(Gamemodes.TEAMSLAYER):
                 runner = new TeamSlayerRunner(map,
