@@ -1,7 +1,6 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
 import com.mcmiddleearth.command.Style;
-import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamConquest;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
@@ -25,7 +24,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -50,15 +51,15 @@ public class TeamConquest extends GamemodeRunner {
         return 20;
     }
 
-    private enum OwnedTeam {blueTeam, neutral, redTeam}
-    HashMap<Location, Pair<OwnedTeam, Integer>> capturePointsProgress = new HashMap<>();
+    //0 neutral, -50 = blueTeam, 50 = redTeam
+    HashMap<Location, Integer> capturePointsProgress = new HashMap<>();
 
     public TeamConquest(JSONMap map, int scoreGoal){
         region = AreaTranscriber.TranscribeArea(map);
         this.scoreGoal = scoreGoal;
         JSONTeamConquest teamConquest = map.getJSONTeamConquest();
         teamConquest.getCapturePoints().stream().map(LocationTranscriber::TranscribeFromJSON).forEach(location ->
-                this.capturePointsProgress.put(location, Pair.of(OwnedTeam.neutral, 0)));
+                this.capturePointsProgress.put(location, 0));
         maxPlayers = teamConquest.getMaximumPlayers();
         mapName = map.getTitle();
         eventListener = new TCListener();
@@ -189,8 +190,10 @@ public class TeamConquest extends GamemodeRunner {
                 capturePointsProgress.keySet().forEach(this::deleteCapturePoint));
         endActions.get(false).add(() ->
                 PlayerRespawnEvent.getHandlerList().unregister(eventListener));
+                PlayerInteractEvent.getHandlerList().unregister(eventListener);
         endActions.get(true).add(()->
                 PlayerRespawnEvent.getHandlerList().unregister(eventListener));
+                PlayerInteractEvent.getHandlerList().unregister(eventListener);
     }
     private Set<Player> getLosingTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
@@ -335,8 +338,75 @@ public class TeamConquest extends GamemodeRunner {
             });
         }
         @EventHandler
+        public void onPlayerRespawn(PlayerRespawnEvent e){
+            Player player = e.getPlayer();
+            if(redTeam.getMembers().contains(player))
+                TeamHandler.respawn(e, redTeam);
+            if(blueTeam.getMembers().contains(player))
+                TeamHandler.respawn(e, blueTeam);
+        }
+        @EventHandler
         public void onPlayerInteract(PlayerInteractEvent e) {
-            //TODO: create the point changing etc.
+            Player p = e.getPlayer();
+            if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+                return;
+            if(gameState != State.RUNNING )
+                return;
+            if(!players.contains(p))
+                return;
+            if(!e.getClickedBlock().getType().equals(Material.BEACON))
+                return;
+            e.setUseInteractedBlock(Event.Result.DENY);
+            Location capturePoint = e.getClickedBlock().getLocation();
+            int oldPointValue = capturePointsProgress.get(capturePoint);
+            int newPointValue= oldPointValue;
+            if(redTeam.getMembers().contains(p))
+                newPointValue += 1;
+            else
+                newPointValue -= 1;
+            if(Math.abs(newPointValue) > 50)
+                return;
+            switch(newPointValue){
+                case 0:
+                    capturePoint.add(0,1,0).getBlock().setType(Material.AIR);
+                    if(oldPointValue < 0)
+                        blueTeam.removeControlledPoint();
+                    else
+                        redTeam.removeControlledPoint();
+                    sendBaseComponent(new ComponentBuilder("Point is neutral!").color(ChatColor.GRAY).create(),p);
+                    break;
+
+                case 50:
+                    redTeam.addControlledPoint();
+                    capturePoint.add(0,1,0).getBlock().setType(Material.RED_STAINED_GLASS);
+                    players.forEach(player ->
+                            sendBaseComponent(new ComponentBuilder("Red team captured a point!")
+                                        .color(redTeam.getChatColor())
+                                        .create(),
+                                    player));
+                    spectator.getMembers().forEach(player ->
+                            sendBaseComponent(new ComponentBuilder("Red team captured a point!")
+                                            .color(redTeam.getChatColor())
+                                            .create(),
+                                    player));
+                    break;
+                case -50:
+                    blueTeam.addControlledPoint();
+                    capturePoint.add(0,1,0).getBlock().setType(Material.BLUE_STAINED_GLASS);
+                    players.forEach(player ->
+                            sendBaseComponent(new ComponentBuilder("Blue team captured a point!")
+                                            .color(blueTeam.getChatColor())
+                                            .create(),
+                                    player));
+                    spectator.getMembers().forEach(player ->
+                            sendBaseComponent(new ComponentBuilder("Blue team captured a point!")
+                                            .color(blueTeam.getChatColor())
+                                            .create(),
+                                    player));
+                    break;
+            }
+            sendBaseComponent(new ComponentBuilder(String.format("Point is now at %d!", newPointValue)).color(ChatColor.GRAY).create(),p);
+            capturePointsProgress.put(capturePoint, newPointValue);
         }
     }
     public static class TCTeam extends Team{
