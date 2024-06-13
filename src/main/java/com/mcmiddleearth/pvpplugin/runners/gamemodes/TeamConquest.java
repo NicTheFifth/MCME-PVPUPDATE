@@ -368,6 +368,7 @@ public class TeamConquest extends GamemodeRunner {
                 return;
             switch(newPointValue){
                 case 0:
+                    //TODO: If not claimed, don't remove controlled point
                     capturePoint.add(0,1,0).getBlock().setType(Material.AIR);
                     if(oldPointValue < 0)
                         blueTeam.removeControlledPoint();
