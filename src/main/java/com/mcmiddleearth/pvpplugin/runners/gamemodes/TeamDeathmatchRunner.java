@@ -294,6 +294,9 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         return Gamemodes.TEAMDEATHMATCH;
     }
     public class TDMListener extends GamemodeListener{
+        public TDMListener(){
+            initOnPlayerDeathActions();
+        }
         @Override
         protected void initOnPlayerDeathActions() {
             onPlayerDeathActions.add(e ->{
