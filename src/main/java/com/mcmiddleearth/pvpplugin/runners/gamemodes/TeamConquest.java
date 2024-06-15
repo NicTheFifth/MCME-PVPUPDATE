@@ -188,12 +188,14 @@ public class TeamConquest extends GamemodeRunner {
                 capturePointsProgress.keySet().forEach(this::deleteCapturePoint));
         endActions.get(true).add(() ->
                 capturePointsProgress.keySet().forEach(this::deleteCapturePoint));
-        endActions.get(false).add(() ->
-                PlayerRespawnEvent.getHandlerList().unregister(eventListener));
-                PlayerInteractEvent.getHandlerList().unregister(eventListener);
-        endActions.get(true).add(()->
-                PlayerRespawnEvent.getHandlerList().unregister(eventListener));
-                PlayerInteractEvent.getHandlerList().unregister(eventListener);
+        endActions.get(false).add(() ->{
+                    PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+                    PlayerInteractEvent.getHandlerList().unregister(eventListener);
+        });
+        endActions.get(true).add(()->{
+            PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            PlayerInteractEvent.getHandlerList().unregister(eventListener);
+        });
     }
     private Set<Player> getLosingTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
