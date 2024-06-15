@@ -137,7 +137,7 @@ public class TeamConquest extends GamemodeRunner {
         capturePoint.getBlock().getRelative(0, 1, 0).setType(Material.AIR);
     }
     //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="End Conditions">
+    //<editor-fold defaultstate="collapsed" desc="Start Conditions">
     @Override
     protected void initStartConditions() {
         Supplier<Integer> totalInTeams = () ->
