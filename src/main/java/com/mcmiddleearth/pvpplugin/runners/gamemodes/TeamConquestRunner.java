@@ -41,7 +41,7 @@ import java.util.function.Supplier;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class TeamConquest extends GamemodeRunner {
+public class TeamConquestRunner extends GamemodeRunner {
 
     TCTeam blueTeam = new TCTeam();
     TCTeam redTeam = new TCTeam();
@@ -54,7 +54,7 @@ public class TeamConquest extends GamemodeRunner {
     //0 neutral, -50 = blueTeam, 50 = redTeam
     HashMap<Location, Integer> capturePointsProgress = new HashMap<>();
 
-    public TeamConquest(JSONMap map, int scoreGoal){
+    public TeamConquestRunner(JSONMap map, int scoreGoal){
         region = AreaTranscriber.TranscribeArea(map);
         this.scoreGoal = scoreGoal;
         JSONTeamConquest teamConquest = map.getJSONTeamConquest();
