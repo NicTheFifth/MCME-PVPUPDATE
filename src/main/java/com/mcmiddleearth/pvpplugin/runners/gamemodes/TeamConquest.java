@@ -78,6 +78,8 @@ public class TeamConquest extends GamemodeRunner {
         initRedTeam(map.getJSONTeamConquest());
         initSpectator(map.getSpawn());
     }
+
+
     private void initBlueTeam(JSONTeamConquest jsonTeamConquest){
         blueTeam.setPrefix("Blue");
         blueTeam.setTeamColour(Color.BLUE);
@@ -86,6 +88,7 @@ public class TeamConquest extends GamemodeRunner {
         blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(jsonTeamConquest.getBlueSpawn())));
     }
+
     private void initRedTeam(JSONTeamConquest jsonTeamConquest){
         redTeam.setPrefix("Red");
         redTeam.setChatColor(ChatColor.RED);
@@ -95,6 +98,7 @@ public class TeamConquest extends GamemodeRunner {
         redTeam.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(jsonTeamConquest.getRedSpawn())));
 
     }
+
     private @NotNull Kit createKit(Color color){
         Consumer<Player> invFunc = (x -> {
             PlayerInventory returnInventory = x.getInventory();
@@ -119,6 +123,7 @@ public class TeamConquest extends GamemodeRunner {
     private void initPoints(){
         capturePointsProgress.keySet().forEach(this::spawnCapturePoint);
     }
+
     private void spawnCapturePoint(Location capturePoint){
         capturePoint.getBlock().setType(Material.BEACON);
 
@@ -132,6 +137,7 @@ public class TeamConquest extends GamemodeRunner {
         capturePoint.getBlock().getRelative(-1, -1, 0).setType(Material.IRON_BLOCK);
         capturePoint.getBlock().getRelative(-1, -1, 1).setType(Material.IRON_BLOCK);
     }
+
     private void deleteCapturePoint(Location capturePoint){
         capturePoint.getBlock().setType(Material.AIR);
         capturePoint.getBlock().getRelative(0, 1, 0).setType(Material.AIR);
@@ -197,11 +203,13 @@ public class TeamConquest extends GamemodeRunner {
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
         });
     }
+
     private Set<Player> getLosingTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
             return blueTeam.getMembers();
         return redTeam.getMembers();
     }
+
     private Set<Player> getWinningTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
             return redTeam.getMembers();
@@ -213,6 +221,7 @@ public class TeamConquest extends GamemodeRunner {
         return redTeam.getOnlineMembers().isEmpty() ||
                 blueTeam.getOnlineMembers().isEmpty();
     }
+
     private boolean isScoreGoalReached(){
         return redTeam.getPoints() >= scoreGoal ||
                 blueTeam.getPoints() >= scoreGoal;
@@ -251,7 +260,6 @@ public class TeamConquest extends GamemodeRunner {
         TeamHandler.addToTeam((team -> team.getOnlineMembers().size()),
                 Pair.of(redTeam, () -> joinRedTeam(player)),
                 Pair.of(blueTeam, () -> joinBlueTeam(player)));
-
     }
 
     private void joinBlueTeam(Player player) {
@@ -320,6 +328,7 @@ public class TeamConquest extends GamemodeRunner {
     public String getGamemode() {
         return Gamemodes.TEAMCONQUEST;
     }
+
     public class TCListener extends GamemodeListener{
         public TCListener(){
             initOnPlayerDeathActions();
@@ -339,6 +348,7 @@ public class TeamConquest extends GamemodeRunner {
                     end(false);
             });
         }
+
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             Player player = e.getPlayer();
@@ -347,6 +357,7 @@ public class TeamConquest extends GamemodeRunner {
             if(blueTeam.getMembers().contains(player))
                 TeamHandler.respawn(e, blueTeam);
         }
+
         @EventHandler
         public void onPlayerInteract(PlayerInteractEvent e) {
             Player p = e.getPlayer();
@@ -412,6 +423,7 @@ public class TeamConquest extends GamemodeRunner {
             capturePointsProgress.put(capturePoint, newPointValue);
         }
     }
+
     public static class TCTeam extends Team{
         private int points = 0;
 
@@ -420,15 +432,19 @@ public class TeamConquest extends GamemodeRunner {
         public void addPoints(int pointsToAdd) {
             points += pointsToAdd;
         }
+
         public int getPoints(){
             return points;
         }
+
         public void addControlledPoint(){
             controlledPoints+=1;
         }
+
         public void removeControlledPoint(){
             controlledPoints -=1;
         }
+
         public int getControlledPoints(){
             return controlledPoints;
         }
