@@ -61,4 +61,12 @@ public class TeamHandler {
         return (new Random())
             .nextInt(team.getSpawnLocations().size());
     }
+
+    public static void addToTeamInfected(
+                                         Pair<Team, Runnable> infected, Pair<Team, Runnable> survivors) {
+        if(infected.getLeft().getOnlineMembers().size() + 10 <= survivors.getLeft().getOnlineMembers().size())
+            infected.getRight().run();
+        else
+            survivors.getRight().run();
+    }
 }
