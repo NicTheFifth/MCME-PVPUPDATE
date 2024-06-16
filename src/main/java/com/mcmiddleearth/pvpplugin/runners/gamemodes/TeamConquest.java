@@ -303,6 +303,7 @@ public class TeamConquest extends GamemodeRunner {
         if(hasEmptyTeam())
             end(true);
     }
+
     private void leaveRedTeam(Player player){
         redTeam.getOnlineMembers().remove(player);
         players.forEach(playerOther->sendBaseComponent(
@@ -313,6 +314,7 @@ public class TeamConquest extends GamemodeRunner {
         ));
 
     }
+
     private void leaveBlueTeam(Player player){
         blueTeam.getOnlineMembers().remove(player);
         players.forEach(playerOther->sendBaseComponent(
