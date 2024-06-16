@@ -7,11 +7,11 @@ PVP Plugin version 2
 * Toggle Auto-Join
 * Kit implementation
 * Functionality to assign team before game start
-* Infected runner
 
 ## To be tested
 * Teleport to spawns (editor)
 * Team Conquest runner
+* Infected runner
 
 ## Implemented
 * JSON structure
