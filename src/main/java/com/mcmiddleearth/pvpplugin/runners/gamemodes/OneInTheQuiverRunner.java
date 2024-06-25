@@ -5,12 +5,15 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONOneInTheQuive
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -26,7 +29,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner {
     public static int defaultScoreGoal = 20;
 
     private final List<Location> spawns;
-    private final Map<UUID, PlayerTeam> players = new HashMap<>();
+    private final Map<UUID, PlayerTeam> OITQplayers = new HashMap<>();
 
     public OneInTheQuiverRunner(JSONMap map, int scoreGoal){
         region = AreaTranscriber.TranscribeArea(map);
@@ -89,16 +92,31 @@ public class OneInTheQuiverRunner extends GamemodeRunner {
         protected void initOnPlayerDeathActions() {
             onPlayerDeathActions.add(e -> {
                 Player player = e.getEntity();
+                if(!players.contains(player))
+                    return;
                 Player killer = player.getKiller();
                 if(killer == null)
                     return;
                 killer.getInventory().addItem(new ItemStack(Material.ARROW, 1));
-                players.get(killer.getUniqueId()).addKill();
+                OITQplayers.get(killer.getUniqueId()).addKill();
             });
         }
 
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
+            Player player = e.getPlayer();
+            if(!players.contains(player))
+                return;
+            TeamHandler.respawn(e, spawns);
+        }
+
+        @EventHandler
+        public void onEntityDamageByEntity(EntityDamageByEntityEvent e){
+            if(!(e.getEntity() instanceof Player))
+                return;
+            Player player = (Player) e.getEntity();
+            if(!(e.getDamageSource().getDirectEntity() instanceof Arrow))
+                return;
 
         }
     }
