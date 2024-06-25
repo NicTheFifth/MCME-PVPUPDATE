@@ -193,12 +193,8 @@ public class InfectedRunner extends GamemodeRunner {
                             sendBaseComponent(
                                     new ComponentBuilder("Survivors Won!!!").color(ChatColor.BLUE)
                                             .create(), player));});
-            endActions.get(false).add(() ->{
-                PlayerRespawnEvent.getHandlerList().unregister(eventListener);
-                PlayerInteractEvent.getHandlerList().unregister(eventListener);});
-            endActions.get(true).add(()->{
-                PlayerRespawnEvent.getHandlerList().unregister(eventListener);
-                PlayerInteractEvent.getHandlerList().unregister(eventListener);});
+            endActions.get(false).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
+            endActions.get(true).add(()-> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
 
     }
     private Set<Player> getLosingTeamMembers() {
