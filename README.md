@@ -12,6 +12,7 @@ PVP Plugin version 2
 * Teleport to spawns (editor)
 * Team Conquest runner
 * Infected runner
+* One in the Quiver runner
 
 ## Implemented
 * JSON structure

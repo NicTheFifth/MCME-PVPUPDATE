@@ -5,10 +5,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
-import com.mcmiddleearth.pvpplugin.runners.gamemodes.InfectedRunner;
-import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamConquestRunner;
-import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamDeathmatchRunner;
-import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamSlayerRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.*;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
@@ -46,6 +43,7 @@ public class GameExecutor {
                 runner = new InfectedRunner(map, InfectedRunner.DefaultTimeLimit());
                 break;
             case(Gamemodes.ONEINTHEQUIVER):
+                runner = new OneInTheQuiverRunner(map, OneInTheQuiverRunner.DefaultScoreGoal());
                 break;
             case(Gamemodes.RINGBEARER):
                 break;

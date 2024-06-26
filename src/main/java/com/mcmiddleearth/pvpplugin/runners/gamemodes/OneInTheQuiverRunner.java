@@ -35,7 +35,7 @@ import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     private int scoreGoal;
-    public static int defaultScoreGoal = 20;
+    public static int DefaultScoreGoal(){return 20;}
 
     private final List<Location> spawns;
     private final Map<Player, PlayerTeam> OITQplayers = new HashMap<>();
