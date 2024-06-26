@@ -62,10 +62,10 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         initSpectator(map.getSpawn());
     }
     private void initTeamBlue(JSONLocation blueSpawn){
-        redTeam.setPrefix("Blue");
-        redTeam.setTeamColour(Color.BLUE);
-        redTeam.setChatColor(ChatColor.BLUE);
-        redTeam.setKit(createKit(Color.BLUE));
+        blueTeam.setPrefix("Blue");
+        blueTeam.setTeamColour(Color.BLUE);
+        blueTeam.setChatColor(ChatColor.BLUE);
+        blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(
             List.of(LocationTranscriber.TranscribeFromJSON(blueSpawn)));
         blueTeam.setGameMode(GameMode.ADVENTURE);
