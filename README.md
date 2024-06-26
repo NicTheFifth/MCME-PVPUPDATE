@@ -1,5 +1,9 @@
 PVP Plugin version 2
 ===========
+## After v.1
+* Add Snowball Fight
+* Add Siege
+
 ## To be Implemented
 * FBT tag whilst in lobby  
 * Multi spawns for every gamemode
