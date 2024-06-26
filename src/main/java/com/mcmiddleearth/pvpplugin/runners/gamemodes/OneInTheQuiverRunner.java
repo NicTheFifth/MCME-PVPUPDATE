@@ -56,7 +56,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
-
+        initSpectator(map.getSpawn());
     }
 
     @Override
