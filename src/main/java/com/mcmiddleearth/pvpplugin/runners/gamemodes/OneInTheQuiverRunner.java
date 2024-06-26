@@ -39,7 +39,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     private final List<Location> spawns;
     private final Map<Player, PlayerTeam> OITQplayers = new HashMap<>();
-
+    //TODO: add random offset to PlayerTeamColours
     private Player winningPlayer;
 
     public OneInTheQuiverRunner(JSONMap map, int scoreGoal){

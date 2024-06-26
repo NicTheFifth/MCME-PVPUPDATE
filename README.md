@@ -3,6 +3,7 @@ PVP Plugin version 2
 ## After v.1
 * Add Snowball Fight
 * Add Siege
+* Add random offset for OITQ colours
 
 ## To be Implemented
 * FBT tag whilst in lobby  
