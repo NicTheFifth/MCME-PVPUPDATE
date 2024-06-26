@@ -1,6 +1,6 @@
 package com.mcmiddleearth.pvpplugin.command.executor;
 
-import com.mcmiddleearth.command.McmeCommandSender;
+import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;

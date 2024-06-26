@@ -1,6 +1,6 @@
 package com.mcmiddleearth.pvpplugin.command;
 
-import com.mcmiddleearth.command.McmeCommandSender;
+import com.mcmiddleearth.command.sender.McmeCommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
 
@@ -14,6 +14,12 @@ public class PVPCommandSender implements McmeCommandSender {
     @Override
     public void sendMessage(BaseComponent[] baseComponents) {
         sender.sendMessage(BaseComponent.toLegacyText(baseComponents));
+    }
+
+    @Override
+    public boolean hasPermission(String s) {
+        //TODO: look into use
+        return false;
     }
 
     public static McmeCommandSender wrap(CommandSender sender){return new PVPCommandSender(sender);}

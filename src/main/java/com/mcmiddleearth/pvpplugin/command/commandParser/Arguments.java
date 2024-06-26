@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.command.commandParser;
 
-import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.Validator;
@@ -8,7 +7,6 @@ import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.command.argumentTypes.*;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.statics.Resourcepacks;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,7 +71,7 @@ public class Arguments {
         new SpecialPointArgument());
     }
 
-    public static ArgumentBuilder<McmeCommandSender,?> SpecialPointListIndexArgument() {
+    public static HelpfulRequiredArgumentBuilder<Integer> SpecialPointListIndexArgument() {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
             new SpecialPointIndexArgument());
     }

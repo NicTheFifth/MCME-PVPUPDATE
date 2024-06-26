@@ -179,8 +179,6 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
         protected void initOnPlayerDeathActions() {
             onPlayerDeathActions.add(e -> {
                 Player player = e.getEntity();
-                if(!players.contains(player))
-                    return;
                 Player killer = player.getKiller();
                 if(killer == null)
                     return;
