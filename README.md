@@ -4,6 +4,7 @@ PVP Plugin version 2
 * Add Snowball Fight
 * Add Siege
 * Add random offset for OITQ colours
+* Custom criteria for scoreboard
 
 ## To be Implemented
 * FBT tag whilst in lobby  
