@@ -15,15 +15,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class TeamHandler {
-
-    public static void spawnAll(Team...teams){
-        spawnAll(Set.of(teams));
-    }
-
-    public static void spawnAll(Set<Team> teams){
-        teams.forEach(TeamHandler::spawnAll);
-    }
-
     public static void spawnAll(Team team){
         int spawnNum = 0;
         for (Player player: team.getMembers()) {
@@ -40,6 +31,11 @@ public class TeamHandler {
         player.teleport(team.getSpawnLocations().get(randomRespawnIndex(team)));
         player.setGameMode(team.getGameMode());
     }
+
+    public static void spawn(Player player, List<Location> spawns){
+        player.teleport(spawns.get((new Random()).nextInt(spawns.size())));
+    }
+
     @SafeVarargs
     public static <T> void addToTeam(Function<Team, Comparable<? super T>> comparer,
                                      Pair<Team, Runnable>... teamAdderPairs){
