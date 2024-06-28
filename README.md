@@ -19,6 +19,7 @@ PVP Plugin version 2
 * Team Conquest runner
 * Infected runner
 * One in the Quiver runner
+* Ringbearer runner
 
 ## Implemented
 * JSON structure

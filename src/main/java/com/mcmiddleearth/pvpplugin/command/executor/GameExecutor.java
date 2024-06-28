@@ -46,6 +46,7 @@ public class GameExecutor {
                 runner = new OneInTheQuiverRunner(map, OneInTheQuiverRunner.DefaultScoreGoal());
                 break;
             case(Gamemodes.RINGBEARER):
+                runner = new RingBearerRunner(map);
                 break;
             case(Gamemodes.TEAMCONQUEST):
                 runner = new TeamConquestRunner(map, TeamConquestRunner.DefaultScoreGoal());
