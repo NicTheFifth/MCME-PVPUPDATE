@@ -48,7 +48,7 @@ public abstract class GamemodeRunner implements Listener {
     //protected Set<Player> whiteList = new HashSet<>();
     protected Set<Player> players = new HashSet<>();
     protected Team spectator = new Team();
-    protected Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+    protected Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     protected Region region;
     protected Listener eventListener;
 

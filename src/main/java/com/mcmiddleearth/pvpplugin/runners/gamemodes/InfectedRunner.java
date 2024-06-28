@@ -137,7 +137,7 @@ public class InfectedRunner extends GamemodeRunner {
     @Override
     protected void initStartActions() {
         startActions.add(this::initWithRandomInfected);
-        startActions.add(() -> players.forEach(this::join));
+        startActions.add(() -> players.forEach(this::JoinInfected));
         startActions.add(()-> ScoreboardEditor.InitInfected(scoreboard, timeLimitSeconds, infected, survivors));
         startActions.add(() -> new BukkitRunnable() {
             @Override
@@ -219,10 +219,10 @@ public class InfectedRunner extends GamemodeRunner {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::join);
+        joinActions.add(this::JoinInfected);
     }
 
-    private void join(Player player){
+    private void JoinInfected(Player player){
         if(gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),

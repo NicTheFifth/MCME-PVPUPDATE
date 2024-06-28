@@ -137,7 +137,7 @@ public class RingBearerRunner extends GamemodeRunner {
     @Override
     protected void initStartActions() {
         startActions.add(() -> {
-            players.forEach(this::join);
+            players.forEach(this::JoinRingBearer);
             if(redTeam.getRingBearer() == null)
                 TeamHandler.SetRingBearer(redTeam);
             if(blueTeam.getRingBearer() == null)
@@ -236,11 +236,11 @@ public class RingBearerRunner extends GamemodeRunner {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::join);
+        joinActions.add(this::JoinRingBearer);
 
     }
 
-    private void join(Player player){
+    private void JoinRingBearer(Player player){
         if(gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),

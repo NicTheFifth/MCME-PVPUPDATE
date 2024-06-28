@@ -68,7 +68,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     @Override
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::join));
+        startActions.add(() -> players.forEach(this::JoinOneInTheQuiver));
         startActions.add(()-> ScoreboardEditor.InitOneInTheQuiver(scoreboard, OITQplayers, scoreGoal));
     }
 
@@ -104,10 +104,10 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::join);
+        joinActions.add(this::JoinOneInTheQuiver);
     }
 
-    private void join(Player player){
+    private void JoinOneInTheQuiver(Player player){
         if(gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),

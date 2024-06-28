@@ -2,6 +2,8 @@ package com.mcmiddleearth.pvpplugin.statics;
 
 import com.mcmiddleearth.pvpplugin.util.HashMapFactory;
 import com.mcmiddleearth.pvpplugin.util.HashSetFactory;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,9 +34,9 @@ public class Gamemodes {
             .add(TEAMSLAYER)
             .build();
 
-    public static final HashMap<String, String> getRules =
-        new HashMapFactory<String, String>()
-            .put(CAPTURETHEFLAG, "Capture the Flag rules.")
-            .put(DEATHRUN, "Death Run rules.")
+    public static final HashMap<String, BaseComponent[]> getRules =
+        new HashMapFactory<String, BaseComponent[]>()
+            .put(CAPTURETHEFLAG, new ComponentBuilder("CTF rules").create())
+            .put(DEATHRUN,  new ComponentBuilder("DR rules").create())
             .build();
 }

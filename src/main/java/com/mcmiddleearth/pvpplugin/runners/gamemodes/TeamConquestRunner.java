@@ -161,7 +161,7 @@ public class TeamConquestRunner extends GamemodeRunner {
     //<editor-fold defaultstate="collapsed" desc="Start Actions">
     @Override
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::join));
+        startActions.add(() -> players.forEach(this::JoinTeamConquest));
         startActions.add(()-> ScoreboardEditor.InitTeamConquest(scoreboard,
                 scoreGoal));
     }
@@ -240,9 +240,9 @@ public class TeamConquestRunner extends GamemodeRunner {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::join);
+        joinActions.add(this::JoinTeamConquest);
     }
-    private void join(Player player){
+    private void JoinTeamConquest(Player player){
         if(gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
