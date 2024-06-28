@@ -1,5 +1,6 @@
 package com.mcmiddleearth.pvpplugin.runners.runnerUtil;
 
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.RingBearerRunner;
 import com.mcmiddleearth.pvpplugin.util.Team;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.tuple.Pair;
@@ -72,5 +73,11 @@ public class TeamHandler {
             infected.getRight().run();
         else
             survivors.getRight().run();
+    }
+
+    public static void SetRingBearer(RingBearerRunner.RBTeam team) {
+        team.setRingBearer((Player) team.getMembers().toArray()[new Random()
+                .nextInt(team.getMembers().size())]);
+        team.getRingBearerKit().getInventory().accept(team.getRingBearer());
     }
 }
