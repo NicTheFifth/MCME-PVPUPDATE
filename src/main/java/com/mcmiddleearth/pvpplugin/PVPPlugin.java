@@ -24,6 +24,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,6 +35,7 @@ public class PVPPlugin extends JavaPlugin {
     HandlerList handlerList;
     HashMap<String, JSONMap> maps = new HashMap<>();
     HashMap<UUID, Playerstat> playerstats = new HashMap<>();
+    Set<Player> autojoiners = new HashSet<>();
     Location spawn;
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
@@ -141,12 +143,12 @@ public class PVPPlugin extends JavaPlugin {
     public static PVPPlugin getInstance() {
         return instance;
     }
-
     public PluginManager getPluginManager() {
         return this.pluginManager;
     }
     public HandlerList getHandlerList(){ return handlerList;
     }
+    public Set<Player> getAutojoiners(){return autojoiners;}
     public HashMap<String, JSONMap> getMaps() {
         return this.maps;
     }
@@ -188,6 +190,10 @@ public class PVPPlugin extends JavaPlugin {
                 getInstance().getPlayerstats();
             if(!playerStats.containsKey(p.getUniqueId()))
                 playerStats.put(p.getUniqueId(), new Playerstat());
+        }
+        @EventHandler
+        public void onLeaveEvent(PlayerQuitEvent e) {
+             getInstance().autojoiners.remove(e.getPlayer());
         }
     }
 }

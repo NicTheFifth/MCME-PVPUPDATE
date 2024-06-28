@@ -5,13 +5,11 @@ PVP Plugin version 2
 * Add Siege
 * Add random offset for OITQ colours
 * Custom criteria for scoreboard
+* Kit implementation
 
 ## To be Implemented
 * FBT tag whilst in lobby  
 * Multi spawns for every gamemode
-* Disallow removal of armour and/or banner
-* Toggle Auto-Join
-* Kit implementation
 * Functionality to assign team before game start
 
 ## To be tested
@@ -20,8 +18,10 @@ PVP Plugin version 2
 * Infected runner
 * One in the Quiver runner
 * Ringbearer runner
+* Toggle Auto-Join
 
 ## Implemented
+* Disallow removal of armour and/or banner
 * JSON structure
 * Mechanism for doing private games
 * Whitelist

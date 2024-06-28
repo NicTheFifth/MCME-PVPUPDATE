@@ -1,8 +1,8 @@
 package com.mcmiddleearth.pvpplugin.command.commandParser;
 
 import com.google.common.base.Joiner;
-import com.mcmiddleearth.command.AbstractCommandHandler;
-import com.mcmiddleearth.command.McmeCommandSender;
+import com.mcmiddleearth.command.handler.AbstractCommandHandler;
+import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
@@ -31,6 +31,8 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
             .requires(sender -> ((PVPCommandSender)sender).getSender() instanceof Player)
+                .then(HelpfulLiteralBuilder.literal("autojoin")
+                        .executes(GameExecutor::ToggleAutojoin))
             .then(HelpfulLiteralBuilder.literal("create")
                 .requires(Requirements::canRun)
                 .then(Arguments.ValidMap()

@@ -69,6 +69,7 @@ public class GameExecutor {
                     .color(Style.INFO)
                     .create(),
                 player);
+            pvpPlugin.getAutojoiners().forEach(runner::Join);
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
@@ -126,6 +127,21 @@ public class GameExecutor {
 
         runner.end(true);
         pvpPlugin.setActiveGame(pvpPlugin.getGameQueue().poll());
+        return 1;
+    }
+
+    public static int ToggleAutojoin(CommandContext<McmeCommandSender> c) {
+        PVPPlugin pvpPlugin = PVPPlugin.getInstance();
+        Player player = CommandUtil.getPlayer(c.getSource());
+        String text = "you won't automatically join games anymore.";
+        if(!pvpPlugin.getAutojoiners().remove(player)) {
+            pvpPlugin.getAutojoiners().add(player);
+            text = "you'll automatically join games now.";
+        }
+        sendBaseComponent(
+                new ComponentBuilder("Toggled autojoin, " + text).color(Style.INFO).create(),
+                player
+        );
         return 1;
     }
 }
