@@ -39,6 +39,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     TSTeam redTeam = new TSTeam();
     TSTeam blueTeam = new TSTeam();
     int scoreGoal;
+
     public static int DefaultScoreGoal(){
         return 20;
     }

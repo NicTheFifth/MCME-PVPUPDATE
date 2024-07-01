@@ -8,6 +8,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONInfected;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -40,8 +41,9 @@ import java.util.function.Supplier;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class InfectedRunner extends GamemodeRunner {
-    int timeLimitSeconds;
+public class InfectedRunner extends GamemodeRunner implements TimeLimit {
+    int timeLimit;
+
     public static int DefaultTimeLimit(){
         return 300;
     }
@@ -49,10 +51,10 @@ public class InfectedRunner extends GamemodeRunner {
     Team survivors = new Team();
     Team infected = new Team();
 
-    public InfectedRunner(JSONMap map, int timeLimitSeconds){
+    public InfectedRunner(JSONMap map, int timeLimit){
         region = AreaTranscriber.TranscribeArea(map);
         JSONInfected infected = map.getJSONInfected();
-        this.timeLimitSeconds = timeLimitSeconds;
+        this.timeLimit = timeLimit;
         maxPlayers = infected.getMaximumPlayers();
         mapName = map.getTitle();
         eventListener = new IListener();
@@ -138,7 +140,7 @@ public class InfectedRunner extends GamemodeRunner {
     protected void initStartActions() {
         startActions.add(this::initWithRandomInfected);
         startActions.add(() -> players.forEach(this::JoinInfected));
-        startActions.add(()-> ScoreboardEditor.InitInfected(scoreboard, timeLimitSeconds, infected, survivors));
+        startActions.add(()-> ScoreboardEditor.InitInfected(scoreboard, timeLimit, infected, survivors));
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
@@ -146,14 +148,14 @@ public class InfectedRunner extends GamemodeRunner {
                 {
                     return;
                 }
-                if (timeLimitSeconds == 0) {
+                if (timeLimit == 0) {
                     end(false);
                     gameState = State.ENDED;
                     this.cancel();
                     return;
                 }
-                timeLimitSeconds--;
-                ScoreboardEditor.UpdateTimeInfected(scoreboard, timeLimitSeconds);
+                timeLimit--;
+                ScoreboardEditor.UpdateTimeInfected(scoreboard, timeLimit);
             }
         }.runTaskTimer(PVPPlugin.getInstance(),5000,20));
     }
@@ -210,7 +212,7 @@ public class InfectedRunner extends GamemodeRunner {
     @Override
     protected void initJoinConditions() {
         joinConditions.put((player ->
-                        timeLimitSeconds <=60),
+                        timeLimit <=60),
                 new ComponentBuilder("The game is close to over, you cannot join.")
                         .color(Style.INFO)
                         .create());
@@ -306,6 +308,16 @@ public class InfectedRunner extends GamemodeRunner {
         ));
     }
     //</editor-fold>
+
+    @Override
+    public int getTimeLimit() {
+        return timeLimit;
+    }
+
+    @Override
+    public void setTimeLimit(int timeLimit) {
+        this.timeLimit = timeLimit;
+    }
 
     @Override
     public String getGamemode() {

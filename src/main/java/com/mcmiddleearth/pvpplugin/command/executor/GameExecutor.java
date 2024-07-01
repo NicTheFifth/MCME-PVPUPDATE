@@ -36,7 +36,7 @@ public class GameExecutor {
             case(Gamemodes.CAPTURETHEFLAG):
                 break;
             case(Gamemodes.DEATHRUN):
-                runner = new DeathRunRunner(map, DeathRunRunner.getDefaultTimeLimitSeconds());
+                runner = new DeathRunRunner(map, DeathRunRunner.DefaultTimeLimit());
                 break;
             case(Gamemodes.FREEFORALL):
                 break;

@@ -6,6 +6,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamConquest;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -41,12 +42,13 @@ import java.util.function.Supplier;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class TeamConquestRunner extends GamemodeRunner {
+public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
 
     TCTeam blueTeam = new TCTeam();
     TCTeam redTeam = new TCTeam();
 
     int scoreGoal;
+
     public static int DefaultScoreGoal(){
         return 20;
     }
@@ -329,6 +331,16 @@ public class TeamConquestRunner extends GamemodeRunner {
     @Override
     public String getGamemode() {
         return Gamemodes.TEAMCONQUEST;
+    }
+
+    @Override
+    public int getScoreGoal() {
+        return scoreGoal;
+    }
+
+    @Override
+    public void setScoreGoal(int scoreGoal) {
+        this.scoreGoal = scoreGoal;
     }
 
     public class TCListener extends GamemodeListener{

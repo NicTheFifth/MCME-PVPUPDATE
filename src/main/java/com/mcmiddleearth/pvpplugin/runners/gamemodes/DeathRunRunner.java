@@ -8,6 +8,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
@@ -44,9 +45,10 @@ import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class DeathRunRunner extends GamemodeRunner {
-    int timeLimitSeconds;
-    public static int getDefaultTimeLimitSeconds(){return 120;}
+public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
+    int timeLimit;
+
+    public static int DefaultTimeLimit(){return 120;}
 
     final int killHeight;
     final Location goal;
@@ -54,10 +56,10 @@ public class DeathRunRunner extends GamemodeRunner {
     final Team death = new Team();
     final DRTeam runner = new DRTeam();
 
-    public DeathRunRunner(JSONMap map, int timeLimitSeconds){
+    public DeathRunRunner(JSONMap map, int timeLimit){
         region = AreaTranscriber.TranscribeArea(map);
         JSONDeathRun deathRun = map.getJSONDeathRun();
-        this.timeLimitSeconds = timeLimitSeconds;
+        this.timeLimit = timeLimit;
         killHeight = deathRun.getKillHeight();
         goal = LocationTranscriber.TranscribeFromJSON(deathRun.getGoal());
         maxPlayers = deathRun.getMaximumPlayers();
@@ -131,7 +133,7 @@ public class DeathRunRunner extends GamemodeRunner {
     protected void initStartActions() {
         startActions.add(this::initWithRandomDeath);
         startActions.add(() -> players.forEach(this::JoinDeathRun));
-        startActions.add(()-> ScoreboardEditor.InitDeathRun(scoreboard, timeLimitSeconds, runner));
+        startActions.add(()-> ScoreboardEditor.InitDeathRun(scoreboard, timeLimit, runner));
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
@@ -139,14 +141,14 @@ public class DeathRunRunner extends GamemodeRunner {
                 {
                     return;
                 }
-                if (timeLimitSeconds == 0) {
+                if (timeLimit == 0) {
                     end(false);
                     gameState = State.ENDED;
                     this.cancel();
                     return;
                 }
-                timeLimitSeconds--;
-                ScoreboardEditor.UpdateTimeDeathRun(scoreboard, timeLimitSeconds);
+                timeLimit--;
+                ScoreboardEditor.UpdateTimeDeathRun(scoreboard, timeLimit);
             }
         }.runTaskTimer(PVPPlugin.getInstance(),5000,20));
     }
@@ -193,7 +195,7 @@ public class DeathRunRunner extends GamemodeRunner {
     @Override
     protected void initJoinConditions() {
         joinConditions.put((player ->
-                        timeLimitSeconds <=60),
+                        timeLimit <=60),
                 new ComponentBuilder("The game is close to over, you cannot join.")
                         .color(Style.INFO)
                         .create());
@@ -280,6 +282,17 @@ public class DeathRunRunner extends GamemodeRunner {
     public String getGamemode() {
         return Gamemodes.DEATHRUN;
     }
+
+    @Override
+    public int getTimeLimit() {
+        return timeLimit;
+    }
+
+    @Override
+    public void setTimeLimit(int timeLimit) {
+        this.timeLimit = timeLimit;
+    }
+
     private class DRListener extends GamemodeListener{
         public DRListener(){
             initOnPlayerDeathActions();
