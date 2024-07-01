@@ -113,4 +113,20 @@ public class ScoreboardEditor {
         scoreboard.getObjective("Remaining").getScore(ChatColor.BLUE + "Blue:").setScore(blueTeam.AliveMembers());
         scoreboard.getObjective("Remaining").getScore(ChatColor.DARK_RED + "Red:").setScore(redTeam.AliveMembers());
     }
+
+    public static void InitDeathRun(Scoreboard scoreboard, int timeLimitSeconds, DeathRunRunner.DRTeam runner) {
+        Objective Points = scoreboard.registerNewObjective("Points",
+                Criteria.DUMMY, "Points");
+        Points.getScore(ChatColor.WHITE + "Time:").setScore(timeLimitSeconds);
+        Points.getScore(runner.getChatColor() + "Runners:").setScore(runner.getOnlineMembers().size());
+        Points.setDisplaySlot(DisplaySlot.SIDEBAR);
+    }
+
+    public static void UpdateTimeDeathRun(Scoreboard scoreboard, int timeSeconds) {
+        scoreboard.getObjective("Points").getScore(ChatColor.WHITE + "Time:").setScore(timeSeconds);
+    }
+
+    public static void UpdateRunnersDeathRun(Scoreboard scoreboard, DeathRunRunner.DRTeam runner){
+        scoreboard.getObjective("Points").getScore(runner.getChatColor() + "Runners:").setScore(runner.getOnlineMembers().size());
+    }
 }

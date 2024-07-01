@@ -5,6 +5,7 @@ import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.*;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
@@ -73,7 +74,11 @@ public class Requirements {
             me.getGamemodeEditor() instanceof SpecialPointEditor;
 
     }
-
+    public static boolean isInstanceOfDeathrun(McmeCommandSender c){
+        Player source = CommandUtil.getPlayer(c);
+        MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        return me.getGamemodeEditor() instanceof DeathRunEditor;
+    }
     public static boolean isInstanceOfSpecialPointEditor(McmeCommandSender c) {
         Player source = CommandUtil.getPlayer(c);
         MapEditor me =

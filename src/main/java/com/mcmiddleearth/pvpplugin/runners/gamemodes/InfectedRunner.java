@@ -194,7 +194,6 @@ public class InfectedRunner extends GamemodeRunner {
                                             .create(), player));});
             endActions.get(false).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
             endActions.get(true).add(()-> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
-
     }
     private Set<Player> getLosingTeamMembers() {
         if(survivors.getOnlineMembers().isEmpty())
@@ -210,7 +209,7 @@ public class InfectedRunner extends GamemodeRunner {
     //<editor-fold defaultstate="collapsed" desc="Join">
     @Override
     protected void initJoinConditions() {
-        joinConditions.put(((player) ->
+        joinConditions.put((player ->
                         timeLimitSeconds <=60),
                 new ComponentBuilder("The game is close to over, you cannot join.")
                         .color(Style.INFO)
@@ -230,19 +229,19 @@ public class InfectedRunner extends GamemodeRunner {
             return;
         }
         if(infected.getMembers().contains(player)) {
-            joinInfected(player);
+            JoinInfectedTeam(player);
             return;
         }
         if(survivors.getMembers().contains(player)) {
-            joinSurvivors(player);
+            JoinSurvivorsTeam(player);
             return;
         }
         TeamHandler.addToTeamInfected(
-                Pair.of(infected, () -> joinInfected(player)),
-                Pair.of(survivors, () -> joinSurvivors(player)));
+                Pair.of(infected, () -> JoinInfectedTeam(player)),
+                Pair.of(survivors, () -> JoinSurvivorsTeam(player)));
     }
 
-    private void joinInfected(Player player){
+    private void JoinInfectedTeam(Player player){
         infected.getOnlineMembers().add(player);
         Matchmaker.addMember(player, infected);
         TeamHandler.spawn(player, infected);
@@ -255,7 +254,7 @@ public class InfectedRunner extends GamemodeRunner {
                 sendBaseComponent(publicJoinMessage, spectator));
     }
     
-    private void joinSurvivors(Player player){
+    private void JoinSurvivorsTeam(Player player){
         survivors.getOnlineMembers().add(player);
         Matchmaker.addMember(player, survivors);
         TeamHandler.spawn(player, survivors);
@@ -327,7 +326,6 @@ public class InfectedRunner extends GamemodeRunner {
                         end(false);
                     ScoreboardEditor.UpdateTeamsInfected(scoreboard, infected, survivors);
                 }
-
             });
         }
 

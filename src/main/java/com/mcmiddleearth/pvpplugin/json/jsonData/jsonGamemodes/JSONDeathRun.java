@@ -6,6 +6,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSON
 public class JSONDeathRun extends JSONGamemode {
     JSONLocation deathSpawn;
     JSONLocation runnerSpawn;
+    int killHeight;
     JSONLocation goal;
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
@@ -22,6 +23,9 @@ public class JSONDeathRun extends JSONGamemode {
     public void setRunnerSpawn(final JSONLocation runnerSpawn) {
         this.runnerSpawn = runnerSpawn;
     }
+
+    public int getKillHeight() { return this.killHeight;}
+    public void setKillHeight(int killHeight){this.killHeight = killHeight;}
 
     public JSONLocation getGoal() {
         return this.goal;

@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
+import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.*;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
@@ -39,6 +40,7 @@ public class EditExecutor {
             new MapEditor(newMap, player));
         return 1;
     }
+
     public static int SelectMap(@NotNull CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
@@ -53,6 +55,7 @@ public class EditExecutor {
             new MapEditor(map, player));
         return 1;
     }
+
     public static int SetArea(@NotNull CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player, true);
@@ -63,6 +66,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int SetTitle(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
@@ -74,6 +78,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int SetRP(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String rpName = c.getArgument(ArgumentNames.RESOURCEPACK, String.class);
@@ -85,6 +90,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int SetGamemode(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
@@ -96,6 +102,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int SetMax(@NotNull CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         Integer max = c.getArgument(ArgumentNames.MAX, Integer.class);
@@ -107,12 +114,23 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int setMapSpawn(@NotNull CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player, true);
 
         if(result.isPresent()) {
             result.get().setSpawn(player);
+            return 1;
+        }
+        return 0;
+    }
+    public static int SetKillHeight(CommandContext<McmeCommandSender> c){
+        Player player = CommandUtil.getPlayer(c.getSource());
+        Optional<MapEditor> result = getMapEditor(player, true);
+
+        if(result.isPresent()) {
+            ((DeathRunEditor)result.get().getGamemodeEditor()).setKillHeight(player);
             return 1;
         }
         return 0;
@@ -127,6 +145,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int SpawnListDeleteSpawn(CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
@@ -139,6 +158,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int SpawnListTeleport(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         Integer index = c.getArgument(ArgumentNames.INDEX, Integer.class);
@@ -150,8 +170,8 @@ public class EditExecutor {
             return 1;
         }
         return 0;
-
     }
+
     public static int TeamSpawnSetSpawn(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
@@ -165,6 +185,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int TeamSpawnTeleporter(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
@@ -188,6 +209,7 @@ public class EditExecutor {
         );
         return 0;
     }
+
     public static int TeamSpawnListAddSpawn(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
@@ -202,6 +224,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int TeamSpawnListDeleteSpawn(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
@@ -217,6 +240,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int TeamSpawnListTeleporter(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         String spawnName = c.getArgument(ArgumentNames.GAMEMODE_SPAWN,
@@ -232,6 +256,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int SetSpecialPoint(CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
@@ -245,6 +270,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int TeleportToSpecialPoint(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
@@ -267,8 +293,8 @@ public class EditExecutor {
         ((SpecialPointEditor)result.get().getGamemodeEditor())
             .getSpecialPointNames().get(pointName).Teleport(player);
         return 1;
-
     }
+
     public static int AddSpecialPoint(CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
@@ -283,6 +309,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int DeleteSpecialPoint(CommandContext<McmeCommandSender> c) {
         Player player =  CommandUtil.getPlayer(c.getSource());
         String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
@@ -298,6 +325,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int TeleportSpecialPointList(CommandContext<McmeCommandSender> c){
         Player player =  CommandUtil.getPlayer(c.getSource());
         String pointName = c.getArgument(ArgumentNames.SPECIAL_POINT,
@@ -313,6 +341,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int SendInfo(CommandContext<McmeCommandSender> c) {
         Player player = CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player, true);
@@ -334,6 +363,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int ShowSpawns(CommandContext<McmeCommandSender> c) {
         Player player = CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player, true);
@@ -344,6 +374,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     public static int HideSpawns(CommandContext<McmeCommandSender> c) {
         Player player = CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player, true);
@@ -354,6 +385,7 @@ public class EditExecutor {
         }
         return 0;
     }
+
     /**
      *
      * @param player A player of whom their map editor is requested.

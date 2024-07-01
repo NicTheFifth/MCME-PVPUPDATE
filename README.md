@@ -1,18 +1,14 @@
 PVP Plugin version 2
 ===========
-## After v.1
-* Add Snowball Fight
-* Add Siege
-* Add random offset for OITQ colours
-* Custom criteria for scoreboard
-* Kit implementation
+
 
 ## To be Implemented
-* FBT tag whilst in lobby  
-* Multi spawns for every gamemode
-* Functionality to assign team before game start
+* Capture the Flag
+* Free for All
+* Rules in [Gamemodes](src/main/java/com/mcmiddleearth/pvpplugin/statics/Gamemodes.java)
 
 ## To be tested
+* Death Run
 * Teleport to spawns (editor)
 * Team Conquest runner
 * Infected runner
@@ -27,3 +23,17 @@ PVP Plugin version 2
 * Whitelist
 * Save and Load
 * Spawn display functionality
+* Multi spawns for every relevant gamemode
+
+## V2
+* Juggernaut
+* Kit implementation
+* Look at a team rework
+* Functionality to assign team before game start
+
+## V.1.5
+* Add Snowball Fight
+* Add Siege
+* Add random offset for OITQ colours
+* Custom criteria for scoreboard
+* FBT tag whilst in lobby

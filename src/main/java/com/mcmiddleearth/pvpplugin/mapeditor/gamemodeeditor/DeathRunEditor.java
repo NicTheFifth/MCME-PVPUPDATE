@@ -4,6 +4,7 @@ import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
+import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONGamemode;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpecialPointEditor;
@@ -32,6 +33,7 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
         initSpawnNames();
         initSpecialPointNames();
     }
+
     public void setDeathSpawn(Player player){
         Location deathSpawn = player.getLocation();
         JSONLocation JSONDeathSpawn = new JSONLocation(deathSpawn);
@@ -43,6 +45,7 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
             player
         );
     }
+
     public void teleportToDeathSpawn(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
@@ -54,6 +57,7 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
             player
         );
     }
+
     public void setRunnerSpawn(Player player){
         Location runnerSpawn = player.getLocation();
         JSONLocation JSONRunnerSpawn = new JSONLocation(runnerSpawn);
@@ -65,6 +69,7 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
             player
         );
     }
+
     public void teleportToRunnerSpawn(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
@@ -76,6 +81,19 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
             player
         );
     }
+
+    public void setKillHeight(Player player){
+        int height = player.getLocation().getBlockY();
+        ((JSONDeathRun)jsonGamemode).setKillHeight(height);
+
+        sendBaseComponent(
+                new ComponentBuilder(String.format("Kill height set to %d for Death Run.", height))
+                        .color(Style.INFO)
+                        .create(),
+                player
+        );
+    }
+
     public void setGoal(Player player){
         Location goal = player.getLocation();
         JSONLocation JSONGoal = new JSONLocation(goal);
