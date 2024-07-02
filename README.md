@@ -37,3 +37,4 @@ PVP Plugin version 2
 * Kit implementation
 * Look at a team rework
 * Functionality to assign team before game start
+* BossBar implementation to keep track of ingame stats
