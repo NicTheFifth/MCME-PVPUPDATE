@@ -156,11 +156,13 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
         endActions.get(true).add(()->
             PlayerRespawnEvent.getHandlerList().unregister(eventListener));
     }
+
     private Set<Player> getLosingTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
             return blueTeam.getMembers();
         return redTeam.getMembers();
     }
+
     private Set<Player> getWinningTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
             return redTeam.getMembers();
