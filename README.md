@@ -23,6 +23,7 @@ PVP Plugin version 2
 * Save and Load
 * Spawn display functionality
 * Multi spawns for every relevant gamemode
+* Validator
 
 ## V.1.5
 * Add Snowball Fight
