@@ -21,12 +21,26 @@ public class KitEditor {
             ItemMeta meta = item.hasItemMeta() ?
                 item.getItemMeta() :
                 Bukkit.getItemFactory().getItemMeta(item.getType());
-            LeatherArmorMeta leatherArmorMeta = (LeatherArmorMeta) meta;
-            leatherArmorMeta.setColor(teamColour);
-            item.setItemMeta(leatherArmorMeta);
+            if(meta instanceof LeatherArmorMeta) {
+                LeatherArmorMeta leatherArmorMeta = (LeatherArmorMeta) meta;
+                leatherArmorMeta.setColor(teamColour);
+                item.setItemMeta(leatherArmorMeta);
+            }
         }
         if(item.getType().equals(Material.SHIELD)){
-            //TODO Create shield colouring
+            ItemMeta meta = item.hasItemMeta() ?
+                    item.getItemMeta() :
+                    Bukkit.getItemFactory().getItemMeta(item.getType());
+            DyeColor dyeColor = DyeColor.getByColor(teamColour);
+            if(dyeColor == null)
+                return;
+            if(meta instanceof BlockStateMeta) {
+                BlockStateMeta blockStateMeta = (BlockStateMeta) meta;
+                Banner banner = (Banner) blockStateMeta.getBlockState();
+                banner.setBaseColor(dyeColor);
+                blockStateMeta.setBlockState(banner);
+                item.setItemMeta(blockStateMeta);
+            }
         }
     }
 }
