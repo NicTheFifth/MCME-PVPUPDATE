@@ -77,6 +77,10 @@ public class Requirements {
     public static boolean isInstanceOfDeathrun(McmeCommandSender c){
         Player source = CommandUtil.getPlayer(c);
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(source.getUniqueId());
+        if(me == null)
+            return false;
+        if(me.getGamemodeEditor() == null)
+            return false;
         return me.getGamemodeEditor() instanceof DeathRunEditor;
     }
     public static boolean isInstanceOfSpecialPointEditor(McmeCommandSender c) {

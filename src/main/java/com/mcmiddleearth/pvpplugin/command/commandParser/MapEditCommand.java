@@ -63,7 +63,7 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
             .then(ActiveGamemodeEditorLiteral("setmax")
                 .then(HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAX, IntegerArgumentType.integer(0))
                     .executes(EditExecutor::SetMax)))
-            .then(HelpfulLiteralBuilder.literal("setkillheight")
+            .then(ActiveGamemodeEditorLiteral("setkillheight")
                  .requires(Requirements::isInstanceOfDeathrun)
                     .executes(EditExecutor::SetKillHeight))
             .then(ActiveGamemodeEditorLiteral("spawn")
