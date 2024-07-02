@@ -1,6 +1,6 @@
 package com.mcmiddleearth.pvpplugin.command.argumentTypes;
 
-import com.mcmiddleearth.command.McmeCommandSender;
+import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.*;
