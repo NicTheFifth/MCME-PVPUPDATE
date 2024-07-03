@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class CaptureTheFlag extends GamemodeRunner implements ScoreGoal, TimeLimit {
+public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, TimeLimit {
 
     int scoreGoal;
     int timeLimit;
@@ -61,7 +61,7 @@ public class CaptureTheFlag extends GamemodeRunner implements ScoreGoal, TimeLim
     CTFTeam redTeam = new CTFTeam();
     CTFTeam blueTeam = new CTFTeam();
 
-    public CaptureTheFlag(JSONMap map, int scoreGoal, int timeLimit){
+    public CaptureTheFlagRunner(JSONMap map, int scoreGoal, int timeLimit){
         region = AreaTranscriber.TranscribeArea(map);
         this.scoreGoal = scoreGoal;
         this.timeLimit = timeLimit;
