@@ -144,7 +144,7 @@ public class ScoreboardEditor {
         scoreboard.getObjective("Points").getScore(ChatColor.WHITE + "Time:").setScore(timeLimit);
     }
 
-    public static void UpdatePointsCaptureTheFlag(Scoreboard scoreboard, CaptureTheFlag.CTFTeam blueTeam, CaptureTheFlag.CTFTeam redTeam) {
+    public static void UpdatePointsCaptureTheFlag(Scoreboard scoreboard, CaptureTheFlagRunner.CTFTeam blueTeam, CaptureTheFlagRunner.CTFTeam redTeam) {
         scoreboard.getObjective("Points").getScore(ChatColor.BLUE + "Blue:").setScore(blueTeam.getPoints());
         scoreboard.getObjective("Points").getScore(ChatColor.RED + "Red:").setScore(redTeam.getPoints());
     }

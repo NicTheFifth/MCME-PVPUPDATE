@@ -37,22 +37,32 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
                 .requires(Requirements::canRun)
                 .then(Arguments.ValidMap()
                     .then(Arguments.ValidGamemode()
-                        .executes(GameExecutor::CreateGame))))
+                        .executes(GameExecutor::CreateGame)
+                        .then(Arguments.TimeLimitArgument()
+                            .executes(GameExecutor::CreateGameWithTimeLimit)
+                            .then(Arguments.ScoreGoalArgument()
+                                .executes(GameExecutor::CreateGameWithTimeLimitAndScoreGoal)))
+                        .then(Arguments.ScoreGoalArgument()
+                            .executes(GameExecutor::CreateGameWithScoreGoal)))))
             .then(MultiReqLiteral("start",
                     Requirements::canRun, Requirements::ActiveGameExists)
                 .executes(GameExecutor::StartGame))
             .then(HelpfulLiteralBuilder.literal("join")
                 .requires(Requirements::ActiveGameExists)
                 .executes(GameExecutor::JoinGame))
-                .then(HelpfulLiteralBuilder.literal("rules")
-                        .then(Arguments.GetGamemodes()
-                                .executes(GameExecutor::SendRules)))
+            .then(HelpfulLiteralBuilder.literal("rules")
+                   .then(Arguments.GetGamemodes()
+                        .executes(GameExecutor::SendRules)))
             .then(MultiReqLiteral("setgoal",
                 Requirements::hasScoreGoal,
                 Requirements::canRun)
-                .then(HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GOAL,
-                    IntegerArgumentType.integer(0))
+                .then(Arguments.ScoreGoalArgument()
                     .executes(GameExecutor::SetGoal)))
+                .then(MultiReqLiteral("settimelimit",
+                    Requirements::hasTimeLimit,
+                    Requirements::canRun)
+                        .then(Arguments.TimeLimitArgument()
+                            .executes(GameExecutor::SetTimeLimit)))
             .then(MultiReqLiteral("stop",
                 Requirements::ActiveGameExists,
                 Requirements::canRun)

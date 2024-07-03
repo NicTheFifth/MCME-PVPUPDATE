@@ -2,18 +2,16 @@ PVP Plugin version 2
 ===========
 ## To be Implemented
 * Free for All
-* Variable instantiation for gamemode runners with variables
 
 ## To be tested
-* Death Run
-* Teleport to spawns (editor)
+* Death Run runner
 * Team Conquest runner
 * Infected runner
 * One in the Quiver runner
 * Ringbearer runner
-* Capture the Flag
+* Capture the Flag runner
 * Toggle Auto-Join
-* Rules in [Gamemodes](src/main/java/com/mcmiddleearth/pvpplugin/statics/Gamemodes.java)
+* Teleport to spawns (editor)
 
 ## Implemented
 * Disallow removal of armour and/or banner
@@ -24,6 +22,8 @@ PVP Plugin version 2
 * Spawn display functionality
 * Multi spawns for every relevant gamemode
 * Validator
+* Variable instantiation for gamemode runners with variables
+* Rules in [Gamemodes](src/main/java/com/mcmiddleearth/pvpplugin/statics/Gamemodes.java)
 
 ## V.1.5
 * Add Snowball Fight
