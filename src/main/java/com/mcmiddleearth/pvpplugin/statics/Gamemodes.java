@@ -36,7 +36,31 @@ public class Gamemodes {
 
     public static final HashMap<String, BaseComponent[]> getRules =
         new HashMapFactory<String, BaseComponent[]>()
-            .put(CAPTURETHEFLAG, new ComponentBuilder("CTF rules").create())
-            .put(DEATHRUN,  new ComponentBuilder("DR rules").create())
+            .put(CAPTURETHEFLAG, new ComponentBuilder("Capture the Flag rules").bold(true)
+                    .append("\nCapture the enemy flag(banner), by right clicking it, and escort it to your base beacon while protecting your own. " +
+                            "To score a point, run towards your own flag whilst carrying the flag, once you get close enough, you'll score.")
+                    .append("\n\nTry to reach the score goal before time is up, or else there might be a sudden death!").create())
+            .put(DEATHRUN,  new ComponentBuilder("Death Run rules").bold(true)
+                    .append("\nOne death, and lots of runners. Runners have to reach the end goal before the time limit is reached or they're killed by death.").create())
+            .put(FREEFORALL, new ComponentBuilder("Free for All Rules").bold(true)
+                    .append("\nEvery man for himself, madly killing everyone! Get as many kills before the time limit is reached.").create())
+            .put(INFECTED, new ComponentBuilder("Infected rules").bold(true)
+                    .append("\nInfected versus survivors. Can you survive until the time limit is reached, or will you meet your demise and join the Infected? " +
+                            "Survivors aim to stay alive until the time limit is reached, whilst the infected aim to kill all survivors before the time limit is reached.").create())
+            .put(ONEINTHEQUIVER, new ComponentBuilder("One in the Quiver rules").bold(true)
+                    .append("\nEveryone gets an axe, a bow, and one arrow. Arrows instakill when hit. " +
+                            "When you kill, you get a new arrow. Try to reach the score goal before anyone else!").create())
+            .put(RINGBEARER, new ComponentBuilder("Ringbearer rules").bold(true)
+                    .append("\nIn this team versus team game, there exists one ringbearer per team. " +
+                            "Kill your enemy's ringbearer to stop their respawning. Last team standing wins.").create())
+            .put(TEAMCONQUEST, new ComponentBuilder("Team Conquest rules").bold(true)
+                    .append("\nIn this team versus team game, you have to capture points, before killing enemies to score. " +
+                            "The points gained is the positive difference you have with the enemy team in captured points. " +
+                            "Try to reach the score goal before the enemy team!").create())
+            .put(TEAMDEATHMATCH, new ComponentBuilder("Team Deathmatch rules").bold(true)
+                    .append("\nIn this team versus team game, it's easy, kill the enemy team before they kill your team!").create())
+            .put(TEAMSLAYER, new ComponentBuilder("Team Slayer rules").bold(true)
+                    .append("\nIn this team versus team game, try to reach the score goal by killing enemy team members. " +
+                            "Each kill is worth one point.").create())
             .build();
 }

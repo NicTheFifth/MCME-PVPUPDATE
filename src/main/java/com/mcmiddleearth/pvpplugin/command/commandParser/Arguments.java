@@ -41,6 +41,7 @@ public class Arguments {
     private static CommandStringArgument ResourcePacks(){
         return new CommandStringArgument(Resourcepacks.getAll);
     }
+
     public static HelpfulRequiredArgumentBuilder<String> GetGamemodes(){
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE,
             Gamemodes());

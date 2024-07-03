@@ -44,6 +44,9 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
             .then(HelpfulLiteralBuilder.literal("join")
                 .requires(Requirements::ActiveGameExists)
                 .executes(GameExecutor::JoinGame))
+                .then(HelpfulLiteralBuilder.literal("rules")
+                        .then(Arguments.GetGamemodes()
+                                .executes(GameExecutor::SendRules)))
             .then(MultiReqLiteral("setgoal",
                 Requirements::hasScoreGoal,
                 Requirements::canRun)
@@ -56,6 +59,7 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
                 .executes(GameExecutor::EndGame));
         return commandNodeBuilder;
     }
+
     @SafeVarargs
     private LiteralArgumentBuilder<McmeCommandSender> MultiReqLiteral(String literal, Predicate<McmeCommandSender>... predicates){
         return HelpfulLiteralBuilder.literal(literal)
@@ -63,6 +67,7 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
                 CommandUtil.multiRequirements(predicates)
             );
     }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         PVPCommandSender wrappedSender = new PVPCommandSender(sender);

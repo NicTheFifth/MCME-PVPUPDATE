@@ -11,6 +11,7 @@ import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mojang.brigadier.context.CommandContext;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.entity.Player;
 
@@ -105,6 +106,19 @@ public class GameExecutor {
             return 1;
         }
         return 0;
+    }
+
+    public static int SendRules(CommandContext<McmeCommandSender> c) {
+        Player player = CommandUtil.getPlayer(c.getSource());
+        String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
+        BaseComponent[] message = Gamemodes.getRules.get(gamemode);
+        if(message == null){
+            sendBaseComponent(new ComponentBuilder(String.format("Please report in dev-public that %s has no rules set!", gamemode)).color(Style.ERROR).create(),
+                    player);
+            return 0;
+        }
+        sendBaseComponent(message, player);
+        return 1;
     }
 
     public static int SetGoal(CommandContext<McmeCommandSender> c) {
