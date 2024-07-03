@@ -37,7 +37,7 @@ public class ScoreboardEditor {
                 Criteria.DUMMY, "Points");
         Points.getScore(ChatColor.WHITE + "Goal:").setScore(scoreGoal);
         Points.getScore(ChatColor.BLUE + "Blue:").setScore(0);
-        Points.getScore(ChatColor.DARK_RED + "Red:").setScore(0);
+        Points.getScore(ChatColor.RED + "Red:").setScore(0);
         Points.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
@@ -46,7 +46,7 @@ public class ScoreboardEditor {
         scoreboard.getObjective("Points")
             .getScore(ChatColor.BLUE + "Blue:").setScore(blue.getPoints());
         scoreboard.getObjective("Points")
-            .getScore(ChatColor.DARK_RED + "Red:").setScore(red.getPoints());
+            .getScore(ChatColor.RED + "Red:").setScore(red.getPoints());
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Team Conquest">
@@ -128,5 +128,24 @@ public class ScoreboardEditor {
 
     public static void UpdateRunnersDeathRun(Scoreboard scoreboard, DeathRunRunner.DRTeam runner){
         scoreboard.getObjective("Points").getScore(runner.getChatColor() + "Runners:").setScore(runner.getOnlineMembers().size());
+    }
+
+    public static void InitCaptureTheFlag(Scoreboard scoreboard, int scoreGoal, int timeLimit) {
+        Objective Points = scoreboard.registerNewObjective("Points",
+                Criteria.DUMMY, "Points");
+        Points.getScore(ChatColor.WHITE + "Time:").setScore(timeLimit);
+        Points.getScore(ChatColor.WHITE + "Goal:").setScore(scoreGoal);
+        Points.getScore(ChatColor.BLUE + "Blue:").setScore(0);
+        Points.getScore(ChatColor.RED + "Red:").setScore(0);
+        Points.setDisplaySlot(DisplaySlot.SIDEBAR);
+    }
+
+    public static void UpdateTimeCaptureTheFlag(Scoreboard scoreboard, int timeLimit){
+        scoreboard.getObjective("Points").getScore(ChatColor.WHITE + "Time:").setScore(timeLimit);
+    }
+
+    public static void UpdatePointsCaptureTheFlag(Scoreboard scoreboard, CaptureTheFlag.CTFTeam blueTeam, CaptureTheFlag.CTFTeam redTeam) {
+        scoreboard.getObjective("Points").getScore(ChatColor.BLUE + "Blue:").setScore(blueTeam.getPoints());
+        scoreboard.getObjective("Points").getScore(ChatColor.RED + "Red:").setScore(redTeam.getPoints());
     }
 }

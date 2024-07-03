@@ -1,9 +1,9 @@
 package com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes;
 
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
-import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
+import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnListGamemode;
 
-public class JSONCaptureTheFlag extends JSONRedBlueSpawnGamemode {
+public class JSONCaptureTheFlag extends JSONRedBlueSpawnListGamemode {
     JSONLocation blueFlag;
     JSONLocation redFlag;
 

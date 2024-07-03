@@ -34,6 +34,7 @@ public class GameExecutor {
         GamemodeRunner runner = null;
         switch(gamemode){
             case(Gamemodes.CAPTURETHEFLAG):
+                runner = new CaptureTheFlag(map, CaptureTheFlag.GetDefaultScoreGoal(), CaptureTheFlag.GetDefaultTimeLimit());
                 break;
             case(Gamemodes.DEATHRUN):
                 runner = new DeathRunRunner(map, DeathRunRunner.DefaultTimeLimit());

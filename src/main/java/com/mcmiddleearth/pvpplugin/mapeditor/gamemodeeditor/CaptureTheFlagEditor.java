@@ -5,6 +5,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONCaptureTheFlag;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
+import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnListGamemode;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpecialPointEditor;
@@ -13,12 +14,13 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialPointEditor {
+public class CaptureTheFlagEditor extends RedBlueSpawnListEditor implements SpecialPointEditor {
     /**
      * SpecialPointNames is a map of &lt;name, setter of said point&gt;
      */
@@ -28,6 +30,10 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialP
         setDisplayString("Capture the Flag");
         if(map.getJSONCaptureTheFlag() == null)
             map.setJSONCaptureTheFlag(new JSONCaptureTheFlag());
+        if(map.getJSONCaptureTheFlag().getRedSpawns() == null)
+            map.getJSONCaptureTheFlag().setRedSpawns(new ArrayList<>());
+        if(map.getJSONCaptureTheFlag().getBlueSpawns() == null)
+            map.getJSONCaptureTheFlag().setBlueSpawns(new ArrayList<>());
         this.jsonGamemode = map.getJSONCaptureTheFlag();
         initSpecialPointNames();
     }
@@ -84,12 +90,7 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialP
         JSONLocation blueFlag =
             ((JSONCaptureTheFlag)jsonGamemode).getBlueFlag();
         MapEditor.SpawnMarker(blueFlag, "blueflag");
-        JSONLocation redSpawn = ((JSONCaptureTheFlag)jsonGamemode).getRedSpawn();
-        MapEditor.SpawnMarker(redSpawn, "spawn red");
-        JSONLocation blueSpawn =
-            ((JSONCaptureTheFlag)jsonGamemode).getBlueSpawn();
-        MapEditor.SpawnMarker(blueSpawn, "spawn blue");
-
+        super.ShowPoints(player);
     }
     @Override
     public void sendStatus(Player player){
@@ -99,14 +100,14 @@ public class CaptureTheFlagEditor extends RedBlueSpawnEditor implements SpecialP
                 .append(String.format("\nMax players: %d",
                     jsonGamemode.getMaximumPlayers()))
                 .color(Style.INFO)
-                .append(String.format("Blue spawn set: %b",
-                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getBlueSpawn()))
+                .append(String.format("Blue spawns set: %d",
+                    ((JSONRedBlueSpawnListGamemode)jsonGamemode).getBlueSpawns().size()))
                 .color(Style.INFO)
                 .append(String.format("Blue flag set: %b",
                             ((JSONCaptureTheFlag) jsonGamemode).getBlueFlag()))
                 .color(Style.INFO)
-                .append(String.format("Red spawn set: %b",
-                    ((JSONRedBlueSpawnGamemode)jsonGamemode).getRedSpawn()))
+                .append(String.format("Red spawns set: %d",
+                    ((JSONRedBlueSpawnListGamemode)jsonGamemode).getRedSpawns().size()))
                 .color(Style.INFO)
                 .append(String.format("Red flag set: %b",
                     ((JSONCaptureTheFlag) jsonGamemode).getRedFlag()))

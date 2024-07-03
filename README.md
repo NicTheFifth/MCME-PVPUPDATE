@@ -1,7 +1,6 @@
 PVP Plugin version 2
 ===========
 ## To be Implemented
-* Capture the Flag
 * Free for All
 * Rules in [Gamemodes](src/main/java/com/mcmiddleearth/pvpplugin/statics/Gamemodes.java)
 * Variable instantiation for gamemode runners with variables
@@ -13,6 +12,7 @@ PVP Plugin version 2
 * Infected runner
 * One in the Quiver runner
 * Ringbearer runner
+* Capture the Flag
 * Toggle Auto-Join
 
 ## Implemented
