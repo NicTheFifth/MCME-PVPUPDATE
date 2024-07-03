@@ -2,7 +2,6 @@ PVP Plugin version 2
 ===========
 ## To be Implemented
 * Free for All
-* Rules in [Gamemodes](src/main/java/com/mcmiddleearth/pvpplugin/statics/Gamemodes.java)
 * Variable instantiation for gamemode runners with variables
 
 ## To be tested
@@ -14,6 +13,7 @@ PVP Plugin version 2
 * Ringbearer runner
 * Capture the Flag
 * Toggle Auto-Join
+* Rules in [Gamemodes](src/main/java/com/mcmiddleearth/pvpplugin/statics/Gamemodes.java)
 
 ## Implemented
 * Disallow removal of armour and/or banner
