@@ -9,9 +9,10 @@ PVP Plugin version 2
 * One in the Quiver runner
 * Ringbearer runner
 * Capture the Flag runner
-* Toggle Auto-Join
-* Teleport to spawns (editor)
 * Free for All
+
+## To be fixed
+* Game queue
 
 ## Implemented
 * Disallow removal of armour and/or banner
@@ -24,6 +25,8 @@ PVP Plugin version 2
 * Validator
 * Variable instantiation for gamemode runners with variables
 * Rules in [Gamemodes](src/main/java/com/mcmiddleearth/pvpplugin/statics/Gamemodes.java)
+* Toggle Auto-Join
+* Teleport to spawns (editor)
 
 ## V.1.5
 * Add Snowball Fight
@@ -32,6 +35,7 @@ PVP Plugin version 2
 * Custom criteria for scoreboard
 * FBT tag whilst in lobby
 * Variable editing for gamemode runners with variables
+* Use get block for coordinates of spawns
 
 ## V2
 * Juggernaut

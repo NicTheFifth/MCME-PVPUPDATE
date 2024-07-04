@@ -54,8 +54,9 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
                  .requires(Requirements::ActiveGameExists)
                  .executes(GameExecutor::LeaveGame))
             .then(HelpfulLiteralBuilder.literal("rules")
-                   .then(Arguments.GetGamemodes()
-                        .executes(GameExecutor::SendRules)))
+                .executes(GameExecutor::SendActiveGamemodeRules)
+                .then(Arguments.GetGamemodes()
+                    .executes(GameExecutor::SendRules)))
             .then(MultiReqLiteral("setgoal",
                 Requirements::hasScoreGoal,
                 Requirements::canRun)

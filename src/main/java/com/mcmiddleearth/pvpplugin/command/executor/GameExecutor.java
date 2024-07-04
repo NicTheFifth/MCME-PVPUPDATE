@@ -280,6 +280,25 @@ public class GameExecutor {
         return 1;
     }
 
+    public static int SendActiveGamemodeRules(CommandContext<McmeCommandSender> c) {
+        Player player = CommandUtil.getPlayer(c.getSource());
+        GamemodeRunner gamemodeRunner = PVPPlugin.getInstance().getActiveGame();
+        if(gamemodeRunner == null){
+            sendBaseComponent(new ComponentBuilder("There is no active game running.").color(Style.ERROR).create(),
+                    player);
+            return 0;
+        }
+        String gamemode = gamemodeRunner.getGamemode();
+        BaseComponent[] message = Gamemodes.getRules.get(gamemode);
+        if(message == null){
+            sendBaseComponent(new ComponentBuilder(String.format("Please report in dev-public that %s has no rules set!", gamemode)).color(Style.ERROR).create(),
+                    player);
+            return 0;
+        }
+        sendBaseComponent(message, player);
+        return 1;
+    }
+
     public static int SetGoal(CommandContext<McmeCommandSender> c) {
         Player player = CommandUtil.getPlayer(c.getSource());
         int scoreGoal = c.getArgument(ArgumentNames.SCORE_GOAL, Integer.class);
