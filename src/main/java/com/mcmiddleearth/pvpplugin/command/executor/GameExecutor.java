@@ -38,6 +38,7 @@ public class GameExecutor {
             case(Gamemodes.DEATHRUN):
                 break;
             case(Gamemodes.FREEFORALL):
+                runner = new FreeForAllRunner(map, FreeForAllRunner.DefaultTimeLimit());
                 break;
             case(Gamemodes.INFECTED):
                 runner = new InfectedRunner(map, InfectedRunner.DefaultTimeLimit());

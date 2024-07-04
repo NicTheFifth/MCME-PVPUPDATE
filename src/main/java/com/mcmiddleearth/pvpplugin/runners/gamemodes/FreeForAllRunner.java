@@ -83,22 +83,27 @@ public class FreeForAllRunner extends GamemodeRunner {
                 timeLimitSeconds--;
                 ScoreboardEditor.UpdateTimeFreeForAll(scoreboard, timeLimitSeconds);
             }
-        }.runTaskTimer(PVPPlugin.getInstance(), 0, 20));
+        }.runTaskTimer(PVPPlugin.getInstance(), 100, 20));
     }
 
     @Override
     protected void initEndActions() {
-        endActions.get(false).add(() -> players.forEach(player -> {
-            Player winningPlayer = FFAplayers.entrySet().stream().filter(entry -> players.contains(entry.getKey())).max(Map.Entry.comparingByValue(Comparator.comparingInt(PlayerTeam::getKills))).map(Map.Entry::getKey).orElse(null);
-            if (player == winningPlayer) {
-                PlayerStatEditor.addWon(player);
-            } else {
-                PlayerStatEditor.addLost(player);
-            }
-            sendBaseComponent(new ComponentBuilder(winningPlayer.getName() + " has won!")
-                            .color(FFAplayers.get(winningPlayer).chatColor.asBungee()).create(),
-                    player);
-        }));
+        endActions.get(false).add(() -> {
+            Player winningPlayer = FFAplayers.entrySet().stream()
+                    .filter(entry -> players.contains(entry.getKey()))
+                    .max(Map.Entry.comparingByValue(Comparator.comparingInt(PlayerTeam::getKills)))
+                    .map(Map.Entry::getKey).orElse(null);
+            players.forEach(player -> {
+                if (player == winningPlayer) {
+                    PlayerStatEditor.addWon(player);
+                } else {
+                    PlayerStatEditor.addLost(player);
+                }
+                sendBaseComponent(new ComponentBuilder(winningPlayer.getName() + " has won!")
+                                .color(FFAplayers.get(winningPlayer).chatColor.asBungee()).create(),
+                        player);
+            });
+        });
         endActions.get(false).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
         endActions.get(true).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
     }
