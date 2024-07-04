@@ -72,6 +72,10 @@ public abstract class GamemodeRunner implements Listener {
             new ComponentBuilder("Can't join the game during countdown, try " +
                 "again after the countdown is finished.")
                 .color(Style.ERROR).create());
+        joinConditions.put(player -> players.contains(player),
+            new ComponentBuilder("Can't join the game, you've already joined it.")
+                    .color(Style.ERROR).create()
+        );
 
         joinActions.add(players::add);
         joinActions.add(player -> spectator.getMembers().remove(player));
