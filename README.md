@@ -10,7 +10,6 @@ PVP Plugin version 2
 * Ringbearer runner
 * Capture the Flag runner
 * Free for All runner
-* Game queue
 
 ## To be fixed
 
@@ -27,6 +26,7 @@ PVP Plugin version 2
 * Rules in [Gamemodes](src/main/java/com/mcmiddleearth/pvpplugin/statics/Gamemodes.java)
 * Toggle Auto-Join
 * Teleport to spawns (editor)
+* Game queue
 
 ## V.1.5
 * Add Snowball Fight

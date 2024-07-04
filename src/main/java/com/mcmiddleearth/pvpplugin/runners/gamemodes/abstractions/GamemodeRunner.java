@@ -148,12 +148,9 @@ public abstract class GamemodeRunner implements Listener {
         });
         scoreboard.getObjectives().forEach(Objective::unregister);
         gameState = State.ENDED;
-        if(stopped){
-            endActions.get(true).forEach(Runnable::run);
-            return;
-        }
         endActions.get(false).forEach(Runnable::run);
-        spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
+        if(!stopped)
+            spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
         Supplier<GamemodeRunner> nextGame = pvpPlugin.getGameQueue().poll();
         if(nextGame != null)
             pvpPlugin.setActiveGame(nextGame.get());
