@@ -6,6 +6,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONFreeForAll;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
@@ -56,6 +57,7 @@ public class FreeForAllRunner extends GamemodeRunner {
         initJoinActions();
         initLeaveActions();
         initSpectator(map.getSpawn());
+        ChatUtils.AnnounceNewGame("Free for All", mapName, String.valueOf(maxPlayers));
     }
 
     @Override

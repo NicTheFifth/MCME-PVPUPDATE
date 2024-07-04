@@ -9,6 +9,7 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -65,6 +66,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
+        ChatUtils.AnnounceNewGame("Infected", mapName, String.valueOf(maxPlayers));
     }
     //<editor-fold defaultstate="collapsed" desc="Teams">
     private void initTeams(JSONMap map){

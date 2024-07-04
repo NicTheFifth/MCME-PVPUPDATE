@@ -7,6 +7,7 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -58,6 +59,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
+        ChatUtils.AnnounceNewGame("Team Slayer", mapName, String.valueOf(maxPlayers));
     }
     //<editor-fold defaultstate="collapsed" desc="Teams">
     public void initTeams(@NotNull JSONMap map){

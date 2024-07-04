@@ -9,6 +9,7 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
@@ -73,6 +74,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
+        ChatUtils.AnnounceNewGame("Death Run", mapName, String.valueOf(maxPlayers));
     }
     public void initGoal(){
         goal.getBlock().setType(Material.BEACON);

@@ -7,6 +7,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamDeathMatc
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -54,6 +55,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
+        ChatUtils.AnnounceNewGame("Team Deathmatch", mapName, String.valueOf(maxPlayers));
     }
     //<editor-fold defaultstate="collapsed" desc="Teams">
     private void initTeams(JSONMap map){
