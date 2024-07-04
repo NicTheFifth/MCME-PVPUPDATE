@@ -114,6 +114,9 @@ public class GameExecutor {
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
         GamemodeRunner runner = null;
         switch(gamemode) {
+            case(Gamemodes.FREEFORALL):
+                runner = new FreeForAllRunner(map, timeLimit);
+                break;
             case (Gamemodes.CAPTURETHEFLAG):
                 runner = new CaptureTheFlagRunner(map, CaptureTheFlagRunner.GetDefaultScoreGoal(), timeLimit);
                 break;
