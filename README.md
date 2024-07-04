@@ -1,7 +1,6 @@
 PVP Plugin version 2
 ===========
 ## To be Implemented
-* Free for All
 
 ## To be tested
 * Death Run runner
@@ -12,6 +11,7 @@ PVP Plugin version 2
 * Capture the Flag runner
 * Toggle Auto-Join
 * Teleport to spawns (editor)
+* Free for All
 
 ## Implemented
 * Disallow removal of armour and/or banner
