@@ -2,6 +2,7 @@ package com.mcmiddleearth.pvpplugin;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +40,7 @@ public class PVPPlugin extends JavaPlugin {
     Location spawn;
     Matchmaker matchmaker;
     GamemodeRunner activeGame;
-    Queue<GamemodeRunner> gameQueue = new LinkedList<>();
+    Queue<Supplier<GamemodeRunner>> gameQueue = new LinkedList<>();
     HashMap<UUID, MapEditor> mapEditors = new HashMap<>();
     static PVPPlugin instance;
     //TODO: Implement switching between servermode and minigame mode.
@@ -160,7 +161,7 @@ public class PVPPlugin extends JavaPlugin {
         return this.activeGame;
     }
 
-    public Queue<GamemodeRunner> getGameQueue() {
+    public Queue<Supplier<GamemodeRunner>> getGameQueue() {
         return gameQueue;
     }
 

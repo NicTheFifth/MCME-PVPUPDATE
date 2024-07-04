@@ -154,7 +154,9 @@ public abstract class GamemodeRunner implements Listener {
         }
         endActions.get(false).forEach(Runnable::run);
         spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
-        pvpPlugin.setActiveGame(pvpPlugin.getGameQueue().poll());
+        Supplier<GamemodeRunner> nextGame = pvpPlugin.getGameQueue().poll();
+        if(nextGame != null)
+            pvpPlugin.setActiveGame(nextGame.get());
     }
     protected abstract void initEndActions();
     //</editor-fold>

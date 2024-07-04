@@ -10,9 +10,9 @@ PVP Plugin version 2
 * Ringbearer runner
 * Capture the Flag runner
 * Free for All
+* Game queue
 
 ## To be fixed
-* Game queue
 
 ## Implemented
 * Disallow removal of armour and/or banner

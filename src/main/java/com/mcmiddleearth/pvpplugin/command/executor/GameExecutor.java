@@ -17,6 +17,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
@@ -50,55 +51,55 @@ public class GameExecutor {
             c.getArgument(ArgumentNames.MAP_NAME, String.class));
         String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-        GamemodeRunner runner = null;
+        Supplier<GamemodeRunner> runner = null;
         switch(gamemode){
             case(Gamemodes.CAPTURETHEFLAG):
-                runner = new CaptureTheFlagRunner(map, CaptureTheFlagRunner.GetDefaultScoreGoal(), CaptureTheFlagRunner.GetDefaultTimeLimit());
+                runner = () -> new CaptureTheFlagRunner(map, CaptureTheFlagRunner.GetDefaultScoreGoal(), CaptureTheFlagRunner.GetDefaultTimeLimit());
                 break;
             case(Gamemodes.DEATHRUN):
-                runner = new DeathRunRunner(map, DeathRunRunner.DefaultTimeLimit());
+                runner = () -> new DeathRunRunner(map, DeathRunRunner.DefaultTimeLimit());
                 break;
             case(Gamemodes.FREEFORALL):
-                runner = new FreeForAllRunner(map, FreeForAllRunner.DefaultTimeLimit());
+                runner = () -> new FreeForAllRunner(map, FreeForAllRunner.DefaultTimeLimit());
                 break;
             case(Gamemodes.INFECTED):
-                runner = new InfectedRunner(map, InfectedRunner.DefaultTimeLimit());
+                runner = () -> new InfectedRunner(map, InfectedRunner.DefaultTimeLimit());
                 break;
             case(Gamemodes.ONEINTHEQUIVER):
-                runner = new OneInTheQuiverRunner(map, OneInTheQuiverRunner.DefaultScoreGoal());
+                runner = () -> new OneInTheQuiverRunner(map, OneInTheQuiverRunner.DefaultScoreGoal());
                 break;
             case(Gamemodes.RINGBEARER):
-                runner = new RingBearerRunner(map);
+                runner = () -> new RingBearerRunner(map);
                 break;
             case(Gamemodes.TEAMCONQUEST):
-                runner = new TeamConquestRunner(map, TeamConquestRunner.DefaultScoreGoal());
+                runner = () -> new TeamConquestRunner(map, TeamConquestRunner.DefaultScoreGoal());
                 break;
             case(Gamemodes.TEAMDEATHMATCH):
-                runner = new TeamDeathmatchRunner(map);
+                runner = () -> new TeamDeathmatchRunner(map);
                 break;
             case(Gamemodes.TEAMSLAYER):
-                runner = new TeamSlayerRunner(map,
-                    TeamSlayerRunner.DefaultScoreGoal());
+                runner = () -> new TeamSlayerRunner(map, TeamSlayerRunner.DefaultScoreGoal());
         }
         if(runner == null)
             return 0;
         if(pvpPlugin.getActiveGame() == null) {
-            pvpPlugin.setActiveGame(runner);
+            GamemodeRunner activeGame = runner.get();
+            pvpPlugin.setActiveGame(activeGame);
             sendBaseComponent(
                 new ComponentBuilder(
                     String.format("Game created: %s on %s",
-                        runner.getGamemode(), runner.getMapName()))
+                        activeGame.getGamemode(), activeGame.getMapName()))
                     .color(Style.INFO)
                     .create(),
                 player);
-            pvpPlugin.getAutojoiners().forEach(runner::Join);
+            pvpPlugin.getAutojoiners().forEach(activeGame::Join);
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
         sendBaseComponent(
             new ComponentBuilder(
                 String.format("Game created, added to queue: %s on %s",
-                    runner.getGamemode(), runner.getMapName()))
+                    gamemode, map.getTitle()))
                 .color(Style.INFO)
                 .create(),
             player);
@@ -112,40 +113,41 @@ public class GameExecutor {
         String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
         Integer timeLimit = c.getArgument(ArgumentNames.TIME_LIMIT, Integer.class);
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-        GamemodeRunner runner = null;
+        Supplier<GamemodeRunner> runner = null;
         switch(gamemode) {
             case(Gamemodes.FREEFORALL):
-                runner = new FreeForAllRunner(map, timeLimit);
+                runner = () -> new FreeForAllRunner(map, timeLimit);
                 break;
             case (Gamemodes.CAPTURETHEFLAG):
-                runner = new CaptureTheFlagRunner(map, CaptureTheFlagRunner.GetDefaultScoreGoal(), timeLimit);
+                runner = () -> new CaptureTheFlagRunner(map, CaptureTheFlagRunner.GetDefaultScoreGoal(), timeLimit);
                 break;
             case (Gamemodes.DEATHRUN):
-                runner = new DeathRunRunner(map, timeLimit);
+                runner = () -> new DeathRunRunner(map, timeLimit);
                 break;
             case (Gamemodes.INFECTED):
-                runner = new InfectedRunner(map, timeLimit);
+                runner = () -> new InfectedRunner(map, timeLimit);
                 break;
         }
         if(runner == null)
             return 0;
         if(pvpPlugin.getActiveGame() == null) {
-            pvpPlugin.setActiveGame(runner);
+            GamemodeRunner activeGame = runner.get();
+            pvpPlugin.setActiveGame(activeGame);
             sendBaseComponent(
                     new ComponentBuilder(
                             String.format("Game created: %s on %s with time limit %d",
-                                    runner.getGamemode(), runner.getMapName(), timeLimit))
+                                    activeGame.getGamemode(), activeGame.getMapName(), timeLimit))
                             .color(Style.INFO)
                             .create(),
                     player);
-            pvpPlugin.getAutojoiners().forEach(runner::Join);
+            pvpPlugin.getAutojoiners().forEach(activeGame::Join);
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
         sendBaseComponent(
                 new ComponentBuilder(
                         String.format("Game created, added to queue: %s on %s with time limit %d",
-                                runner.getGamemode(), runner.getMapName(), timeLimit))
+                                gamemode, map.getTitle(), timeLimit))
                         .color(Style.INFO)
                         .create(),
                 player);
@@ -159,39 +161,40 @@ public class GameExecutor {
         String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
         Integer scoreGoal = c.getArgument(ArgumentNames.SCORE_GOAL, Integer.class);
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-        GamemodeRunner runner = null;
+        Supplier<GamemodeRunner> runner = null;
         switch(gamemode){
             case(Gamemodes.CAPTURETHEFLAG):
-                runner = new CaptureTheFlagRunner(map, scoreGoal, CaptureTheFlagRunner.GetDefaultTimeLimit());
+                runner = () -> new CaptureTheFlagRunner(map, scoreGoal, CaptureTheFlagRunner.GetDefaultTimeLimit());
                 break;
             case(Gamemodes.ONEINTHEQUIVER):
-                runner = new OneInTheQuiverRunner(map, scoreGoal);
+                runner = () -> new OneInTheQuiverRunner(map, scoreGoal);
                 break;
             case(Gamemodes.TEAMCONQUEST):
-                runner = new TeamConquestRunner(map, scoreGoal);
+                runner = () -> new TeamConquestRunner(map, scoreGoal);
                 break;
             case(Gamemodes.TEAMSLAYER):
-                runner = new TeamSlayerRunner(map, scoreGoal);
+                runner = () -> new TeamSlayerRunner(map, scoreGoal);
         }
         if(runner == null)
             return 0;
         if(pvpPlugin.getActiveGame() == null) {
-            pvpPlugin.setActiveGame(runner);
+            GamemodeRunner activeGame = runner.get();
+            pvpPlugin.setActiveGame(activeGame);
             sendBaseComponent(
                     new ComponentBuilder(
                             String.format("Game created: %s on %s with score goal %d",
-                                    runner.getGamemode(), runner.getMapName(), scoreGoal))
+                                    activeGame.getGamemode(), activeGame.getMapName(), scoreGoal))
                             .color(Style.INFO)
                             .create(),
                     player);
-            pvpPlugin.getAutojoiners().forEach(runner::Join);
+            pvpPlugin.getAutojoiners().forEach(activeGame::Join);
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
         sendBaseComponent(
                 new ComponentBuilder(
-                        String.format("Game created: %s on %s with score goal %d",
-                                runner.getGamemode(), runner.getMapName(), scoreGoal))
+                        String.format("Game created, added to queue: %s on %s with score goal %d",
+                                gamemode, map.getTitle(), scoreGoal))
                         .color(Style.INFO)
                         .create(),
                 player);
@@ -206,28 +209,29 @@ public class GameExecutor {
         Integer timeLimit = c.getArgument(ArgumentNames.TIME_LIMIT, Integer.class);
         Integer scoreGoal = c.getArgument(ArgumentNames.SCORE_GOAL, Integer.class);
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-        GamemodeRunner runner;
+        Supplier<GamemodeRunner> runner = null;
         if(Objects.equals(gamemode, Gamemodes.CAPTURETHEFLAG))
-            runner = new CaptureTheFlagRunner(map, scoreGoal, timeLimit);
+            runner = () -> new CaptureTheFlagRunner(map, scoreGoal, timeLimit);
         else
             return 0;
         if(pvpPlugin.getActiveGame() == null) {
-            pvpPlugin.setActiveGame(runner);
+            GamemodeRunner activeRunner = runner.get();
+            pvpPlugin.setActiveGame(activeRunner);
             sendBaseComponent(
                     new ComponentBuilder(
                             String.format("Game created: %s on %s with time limit %d and score goal %d",
-                                    runner.getGamemode(), runner.getMapName(), timeLimit, scoreGoal))
+                                    activeRunner.getGamemode(), activeRunner.getMapName(), timeLimit, scoreGoal))
                             .color(Style.INFO)
                             .create(),
                     player);
-            pvpPlugin.getAutojoiners().forEach(runner::Join);
+            pvpPlugin.getAutojoiners().forEach(activeRunner::Join);
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
         sendBaseComponent(
                 new ComponentBuilder(
                         String.format("Game created: %s on %s with time limit %d and score goal %d",
-                                runner.getGamemode(), runner.getMapName(), timeLimit, scoreGoal))
+                                gamemode, map.getTitle(), timeLimit, scoreGoal))
                         .color(Style.INFO)
                         .create(),
                 player);
@@ -334,7 +338,7 @@ public class GameExecutor {
         GamemodeRunner runner = pvpPlugin.getActiveGame();
 
         runner.end(true);
-        pvpPlugin.setActiveGame(pvpPlugin.getGameQueue().poll());
+
         return 1;
     }
 }
