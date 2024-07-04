@@ -39,6 +39,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     TSTeam redTeam = new TSTeam();
     TSTeam blueTeam = new TSTeam();
     int scoreGoal;
+
     public static int DefaultScoreGoal(){
         return 20;
     }
@@ -122,7 +123,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start actions">
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::join));
+        startActions.add(() -> players.forEach(this::JoinTeamSlayer));
         startActions.add(()-> ScoreboardEditor.InitTeamSlayer(scoreboard,
             scoreGoal));
     }
@@ -155,11 +156,13 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
         endActions.get(true).add(()->
             PlayerRespawnEvent.getHandlerList().unregister(eventListener));
     }
+
     private Set<Player> getLosingTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
             return blueTeam.getMembers();
         return redTeam.getMembers();
     }
+
     private Set<Player> getWinningTeamMembers() {
         if(redTeam.getPoints() == scoreGoal)
             return redTeam.getMembers();
@@ -188,9 +191,9 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     }
     @Override
     protected void initJoinActions(){
-        joinActions.add(this::join);
+        joinActions.add(this::JoinTeamSlayer);
     }
-    private void join(Player player){
+    private void JoinTeamSlayer(Player player){
         if(gameState == State.QUEUED) {
             sendBaseComponent(
                 new ComponentBuilder("You joined the game.").color(Style.INFO).create(),

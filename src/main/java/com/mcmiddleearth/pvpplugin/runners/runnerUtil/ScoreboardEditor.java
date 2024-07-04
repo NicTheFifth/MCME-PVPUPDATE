@@ -1,13 +1,18 @@
 package com.mcmiddleearth.pvpplugin.runners.runnerUtil;
 
+
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.OneInTheQuiverRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamConquestRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamDeathmatchRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamSlayerRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.FreeForAllRunner;
+
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.*;
+
 import com.mcmiddleearth.pvpplugin.util.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -20,7 +25,7 @@ public class ScoreboardEditor {
                                           TeamDeathmatchRunner.TDMTeam red,
                                           TeamDeathmatchRunner.TDMTeam blue){
         Objective Points = scoreboard.registerNewObjective("Remaining",
-            "dummy", "Remaining");
+                Criteria.DUMMY, "Remaining");
         Points.getScore(ChatColor.BLUE + "Blue:").setScore(blue.AliveMembers());
         Points.getScore(ChatColor.DARK_RED + "Red:").setScore(red.AliveMembers());
         Points.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -37,10 +42,10 @@ public class ScoreboardEditor {
     //<editor-fold defaultstate="collapsed" desc="Team Slayer">
     public static void InitTeamSlayer(Scoreboard scoreboard, Integer scoreGoal) {
         Objective Points = scoreboard.registerNewObjective("Points",
-            "dummy", "Points");
+                Criteria.DUMMY, "Points");
         Points.getScore(ChatColor.WHITE + "Goal:").setScore(scoreGoal);
         Points.getScore(ChatColor.BLUE + "Blue:").setScore(0);
-        Points.getScore(ChatColor.DARK_RED + "Red:").setScore(0);
+        Points.getScore(ChatColor.RED + "Red:").setScore(0);
         Points.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
@@ -49,13 +54,13 @@ public class ScoreboardEditor {
         scoreboard.getObjective("Points")
             .getScore(ChatColor.BLUE + "Blue:").setScore(blue.getPoints());
         scoreboard.getObjective("Points")
-            .getScore(ChatColor.DARK_RED + "Red:").setScore(red.getPoints());
+            .getScore(ChatColor.RED + "Red:").setScore(red.getPoints());
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Team Conquest">
     public static void InitTeamConquest(Scoreboard scoreboard, int scoreGoal) {
         Objective Points = scoreboard.registerNewObjective("Points",
-                "dummy", "Points");
+                Criteria.DUMMY, "Points");
         Points.getScore(ChatColor.WHITE + "Goal:").setScore(scoreGoal);
         Points.getScore(ChatColor.BLUE + "Blue:").setScore(0);
         Points.getScore(ChatColor.DARK_RED + "Red:").setScore(0);
@@ -73,7 +78,7 @@ public class ScoreboardEditor {
     //<editor-fold defaultstate="collapsed" desc="Infected">
     public static void InitInfected(Scoreboard scoreboard, int timeLimitSeconds, Team infected, Team survivors) {
         Objective Points = scoreboard.registerNewObjective("Points",
-                "dummy", "Points");
+                Criteria.DUMMY, "Points");
         Points.getScore(ChatColor.WHITE + "Time:").setScore(timeLimitSeconds);
         Points.getScore(ChatColor.DARK_RED + "Infected:").setScore(infected.getOnlineMembers().size());
         Points.getScore(ChatColor.BLUE + "Survivors:").setScore(survivors.getOnlineMembers().size());
@@ -95,7 +100,7 @@ public class ScoreboardEditor {
     //<editor-fold defaultstate="collapsed" desc="One in the Quiver">
     public static void InitOneInTheQuiver(Scoreboard scoreboard, Map<Player, OneInTheQuiverRunner.PlayerTeam> players, int scoreGoal) {
         Objective Points = scoreboard.registerNewObjective("Points",
-                "dummy", "Points");
+                Criteria.DUMMY, "Points");
         Points.getScore(ChatColor.WHITE + "Goal:").setScore(scoreGoal);
         players.forEach((player, playerTeam) ->
                 Points.getScore(playerTeam.getChatColor() + player.getName() + ":").setScore(0));
@@ -105,6 +110,7 @@ public class ScoreboardEditor {
                 .getScore(playerTeam.getChatColor() + player.getName() + ":").setScore(playerTeam.getKills());
     }
     //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Free for All">
     public static void InitFreeForAll(Scoreboard scoreboard, Map<Player, FreeForAllRunner.PlayerTeam> players, int timeLimitSeconds) {
         Objective Points = scoreboard.registerNewObjective("Points",
@@ -121,4 +127,52 @@ public class ScoreboardEditor {
         scoreboard.getObjective("Points").getScore(ChatColor.WHITE + "Time:").setScore(timeSeconds);
     }
     //</editor-fold>
+
+    public static void InitRingBearer(Scoreboard scoreboard, RingBearerRunner.RBTeam redTeam, RingBearerRunner.RBTeam blueTeam) {
+        Objective Points = scoreboard.registerNewObjective("Remaining", Criteria.DUMMY, "Remaining");
+        Points.getScore(ChatColor.BLUE + "Blue:").setScore(blueTeam.AliveMembers());
+        Points.getScore(ChatColor.DARK_RED + "Red:").setScore(redTeam.AliveMembers());
+        Points.setDisplaySlot(DisplaySlot.SIDEBAR);
+    }
+
+    public static void UpdateRingBearer(Scoreboard scoreboard, RingBearerRunner.RBTeam redTeam, RingBearerRunner.RBTeam blueTeam) {
+        scoreboard.getObjective("Remaining").getScore(ChatColor.BLUE + "Blue:").setScore(blueTeam.AliveMembers());
+        scoreboard.getObjective("Remaining").getScore(ChatColor.DARK_RED + "Red:").setScore(redTeam.AliveMembers());
+    }
+
+    public static void InitDeathRun(Scoreboard scoreboard, int timeLimitSeconds, DeathRunRunner.DRTeam runner) {
+        Objective Points = scoreboard.registerNewObjective("Points",
+                Criteria.DUMMY, "Points");
+        Points.getScore(ChatColor.WHITE + "Time:").setScore(timeLimitSeconds);
+        Points.getScore(runner.getChatColor() + "Runners:").setScore(runner.getOnlineMembers().size());
+        Points.setDisplaySlot(DisplaySlot.SIDEBAR);
+    }
+
+    public static void UpdateTimeDeathRun(Scoreboard scoreboard, int timeSeconds) {
+        scoreboard.getObjective("Points").getScore(ChatColor.WHITE + "Time:").setScore(timeSeconds);
+    }
+
+    public static void UpdateRunnersDeathRun(Scoreboard scoreboard, DeathRunRunner.DRTeam runner){
+        scoreboard.getObjective("Points").getScore(runner.getChatColor() + "Runners:").setScore(runner.getOnlineMembers().size());
+    }
+
+    public static void InitCaptureTheFlag(Scoreboard scoreboard, int scoreGoal, int timeLimit) {
+        Objective Points = scoreboard.registerNewObjective("Points",
+                Criteria.DUMMY, "Points");
+        Points.getScore(ChatColor.WHITE + "Time:").setScore(timeLimit);
+        Points.getScore(ChatColor.WHITE + "Goal:").setScore(scoreGoal);
+        Points.getScore(ChatColor.BLUE + "Blue:").setScore(0);
+        Points.getScore(ChatColor.RED + "Red:").setScore(0);
+        Points.setDisplaySlot(DisplaySlot.SIDEBAR);
+    }
+
+    public static void UpdateTimeCaptureTheFlag(Scoreboard scoreboard, int timeLimit){
+        scoreboard.getObjective("Points").getScore(ChatColor.WHITE + "Time:").setScore(timeLimit);
+    }
+
+    public static void UpdatePointsCaptureTheFlag(Scoreboard scoreboard, CaptureTheFlagRunner.CTFTeam blueTeam, CaptureTheFlagRunner.CTFTeam redTeam) {
+        scoreboard.getObjective("Points").getScore(ChatColor.BLUE + "Blue:").setScore(blueTeam.getPoints());
+        scoreboard.getObjective("Points").getScore(ChatColor.RED + "Red:").setScore(redTeam.getPoints());
+    }
+
 }

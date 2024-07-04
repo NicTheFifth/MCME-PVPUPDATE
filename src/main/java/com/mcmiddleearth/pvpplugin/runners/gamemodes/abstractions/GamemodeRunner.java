@@ -18,6 +18,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -45,7 +48,7 @@ public abstract class GamemodeRunner implements Listener {
     //protected Set<Player> whiteList = new HashSet<>();
     protected Set<Player> players = new HashSet<>();
     protected Team spectator = new Team();
-    protected Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+    protected Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     protected Region region;
     protected Listener eventListener;
 
@@ -249,6 +252,21 @@ public abstract class GamemodeRunner implements Listener {
                     playerAreaLeaveTimer.put(uuid, System.currentTimeMillis());
                 }
             }
+        }
+        @EventHandler
+        public void onInventoryClick(InventoryClickEvent e){
+            Player player = (Player) e.getWhoClicked();
+            if(!players.contains(player))
+                return;
+            if(e.getSlotType() == InventoryType.SlotType.ARMOR)
+                e.setCancelled(true);
+        }
+        @EventHandler
+        public void returnDroppedItems(PlayerDropItemEvent e){
+            Player player = e.getPlayer();
+            if(!players.contains(player))
+                return;
+            e.setCancelled(true);
         }
     }
 }

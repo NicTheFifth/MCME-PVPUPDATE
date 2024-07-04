@@ -15,6 +15,7 @@ public class Arguments {
     public static HelpfulRequiredArgumentBuilder<String> ExistingMap() {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAP_NAME, ExistingMaps());
     }
+
     private static CommandStringArgument ExistingMaps() {
         return new CommandStringArgument(PVPPlugin.getInstance().getMaps().keySet());
     }
@@ -45,6 +46,7 @@ public class Arguments {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GAMEMODE,
             Gamemodes());
     }
+
     private static CommandStringArgument Gamemodes(){
         return new CommandStringArgument(Gamemodes.getAll);
     }
@@ -55,7 +57,6 @@ public class Arguments {
     public static ValidGamemodeArgument ValidGamemodes() {
         return new ValidGamemodeArgument();
     }
-
     public static HelpfulRequiredArgumentBuilder<Integer> spawnIndexArgument() {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
             new SpawnIndexArgument());
@@ -74,5 +75,15 @@ public class Arguments {
     public static HelpfulRequiredArgumentBuilder<Integer> SpecialPointListIndexArgument() {
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.INDEX,
             new SpecialPointIndexArgument());
+    }
+
+    public static HelpfulRequiredArgumentBuilder<Integer> TimeLimitArgument(){
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.TIME_LIMIT,
+                new TimeLimitArgument(0));
+    }
+
+    public static HelpfulRequiredArgumentBuilder<Integer> ScoreGoalArgument(){
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.SCORE_GOAL,
+                new ScoreGoalArgument(0));
     }
 }

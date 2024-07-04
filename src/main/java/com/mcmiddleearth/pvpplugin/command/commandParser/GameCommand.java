@@ -1,8 +1,8 @@
 package com.mcmiddleearth.pvpplugin.command.commandParser;
 
 import com.google.common.base.Joiner;
-import com.mcmiddleearth.command.AbstractCommandHandler;
-import com.mcmiddleearth.command.McmeCommandSender;
+import com.mcmiddleearth.command.handler.AbstractCommandHandler;
+import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
@@ -31,29 +31,45 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     protected HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder commandNodeBuilder) {
         commandNodeBuilder
             .requires(sender -> ((PVPCommandSender)sender).getSender() instanceof Player)
+                .then(HelpfulLiteralBuilder.literal("autojoin")
+                        .executes(GameExecutor::ToggleAutojoin))
             .then(HelpfulLiteralBuilder.literal("create")
                 .requires(Requirements::canRun)
                 .then(Arguments.ValidMap()
                     .then(Arguments.ValidGamemode()
-                        .executes(GameExecutor::CreateGame))))
+                        .executes(GameExecutor::CreateGame)
+                        .then(Arguments.TimeLimitArgument()
+                            .executes(GameExecutor::CreateGameWithTimeLimit)
+                            .then(Arguments.ScoreGoalArgument()
+                                .executes(GameExecutor::CreateGameWithTimeLimitAndScoreGoal)))
+                        .then(Arguments.ScoreGoalArgument()
+                            .executes(GameExecutor::CreateGameWithScoreGoal)))))
             .then(MultiReqLiteral("start",
                     Requirements::canRun, Requirements::ActiveGameExists)
                 .executes(GameExecutor::StartGame))
             .then(HelpfulLiteralBuilder.literal("join")
                 .requires(Requirements::ActiveGameExists)
                 .executes(GameExecutor::JoinGame))
+            .then(HelpfulLiteralBuilder.literal("rules")
+                   .then(Arguments.GetGamemodes()
+                        .executes(GameExecutor::SendRules)))
             .then(MultiReqLiteral("setgoal",
                 Requirements::hasScoreGoal,
                 Requirements::canRun)
-                .then(HelpfulRequiredArgumentBuilder.argument(ArgumentNames.GOAL,
-                    IntegerArgumentType.integer(0))
+                .then(Arguments.ScoreGoalArgument()
                     .executes(GameExecutor::SetGoal)))
+                .then(MultiReqLiteral("settimelimit",
+                    Requirements::hasTimeLimit,
+                    Requirements::canRun)
+                        .then(Arguments.TimeLimitArgument()
+                            .executes(GameExecutor::SetTimeLimit)))
             .then(MultiReqLiteral("stop",
                 Requirements::ActiveGameExists,
                 Requirements::canRun)
                 .executes(GameExecutor::EndGame));
         return commandNodeBuilder;
     }
+
     @SafeVarargs
     private LiteralArgumentBuilder<McmeCommandSender> MultiReqLiteral(String literal, Predicate<McmeCommandSender>... predicates){
         return HelpfulLiteralBuilder.literal(literal)
@@ -61,6 +77,7 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
                 CommandUtil.multiRequirements(predicates)
             );
     }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         PVPCommandSender wrappedSender = new PVPCommandSender(sender);

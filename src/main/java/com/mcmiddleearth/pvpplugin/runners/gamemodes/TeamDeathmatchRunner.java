@@ -61,15 +61,17 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         initTeamRed(map.getJSONTeamDeathMatch().getRedSpawn());
         initSpectator(map.getSpawn());
     }
+
     private void initTeamBlue(JSONLocation blueSpawn){
-        redTeam.setPrefix("Blue");
-        redTeam.setTeamColour(Color.BLUE);
-        redTeam.setChatColor(ChatColor.BLUE);
-        redTeam.setKit(createKit(Color.BLUE));
+        blueTeam.setPrefix("Blue");
+        blueTeam.setTeamColour(Color.BLUE);
+        blueTeam.setChatColor(ChatColor.BLUE);
+        blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(
             List.of(LocationTranscriber.TranscribeFromJSON(blueSpawn)));
         blueTeam.setGameMode(GameMode.ADVENTURE);
     }
+
     private void initTeamRed(JSONLocation redSpawn){
         redTeam.setPrefix("Red");
         redTeam.setTeamColour(Color.RED);
@@ -78,8 +80,8 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         redTeam.setSpawnLocations(
             List.of(LocationTranscriber.TranscribeFromJSON(redSpawn)));
         redTeam.setGameMode(GameMode.ADVENTURE);
-
     }
+
     private @NotNull Kit createKit(Color color){
         Consumer<Player> invFunc = (x -> {
             PlayerInventory returnInventory = x.getInventory();
@@ -120,7 +122,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     //<editor-fold defaultstate="collapsed" desc="Start actions"
     @Override
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::join));
+        startActions.add(() -> players.forEach(this::JoinTeamDeathmatch));
         startActions.add(()-> ScoreboardEditor.InitTeamDeathmatch(scoreboard,
             redTeam, blueTeam
             ));
@@ -163,11 +165,13 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         endActions.get(true).add(()->
             PlayerRespawnEvent.getHandlerList().unregister(eventListener));
     }
+
     private Set<Player> getLosingTeamMembers() {
         if(redTeam.hasAliveMembers())
             return blueTeam.getMembers();
         return redTeam.getMembers();
     }
+
     private Set<Player> getWinningTeamMembers() {
         if(redTeam.hasAliveMembers())
             return redTeam.getMembers();
@@ -183,11 +187,13 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
                 .color(Style.INFO)
                 .create());
     }
+
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::join);
+        joinActions.add(this::JoinTeamDeathmatch);
     }
-    private void join(Player player){
+
+    private void JoinTeamDeathmatch(Player player){
         if(gameState == State.QUEUED) {
             sendBaseComponent(
                 new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
@@ -205,8 +211,8 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         TeamHandler.addToTeam((team -> team.getOnlineMembers().size()),
             Pair.of(redTeam, () -> joinRedTeam(player)),
             Pair.of(blueTeam, () -> joinBlueTeam(player)));
-
     }
+
     private void joinRedTeam(Player player){
         redTeam.getOnlineMembers().add(player);
         Matchmaker.addMember(player, redTeam);
@@ -229,6 +235,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         spectator.getMembers().forEach(spectator ->
             sendBaseComponent(publicJoinMessage, spectator));
     }
+
     private void joinBlueTeam(Player player){
         blueTeam.getOnlineMembers().add(player);
         Matchmaker.addMember(player, blueTeam);
@@ -250,7 +257,6 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
             sendBaseComponent(publicJoinMessage, playerOther));
         spectator.getMembers().forEach(spectator ->
             sendBaseComponent(publicJoinMessage, spectator));
-
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Leave">
@@ -258,6 +264,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     protected void initLeaveActions() {
         leaveActions.add(this::leaveTeamDeathmatch);
     }
+
     private void leaveTeamDeathmatch(Player player){
         if (redTeam.getMembers().contains(player)) {
             leaveRedTeam(player);
@@ -279,6 +286,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
             playerOther
         ));
     }
+
     private void leaveBlueTeam(Player player){
         blueTeam.getOnlineMembers().remove(player);
         players.forEach(playerOther->sendBaseComponent(
@@ -293,10 +301,12 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     public String getGamemode() {
         return Gamemodes.TEAMDEATHMATCH;
     }
+
     public class TDMListener extends GamemodeListener{
         public TDMListener(){
             initOnPlayerDeathActions();
         }
+
         @Override
         protected void initOnPlayerDeathActions() {
             onPlayerDeathActions.add(e ->{
@@ -311,6 +321,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
                     end(false);
             });
         }
+
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             TeamHandler.respawn(e, spectator);
@@ -318,10 +329,12 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     }
     public static class TDMTeam extends Team {
         Set<Player> deadMembers = new HashSet<>();
+
         public boolean hasAliveMembers(){
             return deadMembers.containsAll(onlineMembers);
         }
         public Set<Player> getDeadMembers() {return  deadMembers;}
+
         public Integer AliveMembers(){
             Set<Player> aliveMembers = new HashSet<>(onlineMembers);
             aliveMembers.removeAll(deadMembers);
