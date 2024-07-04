@@ -9,6 +9,7 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -77,6 +78,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
+        ChatUtils.AnnounceNewGame("Capture the Flag", mapName, String.valueOf(maxPlayers));
     }
 
     private void initTeams(JSONMap map){

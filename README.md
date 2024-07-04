@@ -9,7 +9,7 @@ PVP Plugin version 2
 * One in the Quiver runner
 * Ringbearer runner
 * Capture the Flag runner
-* Free for All
+* Free for All runner
 * Game queue
 
 ## To be fixed
