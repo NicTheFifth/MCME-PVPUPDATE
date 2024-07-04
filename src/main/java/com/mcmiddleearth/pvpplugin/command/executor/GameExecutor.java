@@ -256,6 +256,17 @@ public class GameExecutor {
         return 0;
     }
 
+    public static int LeaveGame(CommandContext<McmeCommandSender> c) {
+        Player player = CommandUtil.getPlayer(c.getSource());
+        GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
+
+        if(runner.canJoin(player)) {
+            runner.leaveGame(player, false);
+            return 1;
+        }
+        return 0;
+    }
+
     public static int SendRules(CommandContext<McmeCommandSender> c) {
         Player player = CommandUtil.getPlayer(c.getSource());
         String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
