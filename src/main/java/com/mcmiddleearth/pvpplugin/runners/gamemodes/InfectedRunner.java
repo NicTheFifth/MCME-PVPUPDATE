@@ -155,7 +155,7 @@ public class InfectedRunner extends GamemodeRunner {
                 timeLimitSeconds--;
                 ScoreboardEditor.UpdateTimeInfected(scoreboard, timeLimitSeconds);
             }
-        }.runTaskTimer(PVPPlugin.getInstance(),5000,20));
+        }.runTaskTimer(PVPPlugin.getInstance(),100,20));
     }
     private void initWithRandomInfected() {
         if (!infected.getOnlineMembers().isEmpty())
