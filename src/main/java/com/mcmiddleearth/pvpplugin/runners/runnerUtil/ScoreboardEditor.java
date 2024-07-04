@@ -4,6 +4,7 @@ import com.mcmiddleearth.pvpplugin.runners.gamemodes.OneInTheQuiverRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamConquestRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamDeathmatchRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.TeamSlayerRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.FreeForAllRunner;
 import com.mcmiddleearth.pvpplugin.util.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -102,6 +103,22 @@ public class ScoreboardEditor {
     public static void UpdateOneInTheQuiver(Scoreboard scoreboard, Player player, OneInTheQuiverRunner.PlayerTeam playerTeam){
         scoreboard.getObjective("Points")
                 .getScore(playerTeam.getChatColor() + player.getName() + ":").setScore(playerTeam.getKills());
+    }
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="Free for All">
+    public static void InitFreeForAll(Scoreboard scoreboard, Map<Player, FreeForAllRunner.PlayerTeam> players, int timeLimitSeconds) {
+        Objective Points = scoreboard.registerNewObjective("Points",
+                "dummy", "Points");
+        Points.getScore(ChatColor.WHITE + "Time:").setScore(timeLimitSeconds);
+        players.forEach((player, playerTeam) ->
+                Points.getScore(playerTeam.getChatColor() + player.getName() + ":").setScore(0));
+    }
+    public static void UpdateFreeForAll(Scoreboard scoreboard, Player player, FreeForAllRunner.PlayerTeam playerTeam){
+        scoreboard.getObjective("Points")
+                .getScore(playerTeam.getChatColor() + player.getName() + ":").setScore(playerTeam.getKills());
+    }
+    public static void UpdateTimeFreeForAll(Scoreboard scoreboard, int timeSeconds){
+        scoreboard.getObjective("Points").getScore(ChatColor.WHITE + "Time:").setScore(timeSeconds);
     }
     //</editor-fold>
 }
