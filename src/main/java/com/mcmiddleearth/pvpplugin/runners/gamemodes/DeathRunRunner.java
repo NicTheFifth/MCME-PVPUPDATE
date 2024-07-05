@@ -110,7 +110,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
             PlayerInventory returnInventory = player.getInventory();
             returnInventory.setHelmet(new ItemStack(Material.WITHER_SKELETON_SKULL));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.INFINITY, 1);
+            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
         });

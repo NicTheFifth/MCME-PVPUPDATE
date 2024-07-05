@@ -95,7 +95,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.INFINITY, 1);
+            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,

@@ -158,7 +158,7 @@ public class FreeForAllRunner extends GamemodeRunner {
         playerInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
         playerInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.INFINITY, 1);
+        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
         playerInventory.setItem(1, bow);
         playerInventory.setItem(2, new ItemStack(Material.ARROW));
     }
