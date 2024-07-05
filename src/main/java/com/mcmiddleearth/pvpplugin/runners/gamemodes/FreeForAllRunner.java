@@ -68,7 +68,7 @@ public class FreeForAllRunner extends GamemodeRunner {
     }
     @Override
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::join));
+        startActions.add(() -> players.forEach(player -> JoinFreeForAll(player, true)));
         startActions.add(()-> ScoreboardEditor.InitFreeForAll(scoreboard, FFAplayers, timeLimitSeconds));
         startActions.add(() -> new BukkitRunnable() {
             @Override
@@ -121,17 +121,16 @@ public class FreeForAllRunner extends GamemodeRunner {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::join);
+        joinActions.add(player -> JoinFreeForAll(player, false));
     }
 
-    private void join(Player player){
-        if(gameState == State.QUEUED) {
+    private void JoinFreeForAll(Player player, boolean onStart){
+        if(!onStart && gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
                     player);
             return;
         }
-
         ChatColor color = FFAplayers.getOrDefault(player, GenerateNewPlayer(player)).getChatColor();
         KitOutPlayer(player);
         player.setGameMode(GameMode.ADVENTURE);

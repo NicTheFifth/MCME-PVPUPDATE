@@ -124,7 +124,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     //<editor-fold defaultstate="collapsed" desc="Start actions"
     @Override
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::JoinTeamDeathmatch));
+        startActions.add(() -> players.forEach(player -> JoinTeamDeathmatch(player, true)));
         startActions.add(()-> ScoreboardEditor.InitTeamDeathmatch(scoreboard,
             redTeam, blueTeam
             ));
@@ -192,11 +192,11 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::JoinTeamDeathmatch);
+        joinActions.add(player -> JoinTeamDeathmatch(player, false));
     }
 
-    private void JoinTeamDeathmatch(Player player){
-        if(gameState == State.QUEUED) {
+    private void JoinTeamDeathmatch(Player player, boolean onStart){
+        if(!onStart && gameState == State.QUEUED) {
             sendBaseComponent(
                 new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
                 player);

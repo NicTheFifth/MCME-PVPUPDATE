@@ -134,7 +134,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
     @Override
     protected void initStartActions() {
         startActions.add(this::initWithRandomDeath);
-        startActions.add(() -> players.forEach(this::JoinDeathRun));
+        startActions.add(() -> players.forEach(player -> JoinDeathRun(player, true)));
         startActions.add(()-> ScoreboardEditor.InitDeathRun(scoreboard, timeLimit, runner));
         startActions.add(() -> new BukkitRunnable() {
             @Override
@@ -205,10 +205,11 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::JoinDeathRun);
+        joinActions.add(player -> JoinDeathRun(player, false));
     }
-    private void JoinDeathRun(Player player){
-        if(gameState == State.QUEUED) {
+
+    private void JoinDeathRun(Player player, boolean onStart){
+        if(!onStart && gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
                     player);

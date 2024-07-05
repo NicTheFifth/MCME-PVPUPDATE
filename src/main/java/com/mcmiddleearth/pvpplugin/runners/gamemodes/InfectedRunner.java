@@ -141,7 +141,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
     @Override
     protected void initStartActions() {
         startActions.add(this::initWithRandomInfected);
-        startActions.add(() -> players.forEach(this::JoinInfected));
+        startActions.add(() -> players.forEach(player -> JoinInfected(player, true)));
         startActions.add(()-> ScoreboardEditor.InitInfected(scoreboard, timeLimit, infected, survivors));
         startActions.add(() -> new BukkitRunnable() {
             @Override
@@ -161,6 +161,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
             }
         }.runTaskTimer(PVPPlugin.getInstance(),100,20));
     }
+
     private void initWithRandomInfected() {
         if (!infected.getOnlineMembers().isEmpty())
             return;
@@ -222,11 +223,11 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::JoinInfected);
+        joinActions.add(player -> JoinInfected(player, false));
     }
 
-    private void JoinInfected(Player player){
-        if(gameState == State.QUEUED) {
+    private void JoinInfected(Player player, boolean onStart){
+        if(!onStart && gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
                     player);

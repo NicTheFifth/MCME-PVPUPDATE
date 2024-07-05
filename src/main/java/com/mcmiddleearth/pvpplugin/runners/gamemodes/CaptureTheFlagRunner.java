@@ -172,7 +172,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
 
     @Override
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::JoinCaptureTheFlag));
+        startActions.add(() -> players.forEach(player -> JoinCaptureTheFlag(player, true)));
         startActions.add(()-> ScoreboardEditor.InitCaptureTheFlag(scoreboard, scoreGoal, timeLimit));
         startActions.add(() -> new BukkitRunnable() {
             @Override
@@ -278,11 +278,11 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::JoinCaptureTheFlag);
+        joinActions.add(player -> JoinCaptureTheFlag(player, false));
     }
 
-    private void JoinCaptureTheFlag(Player player){
-        if(gameState == State.QUEUED) {
+    private void JoinCaptureTheFlag(Player player, boolean onStart){
+        if(!onStart && gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
                     player);
