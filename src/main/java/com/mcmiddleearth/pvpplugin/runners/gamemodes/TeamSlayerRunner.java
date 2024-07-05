@@ -32,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
@@ -100,7 +102,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.INFINITY, 1);
+            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
@@ -125,7 +127,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start actions">
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::JoinTeamSlayer));
+        startActions.add(() -> players.forEach(player -> JoinTeamSlayer(player, true)));
         startActions.add(()-> ScoreboardEditor.InitTeamSlayer(scoreboard,
             scoreGoal));
     }
@@ -193,10 +195,10 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     }
     @Override
     protected void initJoinActions(){
-        joinActions.add(this::JoinTeamSlayer);
+        joinActions.add(player -> JoinTeamSlayer(player, false));
     }
-    private void JoinTeamSlayer(Player player){
-        if(gameState == State.QUEUED) {
+    private void JoinTeamSlayer(Player player, boolean onStart){
+        if(!onStart) {
             sendBaseComponent(
                 new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
                 player);
