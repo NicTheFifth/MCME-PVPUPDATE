@@ -72,7 +72,7 @@ public abstract class GamemodeRunner implements Listener {
             new ComponentBuilder("Can't join the game during countdown, try " +
                 "again after the countdown is finished.")
                 .color(Style.ERROR).create());
-        joinConditions.put(player -> players.contains(player),
+        joinConditions.put(player -> !players.contains(player),
             new ComponentBuilder("Can't join the game, you've already joined it.")
                     .color(Style.ERROR).create()
         );
@@ -151,6 +151,12 @@ public abstract class GamemodeRunner implements Listener {
         endActions.get(false).forEach(Runnable::run);
         if(!stopped)
             spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
+        Consumer<Player> message = player ->
+                sendBaseComponent(
+                        new ComponentBuilder(String.format("%s on %s has ended.", getGamemode(), mapName)).create(), player);
+        spectator.getMembers().forEach(message);
+        players.forEach(message);
+
         Supplier<GamemodeRunner> nextGame = pvpPlugin.getGameQueue().poll();
         if(nextGame != null)
             pvpPlugin.setActiveGame(nextGame.get());
