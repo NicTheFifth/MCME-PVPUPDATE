@@ -12,9 +12,10 @@ PVP Plugin version 2
 * Free for All runner
 
 ## To be fixed
+* Disallow removal of armour and/or banner
+* Capture the Flag, banner click
 
 ## Implemented
-* Disallow removal of armour and/or banner
 * JSON structure
 * Mechanism for doing private games
 * Whitelist
