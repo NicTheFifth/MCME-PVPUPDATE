@@ -160,12 +160,15 @@ public abstract class GamemodeRunner implements Listener {
         Supplier<GamemodeRunner> nextGame = pvpPlugin.getGameQueue().poll();
         if(nextGame != null)
             pvpPlugin.setActiveGame(nextGame.get());
+        else
+            pvpPlugin.setActiveGame(null);
     }
     protected abstract void initEndActions();
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Joining">
     protected Map<Predicate<Player>, BaseComponent[]> joinConditions =
         new HashMap<>();
+
     public boolean canJoin(Player player){
         List<BaseComponent[]> rejectedMessages =
             joinConditions.entrySet().stream()
@@ -177,11 +180,15 @@ public abstract class GamemodeRunner implements Listener {
             player));
         return false;
     }
+
     protected abstract void initJoinConditions();
+
     protected List<Consumer<Player>> joinActions = new ArrayList<>();
+
     public void Join(Player player){
         joinActions.forEach(joinAction -> joinAction.accept(player));
     }
+
     protected abstract void initJoinActions();
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Leave">
@@ -205,12 +212,14 @@ public abstract class GamemodeRunner implements Listener {
     public String getMapName() {
         return mapName;
     }
+
     public abstract String getGamemode();
 
     protected abstract class GamemodeListener implements Listener {
         HashMap<UUID, Long> playerAreaLeaveTimer = new HashMap<>();
         protected List<Consumer<PlayerDeathEvent>> onPlayerDeathActions =
             new ArrayList<>();
+
         @EventHandler
         public void onPlayerDeath(PlayerDeathEvent e){
             Player player = e.getEntity();
@@ -222,7 +231,9 @@ public abstract class GamemodeRunner implements Listener {
                 PlayerStatEditor.addKill(killer);
             onPlayerDeathActions.forEach(action -> action.accept(e));
         }
+
         protected abstract void initOnPlayerDeathActions();
+
         @EventHandler
         public void onPlayerLeave(PlayerQuitEvent e){
             Player player = e.getPlayer();
@@ -232,6 +243,7 @@ public abstract class GamemodeRunner implements Listener {
             player.teleport(PVPPlugin.getInstance().getSpawn());
             leaveGame(player, true);
         }
+
         @EventHandler
         public void onPlayerMove(PlayerMoveEvent e){
             Location from = e.getFrom();
@@ -262,6 +274,7 @@ public abstract class GamemodeRunner implements Listener {
                 }
             }
         }
+
         @EventHandler
         public void onInventoryClick(InventoryClickEvent e){
             Player player = (Player) e.getWhoClicked();
@@ -270,6 +283,7 @@ public abstract class GamemodeRunner implements Listener {
             if(e.getSlotType() == InventoryType.SlotType.ARMOR)
                 e.setCancelled(true);
         }
+
         @EventHandler
         public void returnDroppedItems(PlayerDropItemEvent e){
             Player player = e.getPlayer();
