@@ -152,7 +152,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
                 timeLimit--;
                 ScoreboardEditor.UpdateTimeDeathRun(scoreboard, timeLimit);
             }
-        }.runTaskTimer(PVPPlugin.getInstance(),5000,20));
+        }.runTaskTimer(PVPPlugin.getInstance(),100,20));
     }
 
     private void initWithRandomDeath() {
