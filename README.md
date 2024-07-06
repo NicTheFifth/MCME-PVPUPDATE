@@ -1,7 +1,7 @@
 PVP Plugin version 2
 ===========
 ## To be Implemented
-* Message for overtime
+* Message for overtime (CTF)
 
 ## To be tested
 * Death Run runner
