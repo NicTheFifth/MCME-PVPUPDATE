@@ -133,7 +133,7 @@ public class FreeForAllRunner extends GamemodeRunner {
         }
         ChatColor color = FFAplayers.getOrDefault(player, GenerateNewPlayer(player)).getChatColor();
         KitOutPlayer(player);
-        player.setGameMode(GameMode.ADVENTURE);
+        player.setGameMode(GameMode.SURVIVAL);
         TeamHandler.spawn(player, spawns);
 
         BaseComponent[] joinMessage = new ComponentBuilder(player.getDisplayName() + " has joined the game!")

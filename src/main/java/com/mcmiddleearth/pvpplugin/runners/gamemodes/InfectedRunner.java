@@ -78,7 +78,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         survivors.setPrefix("Survivor");
         survivors.setTeamColour(Color.BLUE);
         survivors.setChatColor(ChatColor.BLUE);
-        survivors.setGameMode(GameMode.ADVENTURE);
+        survivors.setGameMode(GameMode.SURVIVAL);
         survivors.setKit(createSurvivorKit());
         survivors.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(survivorSpawn)));
 
@@ -101,7 +101,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         infected.setPrefix("Infected");
         infected.setTeamColour(Color.RED);
         infected.setChatColor(ChatColor.RED);
-        infected.setGameMode(GameMode.ADVENTURE);
+        infected.setGameMode(GameMode.SURVIVAL);
         //TODO: Fix the infected kit to be slightly stronger
         infected.setKit(new Kit(createInfectedKit(Color.RED)));
         infected.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(infectedSpawn)));

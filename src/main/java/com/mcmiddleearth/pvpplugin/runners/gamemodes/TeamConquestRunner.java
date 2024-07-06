@@ -88,7 +88,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         blueTeam.setPrefix("Blue");
         blueTeam.setTeamColour(Color.BLUE);
         blueTeam.setChatColor(ChatColor.BLUE);
-        blueTeam.setGameMode(GameMode.ADVENTURE);
+        blueTeam.setGameMode(GameMode.SURVIVAL);
         blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(jsonTeamConquest.getBlueSpawn())));
     }
@@ -97,7 +97,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         redTeam.setPrefix("Red");
         redTeam.setChatColor(ChatColor.RED);
         redTeam.setTeamColour(Color.RED);
-        redTeam.setGameMode(GameMode.ADVENTURE);
+        redTeam.setGameMode(GameMode.SURVIVAL);
         redTeam.setKit(createKit(Color.RED));
         redTeam.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(jsonTeamConquest.getRedSpawn())));
 

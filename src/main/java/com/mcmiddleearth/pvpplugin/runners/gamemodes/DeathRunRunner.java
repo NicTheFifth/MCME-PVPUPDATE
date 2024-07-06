@@ -89,7 +89,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         runner.setPrefix("Runner");
         runner.setTeamColour(Color.BLUE);
         runner.setChatColor(ChatColor.BLUE);
-        runner.setGameMode(GameMode.ADVENTURE);
+        runner.setGameMode(GameMode.SURVIVAL);
         runner.setKit(new Kit(player -> {
             PlayerInventory returnInventory = player.getInventory();
             returnInventory.clear();}));
@@ -100,7 +100,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         death.setPrefix("Death");
         death.setTeamColour(Color.BLACK);
         death.setChatColor(ChatColor.BLACK);
-        death.setGameMode(GameMode.ADVENTURE);
+        death.setGameMode(GameMode.SURVIVAL);
         death.setKit(DeathKit());
         death.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(deathSpawn)));
     }

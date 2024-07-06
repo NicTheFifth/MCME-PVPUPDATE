@@ -71,7 +71,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(
             List.of(LocationTranscriber.TranscribeFromJSON(blueSpawn)));
-        blueTeam.setGameMode(GameMode.ADVENTURE);
+        blueTeam.setGameMode(GameMode.SURVIVAL);
     }
 
     private void initTeamRed(JSONLocation redSpawn){
@@ -81,7 +81,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         redTeam.setKit(createKit(Color.RED));
         redTeam.setSpawnLocations(
             List.of(LocationTranscriber.TranscribeFromJSON(redSpawn)));
-        redTeam.setGameMode(GameMode.ADVENTURE);
+        redTeam.setGameMode(GameMode.SURVIVAL);
     }
 
     private @NotNull Kit createKit(Color color){

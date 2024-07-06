@@ -94,7 +94,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(jsonCaptureTheFlag.getBlueSpawns().stream()
                 .map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
-        blueTeam.setGameMode(GameMode.ADVENTURE);
+        blueTeam.setGameMode(GameMode.SURVIVAL);
         blueTeam.setFlag(LocationTranscriber.TranscribeFromJSON(jsonCaptureTheFlag.getBlueFlag()).add(0,1,0));
         blueTeam.setFlagMaterial(Material.BLUE_BANNER);
     }
@@ -106,7 +106,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         redTeam.setKit(createKit(Color.RED));
         redTeam.setSpawnLocations(jsonCaptureTheFlag.getRedSpawns().stream()
                 .map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
-        redTeam.setGameMode(GameMode.ADVENTURE);
+        redTeam.setGameMode(GameMode.SURVIVAL);
         redTeam.setFlag(LocationTranscriber.TranscribeFromJSON(jsonCaptureTheFlag.getRedFlag()).add(0,1,0));
         redTeam.setFlagMaterial(Material.RED_BANNER);
     }
@@ -194,7 +194,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 timeLimit--;
                 ScoreboardEditor.UpdateTimeCaptureTheFlag(scoreboard, timeLimit);
             }
-        }.runTaskTimer(PVPPlugin.getInstance(),5000,20));
+        }.runTaskTimer(PVPPlugin.getInstance(),100,20));
     }
 
     //<editor-fold defaultstate="collapsed" desc="End conditions">

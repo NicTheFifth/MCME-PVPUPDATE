@@ -143,7 +143,7 @@ public abstract class GamemodeRunner implements Listener {
         players.forEach(player -> {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
-            player.setGameMode(GameMode.ADVENTURE);
+            player.setGameMode(GameMode.SURVIVAL);
             //player.teleport(pvpPlugin.getSpawn());
         });
         scoreboard.getObjectives().forEach(Objective::unregister);
@@ -239,7 +239,7 @@ public abstract class GamemodeRunner implements Listener {
             Player player = e.getPlayer();
             spectator.getMembers().remove(player);
             player.getInventory().clear();
-            player.setGameMode(GameMode.ADVENTURE);
+            player.setGameMode(GameMode.SURVIVAL);
             player.teleport(PVPPlugin.getInstance().getSpawn());
             leaveGame(player, true);
         }

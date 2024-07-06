@@ -78,7 +78,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
             teamSlayer.getRedSpawns()
                 .stream().map(LocationTranscriber::TranscribeFromJSON)
                 .collect(Collectors.toList()));
-        redTeam.setGameMode(GameMode.ADVENTURE);
+        redTeam.setGameMode(GameMode.SURVIVAL);
     }
     public void initBlueTeam(@NotNull JSONTeamSlayer teamSlayer){
         blueTeam.setPrefix("Blue");
@@ -89,7 +89,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
             teamSlayer.getBlueSpawns()
                 .stream().map(LocationTranscriber::TranscribeFromJSON)
                 .collect(Collectors.toList()));
-        blueTeam.setGameMode(GameMode.ADVENTURE);
+        blueTeam.setGameMode(GameMode.SURVIVAL);
     }
     private @NotNull Kit createKit(Color color){
         Consumer<Player> invFunc = (x -> {

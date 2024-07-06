@@ -81,7 +81,7 @@ public class RingBearerRunner extends GamemodeRunner {
         blueTeam.setRingBearerKit(createKit(Color.BLUE, true));
         blueTeam.setSpawnLocations(
                 blueSpawns.stream().map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
-        blueTeam.setGameMode(GameMode.ADVENTURE);
+        blueTeam.setGameMode(GameMode.SURVIVAL);
     }
 
     private void initRed(List<JSONLocation> redSpawns) {
@@ -92,7 +92,7 @@ public class RingBearerRunner extends GamemodeRunner {
         redTeam.setRingBearerKit(createKit(Color.RED, true));
         redTeam.setSpawnLocations(
                 redSpawns.stream().map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
-        redTeam.setGameMode(GameMode.ADVENTURE);
+        redTeam.setGameMode(GameMode.SURVIVAL);
     }
 
     private Kit createKit(Color color, boolean isRingbearer) {

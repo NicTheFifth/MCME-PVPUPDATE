@@ -119,7 +119,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
         ChatColor color = OITQplayers.getOrDefault(player, GenerateNewPlayer(player)).getChatColor();
         KitOutPlayer(player);
-        player.setGameMode(GameMode.ADVENTURE);
+        player.setGameMode(GameMode.SURVIVAL);
         TeamHandler.spawn(player, spawns);
 
         BaseComponent[] joinMessage = new ComponentBuilder(player.getDisplayName() + " has joined the game!")
