@@ -14,7 +14,6 @@ PVP Plugin version 2
 
 ## To be fixed
 * Disallow removal of armour and/or banner
-* Capture the Flag, banner click
 
 ## Implemented
 * JSON structure

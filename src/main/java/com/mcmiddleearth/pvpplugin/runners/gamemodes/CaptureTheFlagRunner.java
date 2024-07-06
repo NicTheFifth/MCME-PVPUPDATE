@@ -397,18 +397,19 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         public CTFListener(){
             initOnPlayerDeathActions();
         }
-
         @Override
         protected void initOnPlayerDeathActions() {
             onPlayerDeathActions.add(e -> {
                 Player player = e.getEntity();
-                if(Objects.equals(player.getInventory().getHelmet(), new ItemStack(blueTeam.getFlagMaterial()))) {
+                if(player.getInventory().getHelmet() == null)
+                    return;
+                if(Objects.equals(player.getInventory().getHelmet().getType(), blueTeam.getFlagMaterial())) {
                     players.forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Red team has dropped blue's flag.").create(), playerOther));
                     spectator.getMembers().forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Red team has dropped blue's flag.").create(), playerOther));
                     blueTeam.getFlag().getBlock().setType(blueTeam.getFlagMaterial());
                     redTeam.getKit().getInventory().accept(player);
                 }
-                if(Objects.equals(player.getInventory().getHelmet(), new ItemStack(redTeam.getFlagMaterial()))) {
+                if(Objects.equals(player.getInventory().getHelmet().getType(), redTeam.getFlagMaterial())) {
                     players.forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Blue team has dropped red's flag.").create(), playerOther));
                     spectator.getMembers().forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Blue team has dropped red's flag.").create(), playerOther));
                     redTeam.getFlag().getBlock().setType(redTeam.getFlagMaterial());
@@ -438,7 +439,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 return;
             if(!players.contains(player))
                 return;
-            if(block.getLocation() != redTeam.getFlag() || block.getLocation() != blueTeam.getFlag())
+            if(!block.getLocation().equals(redTeam.getFlag()) && !block.getLocation().equals(blueTeam.getFlag()))
                 return;
             if(redTeam.getMembers().contains(player) && Objects.equals(block.getType(), blueTeam.getFlagMaterial())){
                 player.getInventory().setHelmet(new ItemStack(blueTeam.getFlagMaterial()));
@@ -465,7 +466,9 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 return;
             if(e.getTo() == null)
                 return;
-            if(Objects.equals(player.getInventory().getHelmet(), new ItemStack(blueTeam.getFlagMaterial()))){
+            if(player.getInventory().getHelmet() == null)
+                return;
+            if(Objects.equals(player.getInventory().getHelmet().getType(), blueTeam.getFlagMaterial())){
                 if(redTeam.getFlag().distance(e.getTo()) <= 5){
                     redTeam.addPoint();
                     redTeam.getKit().getInventory().accept(player);
@@ -477,10 +480,12 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                     spectator.getMembers().forEach(message);
                     if(suddenDeath.get()){
                         end(false);
+                        return;
                     }
+                    redTeam.getFlag().getBlock().setType(redTeam.getFlagMaterial());
                 }
             }
-            if(Objects.equals(player.getInventory().getHelmet(), new ItemStack(redTeam.getFlagMaterial()))){
+            if(Objects.equals(player.getInventory().getHelmet().getType(), blueTeam.getFlagMaterial())){
                 if(blueTeam.getFlag().distance(e.getTo()) <= 5){
                     blueTeam.addPoint();
                     blueTeam.getKit().getInventory().accept(player);
@@ -492,7 +497,9 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                     spectator.getMembers().forEach(message);
                     if(suddenDeath.get()){
                         end(false);
+                        return;
                     }
+                    blueTeam.getFlag().getBlock().setType(blueTeam.getFlagMaterial());
                 }
             }
             ScoreboardEditor.UpdatePointsCaptureTheFlag(scoreboard, blueTeam, redTeam);
