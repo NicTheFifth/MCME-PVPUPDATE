@@ -255,7 +255,7 @@ public abstract class GamemodeRunner implements Listener {
             if(gameState == State.QUEUED || to == null)
                 return;
             if(gameState == State.COUNTDOWN &&
-                    !spectator.getMembers().contains(e.getPlayer()) &&
+                    players.contains(e.getPlayer()) &&
                     (from.getX() != to.getX() || from.getZ() != to.getZ())) {
                 e.setCancelled(true);
                 return;
