@@ -167,14 +167,16 @@ public class RingBearerRunner extends GamemodeRunner {
                 }
                 Player redBearer = redTeam.getRingBearer();
                 Player blueBearer = blueTeam.getRingBearer();
-                if(!redBearer.hasPotionEffect(PotionEffectType.INVISIBILITY) ||
-                        redBearer.getInventory().contains(Material.GOLD_NUGGET, 10))
+                if(redBearer != null &&
+                   !redBearer.hasPotionEffect(PotionEffectType.INVISIBILITY) &&
+                   !redBearer.getInventory().contains(Material.GOLD_NUGGET, 10))
                     redBearer.getInventory().addItem(new ItemStack(Material.GOLD_NUGGET));
-                if(!blueBearer.hasPotionEffect(PotionEffectType.INVISIBILITY) ||
-                        blueBearer.getInventory().contains(Material.GOLD_NUGGET, 10))
+                if(blueBearer != null &&
+                   !blueBearer.hasPotionEffect(PotionEffectType.INVISIBILITY) &&
+                   !blueBearer.getInventory().contains(Material.GOLD_NUGGET, 10))
                     blueBearer.getInventory().addItem(new ItemStack(Material.GOLD_NUGGET));
             }
-        }.runTaskTimer(PVPPlugin.getInstance(),100, 20L * timeSecBetweenRingUp));
+        }.runTaskTimer(PVPPlugin.getInstance(), 20L *(countDownTimer + timeSecBetweenRingUp), 20L * timeSecBetweenRingUp));
     }
 
     @Override
@@ -460,12 +462,14 @@ public class RingBearerRunner extends GamemodeRunner {
             Player player = e.getPlayer();
             if(!players.contains(player))
                 return;
+            if(!player.getInventory().getItemInMainHand().getType().equals(Material.GOLD_NUGGET))
+                return;
             if(player.getInventory().contains(Material.GOLD_NUGGET, 10)){
                 player.getInventory().remove(Material.GOLD_NUGGET);
                 player.addPotionEffect(
-                        new PotionEffect(PotionEffectType.BLINDNESS, 500, 0, true, false));
+                        new PotionEffect(PotionEffectType.BLINDNESS, 200, 0, true, false));
                 player.addPotionEffect(
-                        new PotionEffect(PotionEffectType.INVISIBILITY, 500, 0, true, false));
+                        new PotionEffect(PotionEffectType.INVISIBILITY, 200, 0, true, false));
                 ItemStack empty = new ItemStack(Material.AIR);
                 player.getInventory().setItemInOffHand(empty);
                 player.getInventory().setHelmet(empty);
