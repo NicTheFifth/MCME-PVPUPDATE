@@ -509,7 +509,7 @@ public class RingBearerRunner extends GamemodeRunner {
             return aliveMembers.size();
         }
         public boolean hasAliveMembers(){
-            return AliveMembers() == 0;
+            return AliveMembers() != 0;
         }
 
         public Set<Player> getDeadMembers(){return deadMembers;}
