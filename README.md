@@ -37,6 +37,7 @@ PVP Plugin version 2
 * Toggle Auto-Join
 * Teleport to spawns (editor)
 * Game queue
+* Variable editing for gamemode runners with variables
 
 ## V.1.5
 * Add Snowball Fight
@@ -44,11 +45,12 @@ PVP Plugin version 2
 * Add random offset for OITQ colours
 * Custom criteria for scoreboard
 * FBT tag whilst in lobby
-* Variable editing for gamemode runners with variables
 * Use get block for coordinates of spawns
+* Spawn incrementing
 
 ## V2
 * Juggernaut
+* King of the Hill
 * Kit implementation
 * Look at a team rework
 * Functionality to assign team before game start
