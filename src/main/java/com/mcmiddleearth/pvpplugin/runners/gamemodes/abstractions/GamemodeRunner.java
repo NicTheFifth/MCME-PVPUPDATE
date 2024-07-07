@@ -140,6 +140,7 @@ public abstract class GamemodeRunner implements Listener {
         PlayerDeathEvent.getHandlerList().unregister(eventListener);
         PlayerQuitEvent.getHandlerList().unregister(eventListener);
         PlayerMoveEvent.getHandlerList().unregister(eventListener);
+        PlayerDropItemEvent.getHandlerList().unregister(eventListener);
         players.forEach(player -> {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
