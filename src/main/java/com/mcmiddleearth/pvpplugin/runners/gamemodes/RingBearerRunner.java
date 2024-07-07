@@ -234,7 +234,7 @@ public class RingBearerRunner extends GamemodeRunner {
     @Override
     protected void initJoinConditions() {
         joinConditions.put(((player) ->
-                        redTeam.AliveMembers() >= 3 && blueTeam.AliveMembers() >= 3),
+                        gameState == State.QUEUED || (redTeam.AliveMembers() >= 3 && blueTeam.AliveMembers() >= 3)),
                 new ComponentBuilder("The game is close to over, you cannot join.")
                         .color(Style.INFO)
                         .create());
