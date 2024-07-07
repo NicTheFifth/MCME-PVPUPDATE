@@ -161,6 +161,10 @@ public class RingBearerRunner extends GamemodeRunner {
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
+                if(gameState == State.ENDED) {
+                    this.cancel();
+                    return;
+                }
                 Player redBearer = redTeam.getRingBearer();
                 Player blueBearer = blueTeam.getRingBearer();
                 if(!redBearer.hasPotionEffect(PotionEffectType.INVISIBILITY) ||
@@ -170,7 +174,7 @@ public class RingBearerRunner extends GamemodeRunner {
                         blueBearer.getInventory().contains(Material.GOLD_NUGGET, 10))
                     blueBearer.getInventory().addItem(new ItemStack(Material.GOLD_NUGGET));
             }
-        }.runTaskTimer(PVPPlugin.getInstance(),5000, 20L * timeSecBetweenRingUp));
+        }.runTaskTimer(PVPPlugin.getInstance(),100, 20L * timeSecBetweenRingUp));
     }
 
     @Override
@@ -399,7 +403,6 @@ public class RingBearerRunner extends GamemodeRunner {
                 if(redTeam.getMembers().contains(player)){
                     if(redTeam.isRingBearerDead()) {
                         redTeam.getDeadMembers().add(player);
-
                     }
                     if(redTeam.getRingBearer() == player){
                         redTeam.killRingbearer();
@@ -421,7 +424,10 @@ public class RingBearerRunner extends GamemodeRunner {
                         spectator.getMembers().forEach(spectator -> sendBaseComponent(message, spectator));
                     }
                 }
-                ScoreboardEditor.UpdateRingBearer(scoreboard, redTeam,blueTeam);
+                ScoreboardEditor.UpdateRingBearer(scoreboard, redTeam, blueTeam);
+                if(blueTeam.hasAliveMembers() && redTeam.hasAliveMembers())
+                    return;
+                end(false);
             });
         }
 
@@ -432,6 +438,7 @@ public class RingBearerRunner extends GamemodeRunner {
                 return;
             if(blueTeam.getMembers().contains(player)){
                 if(blueTeam.getDeadMembers().contains(player)){
+                    player.setGameMode(spectator.getGameMode());
                     TeamHandler.respawn(e, spectator);
                     return;
                 }
@@ -440,6 +447,7 @@ public class RingBearerRunner extends GamemodeRunner {
                 return;
             }
             if(redTeam.getDeadMembers().contains(player)){
+                player.setGameMode(spectator.getGameMode());
                 TeamHandler.respawn(e, spectator);
                 return;
             }
@@ -483,6 +491,7 @@ public class RingBearerRunner extends GamemodeRunner {
             sendBaseComponent(new ComponentBuilder("You've turned visible again!").create(), player);
         }
     }
+
     public static class RBTeam extends Team {
         Player ringBearer;
         Kit ringBearerKit;

@@ -20,8 +20,6 @@ PVP Plugin version 2
 * FFA scoreboard
 * OITQ scoreboard
 * OITQ death listener
-* RB kill and end
-* RB events unregistering
 * TQ point reset
 * TDM kill and end
 * Inconsistent armour removal events
