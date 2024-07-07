@@ -2,6 +2,7 @@ PVP Plugin version 2
 ===========
 ## To be Implemented
 * Message for overtime (CTF)
+* Team Conquest -> RedBlueSpawnlist
 
 ## To be tested
 * Death Run runner
@@ -14,6 +15,16 @@ PVP Plugin version 2
 
 ## To be fixed
 * Disallow removal of armour and/or banner
+* Deathrun start issue
+* DR beacon removal?
+* FFA scoreboard
+* OITQ scoreboard
+* OITQ death listener
+* RB kill and end
+* RB events unregistering
+* TQ point reset
+* TDM kill and end
+* Inconsistent armour removal events
 
 ## Implemented
 * JSON structure
