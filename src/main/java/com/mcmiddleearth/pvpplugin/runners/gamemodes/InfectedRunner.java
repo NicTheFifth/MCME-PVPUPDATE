@@ -140,8 +140,10 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
     //<editor-fold defaultstate="collapsed" desc="Start Actions">
     @Override
     protected void initStartActions() {
-        startActions.add(this::initWithRandomInfected);
-        startActions.add(() -> players.forEach(player -> JoinInfected(player, true)));
+        startActions.add(() -> {
+            initWithRandomInfected();
+            players.forEach(player -> JoinInfected(player, true));
+        });
         startActions.add(()-> ScoreboardEditor.InitInfected(scoreboard, timeLimit, infected, survivors));
         startActions.add(() -> new BukkitRunnable() {
             @Override
