@@ -162,7 +162,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
             return;
         Player player;
         do {
-            int randomInfectedIndex = ThreadLocalRandom.current().nextInt(0, players.size() + 1);
+            int randomInfectedIndex = ThreadLocalRandom.current().nextInt(players.size());
             player = (Player) players.toArray()[randomInfectedIndex];
         } while (runner.getMembers().contains(player));
         death.getMembers().add(player);
