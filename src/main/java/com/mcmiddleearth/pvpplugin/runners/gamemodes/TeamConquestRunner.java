@@ -387,7 +387,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                 return;
             e.setUseInteractedBlock(Event.Result.DENY);
             Location capturePoint = e.getClickedBlock().getLocation();
-            Location keyPoint = capturePoint;
+            Location keyPoint = capturePoint.clone();
             int oldPointValue = capturePointsProgress.get(capturePoint);
             int newPointValue= oldPointValue;
             if(redTeam.getMembers().contains(p))
