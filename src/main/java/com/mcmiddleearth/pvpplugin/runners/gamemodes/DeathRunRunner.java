@@ -367,7 +367,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
             if(e.getClickedBlock().getType() != Material.BEACON)
                 return;
             Block possibleGoal = e.getClickedBlock();
-            if(possibleGoal != goal.getBlock())
+            if(!possibleGoal.equals(goal.getBlock()))
                 return;
             runner.getOnlineMembers().remove(player);
             runner.getFinished().add(player);
