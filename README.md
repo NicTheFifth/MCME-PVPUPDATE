@@ -15,13 +15,12 @@ PVP Plugin version 2
 
 ## To be fixed
 * Disallow removal of armour and/or banner
-* Deathrun start issue
-* DR beacon removal?
 * FFA scoreboard
 * OITQ scoreboard
 * OITQ death listener
 * TQ point reset
 * TDM kill and end
+* DR Beacon listener
 * Inconsistent armour removal events
 
 ## Implemented

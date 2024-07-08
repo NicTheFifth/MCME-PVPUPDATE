@@ -345,7 +345,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
             Player player = e.getPlayer();
             if(!players.contains(player))
                 return;
-            if(!runner.getOnlineMembers().contains(player) || !death.getOnlineMembers().contains(player))
+            if(spectator.getMembers().contains(player))
                 return;
             if(e.getTo() != null && e.getTo().getBlockY() <=killHeight)
                 player.setHealth(0);
