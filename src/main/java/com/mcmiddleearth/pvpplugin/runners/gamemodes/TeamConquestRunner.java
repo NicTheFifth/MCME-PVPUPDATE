@@ -387,6 +387,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                 return;
             e.setUseInteractedBlock(Event.Result.DENY);
             Location capturePoint = e.getClickedBlock().getLocation();
+            Location keyPoint = capturePoint;
             int oldPointValue = capturePointsProgress.get(capturePoint);
             int newPointValue= oldPointValue;
             if(redTeam.getMembers().contains(p))
@@ -397,15 +398,15 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                 return;
             switch(newPointValue){
                 case 0:
-                    //TODO: If not claimed, don't remove controlled point
-                    capturePoint.add(0,1,0).getBlock().setType(Material.AIR);
-                    if(oldPointValue < 0)
-                        blueTeam.removeControlledPoint();
-                    else
-                        redTeam.removeControlledPoint();
+                    if(capturePoint.add(0,1,0).getBlock().getType() != Material.AIR) {
+                        if (oldPointValue < 0)
+                            blueTeam.removeControlledPoint();
+                        else
+                            redTeam.removeControlledPoint();
+                    }
+                    capturePoint.getBlock().setType(Material.AIR);
                     sendBaseComponent(new ComponentBuilder("Point is neutral!").color(ChatColor.GRAY).create(),p);
                     break;
-
                 case 50:
                     redTeam.addControlledPoint();
                     capturePoint.add(0,1,0).getBlock().setType(Material.RED_STAINED_GLASS);
@@ -436,7 +437,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                     break;
             }
             sendBaseComponent(new ComponentBuilder(String.format("Point is now at %d!", newPointValue)).color(ChatColor.GRAY).create(),p);
-            capturePointsProgress.put(capturePoint, newPointValue);
+            capturePointsProgress.put(keyPoint, newPointValue);
         }
     }
 
