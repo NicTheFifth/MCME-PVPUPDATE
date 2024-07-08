@@ -24,6 +24,7 @@ import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -366,8 +367,8 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
             if(e.getClickedBlock().getType() != Material.BEACON)
                 return;
             e.setUseInteractedBlock(Event.Result.DENY);
-            Location possibleGoal = e.getClickedBlock().getLocation();
-            if(possibleGoal != goal)
+            Block possibleGoal = e.getClickedBlock();
+            if(possibleGoal != goal.getBlock())
                 return;
             runner.getOnlineMembers().remove(player);
             runner.getFinished().add(player);
