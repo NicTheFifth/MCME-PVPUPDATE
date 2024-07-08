@@ -133,8 +133,10 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
 
     @Override
     protected void initStartActions() {
-        startActions.add(this::initWithRandomDeath);
-        startActions.add(() -> players.forEach(player -> JoinDeathRun(player, true)));
+        startActions.add(() -> players.forEach(player -> {
+            initWithRandomDeath();
+            JoinDeathRun(player, true);
+        }));
         startActions.add(()-> ScoreboardEditor.InitDeathRun(scoreboard, timeLimit, runner));
         startActions.add(() -> new BukkitRunnable() {
             @Override
@@ -158,11 +160,11 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
     private void initWithRandomDeath() {
         if (!death.getOnlineMembers().isEmpty())
             return;
-        Player player = null;
-        while (runner.getOnlineMembers().contains(player)) {
+        Player player;
+        do {
             int randomInfectedIndex = ThreadLocalRandom.current().nextInt(0, players.size() + 1);
             player = (Player) players.toArray()[randomInfectedIndex];
-        }
+        } while (runner.getMembers().contains(player));
         death.getMembers().add(player);
     }
 
@@ -192,12 +194,22 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
                     players.forEach(message);
                     spectator.getMembers().forEach(message);
                 }});
+        endActions.get(false).add(() -> {
+            PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            PlayerInteractEvent.getHandlerList().unregister(eventListener);
+            goal.getBlock().setType(Material.AIR);
+        });
+        endActions.get(true).add(() -> {
+            PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            PlayerInteractEvent.getHandlerList().unregister(eventListener);
+            goal.getBlock().setType(Material.AIR);
+        });
     }
 
     @Override
     protected void initJoinConditions() {
         joinConditions.put((player ->
-                        timeLimit <=60),
+                        gameState == State.QUEUED || timeLimit <= 60),
                 new ComponentBuilder("The game is close to over, you cannot join.")
                         .color(Style.INFO)
                         .create());
