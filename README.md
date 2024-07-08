@@ -52,6 +52,6 @@ PVP Plugin version 2
 * Juggernaut
 * King of the Hill
 * Kit implementation
-* Look at a team rework
+* Look at a team rework (using Team)
 * Functionality to assign team before game start
 * BossBar implementation to keep track of ingame stats
