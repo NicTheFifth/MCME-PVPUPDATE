@@ -324,8 +324,10 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
                 Player player = e.getEntity();
                 if(runner.getOnlineMembers().remove(player)) {
                     runner.getDeadMembers().add(player);
-                    if(runner.getOnlineMembers().isEmpty())
+                    if(runner.getOnlineMembers().isEmpty()) {
                         end(false);
+                        return;
+                    }
                     ScoreboardEditor.UpdateRunnersDeathRun(scoreboard, runner);
                 }
             });
