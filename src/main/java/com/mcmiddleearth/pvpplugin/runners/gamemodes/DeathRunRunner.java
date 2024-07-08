@@ -108,6 +108,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
     private Kit DeathKit(){
         Consumer<Player> invFunc = (player -> {
             PlayerInventory returnInventory = player.getInventory();
+            returnInventory.clear();
             returnInventory.setHelmet(new ItemStack(Material.WITHER_SKELETON_SKULL));
             ItemStack bow = new ItemStack(Material.BOW);
             bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
@@ -151,6 +152,10 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
                     this.cancel();
                     return;
                 }
+                if (gameState == State.ENDED){
+                    this.cancel();
+                    return;
+                }
                 timeLimit--;
                 ScoreboardEditor.UpdateTimeDeathRun(scoreboard, timeLimit);
             }
@@ -176,11 +181,11 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
                     runner.getMembers().forEach(PlayerStatEditor::addLost);
                     players.forEach(player ->
                             sendBaseComponent(
-                                    new ComponentBuilder("Death Won!!!").color(ChatColor.MAGIC)
+                                    new ComponentBuilder("Death Won!!!")
                                             .create(), player));
                     spectator.getMembers().forEach(player ->
                             sendBaseComponent(
-                                    new ComponentBuilder("Death Won!!!").color(ChatColor.MAGIC)
+                                    new ComponentBuilder("Death Won!!!")
                                             .create(), player));
                 } else{
                     runner.getFinished().forEach(PlayerStatEditor::addWon);
@@ -336,7 +341,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         }
 
         @EventHandler
-        public void onPlayerMove(PlayerMoveEvent e){
+        public void onPlayerMoveDR(PlayerMoveEvent e){
             Player player = e.getPlayer();
             if(!players.contains(player))
                 return;

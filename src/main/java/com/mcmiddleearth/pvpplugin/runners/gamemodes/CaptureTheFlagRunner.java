@@ -458,7 +458,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         }
 
         @EventHandler
-        public void onPlayerMove(PlayerMoveEvent e){
+        public void onPlayerMoveCTF(PlayerMoveEvent e){
             Player player = e.getPlayer();
             if(gameState != State.RUNNING )
                 return;
