@@ -19,6 +19,7 @@ PVP Plugin version 2
 * OITQ scoreboard
 * OITQ death listener
 * TDM kill and end
+* TC listener initialisation
 * Inconsistent armour removal events
 
 ## Implemented
