@@ -15,8 +15,6 @@ PVP Plugin version 2
 
 ## To be fixed
 * Disallow removal of armour and/or banner
-* FFA scoreboard
-* OITQ scoreboard
 * OITQ death listener
 * TDM kill and end
 * TC listener initialisation
