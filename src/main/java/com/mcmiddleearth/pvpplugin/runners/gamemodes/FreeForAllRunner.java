@@ -94,18 +94,20 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
     @Override
     protected void initEndActions() {
         endActions.get(false).add(() -> {
-            Player winningPlayer = FFAplayers.entrySet().stream()
+            int maxKills = FFAplayers.entrySet().stream()
                     .filter(entry -> players.contains(entry.getKey()))
                     .max(Map.Entry.comparingByValue(Comparator.comparingInt(PlayerTeam::getKills)))
-                    .map(Map.Entry::getKey).orElse(null);
+                    .map(entry -> entry.getValue().getKills()).orElse(0);
+            List<Player> winningPlayers = FFAplayers.entrySet().stream()
+                    .filter(entry -> players.contains(entry.getKey()) && entry.getValue().getKills() == maxKills)
+                    .map(Map.Entry::getKey).collect(Collectors.toList());
             players.forEach(player -> {
-                if (player == winningPlayer) {
+                if (winningPlayers.contains(player)) {
                     PlayerStatEditor.addWon(player);
                 } else {
                     PlayerStatEditor.addLost(player);
                 }
-                sendBaseComponent(new ComponentBuilder(winningPlayer.getName() + " has won!")
-                                .color(FFAplayers.get(winningPlayer).chatColor.asBungee()).create(),
+                sendBaseComponent(new ComponentBuilder(winningPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) + " has won!").create(),
                         player);
             });
         });

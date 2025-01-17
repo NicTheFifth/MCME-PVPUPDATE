@@ -6,15 +6,13 @@ PVP Plugin version 2
 * Team Conquest -> RedBlueSpawnlist
 
 ## To be tested
-* Death Run runner
-* Free for All runner
 * Infected runner
 * One in the Quiver runner
 * Ringbearer runner
 * Team Conquest runner
 
 ## To be fixed
-* 
+* Infected (assignment of players)
 
 ## Implemented
 * JSON structure
