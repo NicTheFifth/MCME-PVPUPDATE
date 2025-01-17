@@ -1,23 +1,23 @@
 PVP Plugin version 2
 ===========
+## To-Do
+* Add correct chat colours
+
 ## To be Implemented
-* Message for overtime (CTF)
+* Chat
 * Team Conquest -> RedBlueSpawnlist
 
 ## To be tested
+* Capture the Flag runner
 * Death Run runner
 * Team Conquest runner
 * Infected runner
 * One in the Quiver runner
 * Ringbearer runner
-* Capture the Flag runner
 * Free for All runner
 
 ## To be fixed
-* Disallow removal of armour and/or banner
-* TDM kill and end
-* TC listener initialisation
-* Inconsistent armour removal events
+* 
 
 ## Implemented
 * JSON structure

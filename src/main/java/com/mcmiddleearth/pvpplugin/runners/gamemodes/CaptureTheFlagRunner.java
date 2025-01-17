@@ -184,6 +184,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 if (timeLimit == 0) {
                     if(redTeam.getPoints() == blueTeam.getPoints()){
                         suddenDeath.getAndSet(true);
+                        players.forEach (player -> sendBaseComponent(new ComponentBuilder("Sudden death, the next to score wins!!!").create(), player));
                     } else {
                         end(false);
                         gameState = State.ENDED;
@@ -479,13 +480,14 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                     players.forEach(message);
                     spectator.getMembers().forEach(message);
                     if(suddenDeath.get()){
+                        redTeam.WinSuddenDeath(scoreGoal);
                         end(false);
                         return;
                     }
-                    redTeam.getFlag().getBlock().setType(redTeam.getFlagMaterial());
+                    blueTeam.getFlag().getBlock().setType(blueTeam.getFlagMaterial());
                 }
             }
-            if(Objects.equals(player.getInventory().getHelmet().getType(), blueTeam.getFlagMaterial())){
+            if(Objects.equals(player.getInventory().getHelmet().getType(), redTeam.getFlagMaterial())){
                 if(blueTeam.getFlag().distance(e.getTo()) <= 5){
                     blueTeam.addPoint();
                     blueTeam.getKit().getInventory().accept(player);
@@ -496,11 +498,16 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                     players.forEach(message);
                     spectator.getMembers().forEach(message);
                     if(suddenDeath.get()){
+                        blueTeam.WinSuddenDeath(scoreGoal);
                         end(false);
                         return;
                     }
-                    blueTeam.getFlag().getBlock().setType(blueTeam.getFlagMaterial());
+                    redTeam.getFlag().getBlock().setType(redTeam.getFlagMaterial());
                 }
+            }
+            if(isScoreGoalReached()) {
+                end(false);
+                return;
             }
             ScoreboardEditor.UpdatePointsCaptureTheFlag(scoreboard, blueTeam, redTeam);
         }
@@ -510,6 +517,9 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         Location flag;
         Material flagMaterial;
 
+        public void WinSuddenDeath(int scoreGoal){
+            points = scoreGoal;
+        }
 
         public void setFlagMaterial(Material flagMaterial){ this.flagMaterial = flagMaterial;}
         public Material getFlagMaterial(){return flagMaterial;}
