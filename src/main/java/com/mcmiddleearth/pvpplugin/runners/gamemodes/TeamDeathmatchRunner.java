@@ -304,7 +304,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         return Gamemodes.TEAMDEATHMATCH;
     }
 
-    public class TDMListener extends GamemodeListener{
+    private class TDMListener extends GamemodeListener{
         public TDMListener(){
             initOnPlayerDeathActions();
         }

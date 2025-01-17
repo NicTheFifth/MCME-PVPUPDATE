@@ -1,12 +1,12 @@
 package com.mcmiddleearth.pvpplugin;
 
 import java.io.File;
+import java.nio.file.FileSystems;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.command.commandParser.GameCommand;
 import com.mcmiddleearth.pvpplugin.command.commandParser.MapEditCommand;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
@@ -15,8 +15,6 @@ import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.util.*;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
@@ -44,7 +42,7 @@ public class PVPPlugin extends JavaPlugin {
     HashMap<UUID, MapEditor> mapEditors = new HashMap<>();
     static PVPPlugin instance;
     //TODO: Implement switching between servermode and minigame mode.
-    Boolean isPVPServer = true;
+//    Boolean isPVPServer = true;
     File mapDirectory;
     File statDirectory;
 
@@ -68,13 +66,13 @@ public class PVPPlugin extends JavaPlugin {
                 Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Data folder doesn't exist and wasn't able to be created");
             }
         }
-        mapDirectory = new File(getDataFolder() + System.getProperty("file.separator") + "maps");
+        mapDirectory = new File(getDataFolder() + FileSystems.getDefault().getSeparator() + "maps");
         if (!mapDirectory.mkdir()) {
             if (!mapDirectory.exists()) {
                 Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Map directory doesn't exist and wasn't able to be created");
             }
         }
-        statDirectory = new File(getDataFolder() + System.getProperty("file.separator") + "stats");
+        statDirectory = new File(getDataFolder() + FileSystems.getDefault().getSeparator() + "stats");
         if (!statDirectory.mkdir()) {
             if (!statDirectory.exists()) {
                 Logger.getLogger("PVPPlugin").log(Level.SEVERE, "Stat directory doesn't exist and wasn't able to be created");
@@ -110,17 +108,17 @@ public class PVPPlugin extends JavaPlugin {
         StatLoader.saveStats();
     }
 
-    public static void sendInfo(CommandSender recipient, ComponentBuilder message) {
-        ComponentBuilder result = new ComponentBuilder("[PVPPlugin]").color(Style.INFO_STRESSED).append(" ").color(Style.INFO);
-        result.append(message.create());
-        recipient.sendMessage(result.create());
-    }
-
-    public static void sendError(CommandSender recipient, ComponentBuilder message) {
-        ComponentBuilder result = new ComponentBuilder("[PVPPlugin]").color(Style.INFO_STRESSED).append(" ").color(Style.ERROR);
-        result.append(message.create());
-        recipient.sendMessage(result.create());
-    }
+//    public static void sendInfo(CommandSender recipient, ComponentBuilder message) {
+//        ComponentBuilder result = new ComponentBuilder("[PVPPlugin]").color(Style.INFO_STRESSED).append(" ").color(Style.INFO);
+//        result.append(message.create());
+//        recipient.sendMessage(result.create());
+//    }
+//
+//    public static void sendError(CommandSender recipient, ComponentBuilder message) {
+//        ComponentBuilder result = new ComponentBuilder("[PVPPlugin]").color(Style.INFO_STRESSED).append(" ").color(Style.ERROR);
+//        result.append(message.create());
+//        recipient.sendMessage(result.create());
+//    }
 
     public static void addEventListener(Listener listener){
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
@@ -178,9 +176,9 @@ public class PVPPlugin extends JavaPlugin {
     public Location getSpawn(){
         return spawn;
     }
-    public Boolean isPVPServer(){
-        return isPVPServer;
-    }
+//    public Boolean isPVPServer(){
+//        return isPVPServer;
+//    }
 
     //</editor-fold>
     private static class GlobalListeners implements Listener{

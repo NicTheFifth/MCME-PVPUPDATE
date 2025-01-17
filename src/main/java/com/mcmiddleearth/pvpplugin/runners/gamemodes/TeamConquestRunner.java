@@ -345,7 +345,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         this.scoreGoal = scoreGoal;
     }
 
-    public class TCListener extends GamemodeListener{
+    private class TCListener extends GamemodeListener{
         public TCListener(){
             initOnPlayerDeathActions();
         }

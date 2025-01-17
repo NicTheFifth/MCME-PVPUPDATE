@@ -393,7 +393,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         this.timeLimit = timeLimit;
     }
 
-    public class CTFListener extends GamemodeListener{
+    private class CTFListener extends GamemodeListener{
         public CTFListener(){
             initOnPlayerDeathActions();
         }

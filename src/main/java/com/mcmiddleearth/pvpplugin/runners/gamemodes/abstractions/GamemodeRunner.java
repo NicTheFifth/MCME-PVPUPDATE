@@ -135,6 +135,7 @@ public abstract class GamemodeRunner implements Listener {
     //EndActions is a map where the boolean indicates stopped state
     protected Map<Boolean, List<Runnable>> endActions = Map.of(true,
         new ArrayList<>(), false, new ArrayList<>());
+
     public void end(boolean stopped){
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
         PlayerDeathEvent.getHandlerList().unregister(eventListener);
@@ -224,8 +225,9 @@ public abstract class GamemodeRunner implements Listener {
         @EventHandler
         public void onPlayerDeath(PlayerDeathEvent e){
             Player player = e.getEntity();
-            if(!players.contains(player))
+            if(!players.contains(player)) {
                 return;
+            }
             PlayerStatEditor.addDeath(player);
             Player killer = player.getKiller();
             if(killer != null)

@@ -148,7 +148,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
-                if(gameState == State.COUNTDOWN)
+                if(gameState == State.COUNTDOWN || gameState == State.ENDED)
                 {
                     return;
                 }
@@ -328,7 +328,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
     public String getGamemode() {
         return Gamemodes.INFECTED;
     }
-    public class IListener extends GamemodeListener{
+    private class IListener extends GamemodeListener{
         public IListener(){
             initOnPlayerDeathActions();
         }

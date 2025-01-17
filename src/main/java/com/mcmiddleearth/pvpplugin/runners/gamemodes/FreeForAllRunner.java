@@ -6,6 +6,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONFreeForAll;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -30,14 +31,17 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class FreeForAllRunner extends GamemodeRunner {
+public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
     private final List<Location> spawns;
     private final Map<Player, PlayerTeam> FFAplayers = new HashMap<>();
     int timeLimitSeconds;
+
     public static int DefaultTimeLimit(){
         return 300;
     }
@@ -50,7 +54,6 @@ public class FreeForAllRunner extends GamemodeRunner {
         mapName = map.getTitle();
         eventListener = new FFAListener();
         this.spawns = freeForAll.getSpawns().stream().map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList());
-        initStartConditions();
         initStartActions();
         initEndActions();
         initJoinConditions();
@@ -62,10 +65,8 @@ public class FreeForAllRunner extends GamemodeRunner {
 
     @Override
     protected void initStartConditions() {
-        startConditions.put(() -> players.size() >= 2,
-                new ComponentBuilder("Cannot start a game unless it has two or more players.")
-                        .color(Style.ERROR).create());
     }
+
     @Override
     protected void initStartActions() {
         startActions.add(() -> players.forEach(player -> JoinFreeForAll(player, true)));
@@ -73,7 +74,7 @@ public class FreeForAllRunner extends GamemodeRunner {
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
-                if (gameState == State.COUNTDOWN) {
+                if (gameState == State.COUNTDOWN || gameState == State.ENDED) {
                     return;
                 }
                 if (timeLimitSeconds == 0) {
@@ -113,7 +114,7 @@ public class FreeForAllRunner extends GamemodeRunner {
     @Override
     protected void initJoinConditions() {
         joinConditions.put(((player) ->
-                        timeLimitSeconds <=60),
+                    timeLimitSeconds >= 60),
                 new ComponentBuilder("The game is close to over, you cannot join.")
                         .color(Style.INFO)
                         .create());
@@ -177,7 +178,17 @@ public class FreeForAllRunner extends GamemodeRunner {
         return Gamemodes.FREEFORALL;
     }
 
-    public class FFAListener extends GamemodeListener{
+    @Override
+    public int getTimeLimit() {
+        return timeLimitSeconds;
+    }
+
+    @Override
+    public void setTimeLimit(int timeLimit) {
+        this.timeLimitSeconds=timeLimit;
+    }
+
+    private class FFAListener extends GamemodeListener{
         public FFAListener(){
             initOnPlayerDeathActions();
         }
@@ -187,8 +198,9 @@ public class FreeForAllRunner extends GamemodeRunner {
             onPlayerDeathActions.add(e -> {
                 Player player = e.getEntity();
                 Player killer = player.getKiller();
-                if(killer == null)
+                if(killer == null) {
                     return;
+                }
                 FreeForAllRunner.PlayerTeam killerTeam = FFAplayers.get(killer);
                 killerTeam.addKill();
                 ScoreboardEditor.UpdateFreeForAll(scoreboard, killer, killerTeam);

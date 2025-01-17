@@ -15,7 +15,6 @@ PVP Plugin version 2
 
 ## To be fixed
 * Disallow removal of armour and/or banner
-* OITQ death listener
 * TDM kill and end
 * TC listener initialisation
 * Inconsistent armour removal events
@@ -43,6 +42,7 @@ PVP Plugin version 2
 * FBT tag whilst in lobby
 * Use get block for coordinates of spawns
 * Spawn incrementing
+* Update to 1.21.x
 
 ## V2
 * Juggernaut

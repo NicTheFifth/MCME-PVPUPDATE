@@ -29,6 +29,7 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
@@ -39,7 +40,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
     public static int DefaultScoreGoal(){return 20;}
 
     private final List<Location> spawns;
-    private final Map<Player, PlayerTeam> OITQplayers = new HashMap<>();
+    private final Map<UUID, PlayerTeam> OITQplayers = new HashMap<>();
     //TODO: add random offset to PlayerTeamColours
     private Player winningPlayer;
 
@@ -77,6 +78,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
     @Override
     protected void initEndActions() {
         endActions.get(false).add(() -> players.forEach(player -> {
+            if(winningPlayer != null){
             if (player == winningPlayer) {
                 PlayerStatEditor.addWon(player);
             } else {
@@ -85,7 +87,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
             sendBaseComponent(new ComponentBuilder(winningPlayer.getDisplayName() + " has won!")
                     .color(OITQplayers.get(winningPlayer).chatColor.asBungee()).create(),
                     player);
-        }));
+        }}));
         endActions.get(false).add(() -> {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
             EntityShootBowEvent.getHandlerList().unregister(eventListener);
@@ -131,7 +133,8 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
     private PlayerTeam GenerateNewPlayer(Player player){
         PlayerTeam playerTeam = new PlayerTeam();
         playerTeam.setChatColor(ChatColor.values()[OITQplayers.size() % 16]);
-        OITQplayers.put(player, playerTeam);
+        playerTeam.setPlayerName(player.getDisplayName());
+        OITQplayers.put(player.getUniqueId(), playerTeam);
         return playerTeam;
     }
 
@@ -172,7 +175,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     }
 
-    public class OITQListener extends GamemodeListener{
+    private class OITQListener extends GamemodeListener{
         public OITQListener(){
             initOnPlayerDeathActions();
         }
@@ -185,13 +188,9 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
                 if(killer == null)
                     return;
                 killer.getInventory().addItem(new ItemStack(Material.ARROW, 1));
-                PlayerTeam killerTeam = OITQplayers.get(killer);
+                PlayerTeam killerTeam = OITQplayers.get(killer.getUniqueId());
                 killerTeam.addKill();
-                ScoreboardEditor.UpdateOneInTheQuiver(scoreboard, killer, killerTeam);
-                if(killerTeam.getKills() >= scoreGoal) {
-                    winningPlayer = killer;
-                    end(false);
-                }
+                ScoreboardEditor.UpdateOneInTheQuiver(scoreboard, killerTeam);
             });
         }
 
@@ -222,6 +221,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
     public class PlayerTeam {
         int kills = 0;
         ChatColor chatColor;
+        String playerName;
 
         public void addKill(){
             kills++;
@@ -232,6 +232,8 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
             this.chatColor = chatColor;
         }
         public ChatColor getChatColor(){return chatColor;}
+        public void setPlayerName(String playerName) { this.playerName = playerName;}
+        public String getPlayerName(){return playerName;}
         public int getKills() {return kills;}
     }
 }
