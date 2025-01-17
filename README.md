@@ -7,11 +7,11 @@ PVP Plugin version 2
 
 ## To be tested
 * Death Run runner
-* Team Conquest runner
+* Free for All runner
 * Infected runner
 * One in the Quiver runner
 * Ringbearer runner
-* Free for All runner
+* Team Conquest runner
 
 ## To be fixed
 * 
