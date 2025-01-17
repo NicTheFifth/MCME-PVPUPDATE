@@ -1,14 +1,11 @@
 PVP Plugin version 2
 ===========
-## To-Do
-* Add correct chat colours
-
 ## To be Implemented
 * Chat
+* Add correct chat colours
 * Team Conquest -> RedBlueSpawnlist
 
 ## To be tested
-* Capture the Flag runner
 * Death Run runner
 * Team Conquest runner
 * Infected runner

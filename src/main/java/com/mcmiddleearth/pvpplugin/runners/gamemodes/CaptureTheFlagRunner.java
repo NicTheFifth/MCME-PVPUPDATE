@@ -177,6 +177,10 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
+                if (gameState == State.ENDED){
+                    this.cancel();
+                    return;
+                }
                 if(gameState == State.COUNTDOWN)
                 {
                     return;

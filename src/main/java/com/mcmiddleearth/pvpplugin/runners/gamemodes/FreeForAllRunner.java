@@ -74,7 +74,9 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
-                if (gameState == State.COUNTDOWN || gameState == State.ENDED) {
+                if(gameState == State.ENDED)
+                    this.cancel();
+                if(gameState == State.COUNTDOWN) {
                     return;
                 }
                 if (timeLimitSeconds == 0) {

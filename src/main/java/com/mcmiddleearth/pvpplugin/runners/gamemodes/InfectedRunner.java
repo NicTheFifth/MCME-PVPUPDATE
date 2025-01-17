@@ -148,7 +148,11 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
-                if(gameState == State.COUNTDOWN || gameState == State.ENDED)
+                if (gameState == State.ENDED){
+                    this.cancel();
+                    return;
+                }
+                if(gameState == State.COUNTDOWN)
                 {
                     return;
                 }
