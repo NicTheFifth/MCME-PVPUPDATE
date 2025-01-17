@@ -7,7 +7,6 @@ PVP Plugin version 2
 
 ## To be tested
 * Infected runner
-* One in the Quiver runner
 * Ringbearer runner
 * Team Conquest runner
 

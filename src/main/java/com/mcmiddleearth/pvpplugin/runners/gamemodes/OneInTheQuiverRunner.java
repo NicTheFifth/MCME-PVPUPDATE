@@ -84,8 +84,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
             } else {
                 PlayerStatEditor.addLost(player);
             }
-            sendBaseComponent(new ComponentBuilder(winningPlayer.getDisplayName() + " has won!")
-                    .color(OITQplayers.get(winningPlayer).chatColor.asBungee()).create(),
+            sendBaseComponent(new ComponentBuilder(winningPlayer.getDisplayName() + " has won!").create(),
                     player);
         }}));
         endActions.get(false).add(() -> {
@@ -190,6 +189,11 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
                 killer.getInventory().addItem(new ItemStack(Material.ARROW, 1));
                 PlayerTeam killerTeam = OITQplayers.get(killer.getUniqueId());
                 killerTeam.addKill();
+                if(killerTeam.getKills() == scoreGoal){
+                    winningPlayer = killer;
+                    end(false);
+                    return;
+                }
                 ScoreboardEditor.UpdateOneInTheQuiver(scoreboard, killerTeam);
             });
         }
@@ -225,8 +229,6 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
         public void addKill(){
             kills++;
-            if(kills >= scoreGoal)
-                end(false);
         }
         public void setChatColor(ChatColor chatColor){
             this.chatColor = chatColor;
