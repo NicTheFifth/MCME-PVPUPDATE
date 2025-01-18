@@ -3,11 +3,9 @@ PVP Plugin version 2
 ## To be Implemented
 * Chat
 * Add correct chat colours
-* Team Conquest -> RedBlueSpawnlist
 
 ## To be tested
 * Infected runner
-* Ringbearer runner
 * Team Conquest runner
 
 ## To be fixed

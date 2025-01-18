@@ -74,8 +74,8 @@ public class Validator {
         if(teamConquest == null)
             return false;
         if(teamConquest.getCapturePoints() == null ||
-           teamConquest.getBlueSpawn() == null ||
-           teamConquest.getRedSpawn() == null ||
+           teamConquest.getBlueSpawns() == null ||
+           teamConquest.getRedSpawns() == null ||
            teamConquest.getMaximumPlayers() == null)
             return false;
         return !teamConquest.getCapturePoints().isEmpty();

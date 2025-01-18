@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
@@ -90,7 +91,9 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         blueTeam.setChatColor(ChatColor.BLUE);
         blueTeam.setGameMode(GameMode.SURVIVAL);
         blueTeam.setKit(createKit(Color.BLUE));
-        blueTeam.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(jsonTeamConquest.getBlueSpawn())));
+        blueTeam.setSpawnLocations(jsonTeamConquest.getBlueSpawns()
+                .stream().map(LocationTranscriber::TranscribeFromJSON)
+                .collect(Collectors.toList()));
     }
 
     private void initRedTeam(JSONTeamConquest jsonTeamConquest){
@@ -99,8 +102,9 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         redTeam.setTeamColour(Color.RED);
         redTeam.setGameMode(GameMode.SURVIVAL);
         redTeam.setKit(createKit(Color.RED));
-        redTeam.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(jsonTeamConquest.getRedSpawn())));
-
+        redTeam.setSpawnLocations(jsonTeamConquest.getRedSpawns()
+                .stream().map(LocationTranscriber::TranscribeFromJSON)
+                .collect(Collectors.toList()));
     }
 
     private @NotNull Kit createKit(Color color){
