@@ -116,6 +116,10 @@ public class RingBearerRunner extends GamemodeRunner {
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                     color));
+            returnInventory.forEach(item -> {
+                if(item != null && item.getItemMeta() != null)
+                    item.getItemMeta().setUnbreakable(true);
+            });
         });
         return new Kit(invFunc);
     }
@@ -386,6 +390,69 @@ public class RingBearerRunner extends GamemodeRunner {
                         .color(blueTeam.getChatColor()).create(),
                 playerOther
         ));
+    }
+
+    @Override
+    public Boolean trySendSpectatorMessage(Player player, String message){
+        return trySendMessage(player, message);
+    }
+
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        if(blueTeam.getDeadMembers().contains(player)){
+            Set<Player> deads = new HashSet<>(blueTeam.getDeadMembers());
+            deads.addAll(spectator.getMembers());
+            deads.addAll(redTeam.getDeadMembers());
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<gray>Dead Blue %s:</gray> %s",
+                            player.getDisplayName(),
+                            message),
+                    deads);
+            return true;
+        }
+        if(redTeam.getDeadMembers().contains(player)){
+            Set<Player> deads = new HashSet<>(blueTeam.getDeadMembers());
+            deads.addAll(spectator.getMembers());
+            deads.addAll(redTeam.getDeadMembers());
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<gray>Red %s:</gray> %s",
+                            player.getDisplayName(),
+                            message),
+                    deads);
+            return true;
+        }
+        if(spectator.getMembers().contains(player)) {
+            Set<Player> deads = new HashSet<>(blueTeam.getDeadMembers());
+            deads.addAll(spectator.getMembers());
+            deads.addAll(redTeam.getDeadMembers());
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format(
+                            "<gray>Spectator %s: %s</gray>",
+                            player.getDisplayName(),
+                            message),
+                    deads);
+            return true;
+        }
+        if(blueTeam.getMembers().contains(player)){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<%s>Blue %s:</%s> %s",
+                            blueTeam.getChatColor().getColor().getRGB(),
+                            player.getDisplayName(),
+                            blueTeam.getChatColor().getColor().getRGB(),
+                            message));
+            return true;
+        }
+        if(redTeam.getMembers().contains(player)){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<%s>Red %s:</%s> %s",
+                            redTeam.getChatColor().getColor().getRGB(),
+                            player.getDisplayName(),
+                            redTeam.getChatColor().getColor().getRGB(),
+                            message));
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -31,8 +31,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
@@ -166,6 +164,26 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
         bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
         playerInventory.setItem(1, bow);
         playerInventory.setItem(2, new ItemStack(Material.ARROW));
+        playerInventory.forEach(item -> {
+            if(item != null && item.getItemMeta() != null)
+                item.getItemMeta().setUnbreakable(true);
+        });
+    }
+
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        PlayerTeam team = FFAplayers.get(player);
+        if(team != null){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<%s>%s %s:</%s> %s",
+                            team.getChatColor().asBungee().getColor().getRGB(),
+                            team.getChatColor(),
+                            player.getDisplayName(),
+                            team.getChatColor().asBungee().getColor().getRGB(),
+                            message));
+        }
+        return false;
     }
 
     @Override

@@ -7,8 +7,6 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
-
 public class ChatUtils {
     public static void sendBroadcast(BaseComponent[] message){
 //        PVPPlugin.getInstance().getServer().getOnlinePlayers().forEach( player ->

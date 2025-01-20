@@ -115,6 +115,10 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
             bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
+            returnInventory.forEach(item -> {
+                if(item != null && item.getItemMeta() != null)
+                    item.getItemMeta().setUnbreakable(true);
+            });
         });
         return new Kit(invFunc);
     }
@@ -297,6 +301,56 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
             end(true);
         if(runner.getOnlineMembers().isEmpty())
             end(false);
+    }
+
+    @Override
+    public Boolean trySendSpectatorMessage(Player player, String message){
+        return trySendMessage(player, message);
+    }
+
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        if(death.getMembers().contains(player)){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<%s>Death %s:</%s> %s",
+                            death.getChatColor().getColor().getRGB(),
+                            player.getDisplayName(),
+                            death.getChatColor().getColor().getRGB(),
+                            message));
+            return true;
+        }
+        if(runner.getDeadMembers().contains(player)){
+            Set<Player> deads = new HashSet<>(runner.getDeadMembers());
+            deads.addAll(spectator.getMembers());
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<gray>Dead Runner %s:</gray> %s",
+                            player.getDisplayName(),
+                            message),
+                    deads);
+            return true;
+        }
+        if(spectator.getMembers().contains(player)) {
+            Set<Player> deads = new HashSet<>(runner.getDeadMembers());
+            deads.addAll(spectator.getMembers());
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format(
+                            "<gray>Spectator %s: %s</gray>",
+                            player.getDisplayName(),
+                            message),
+                    deads);
+            return true;
+        }
+        if(runner.getMembers().contains(player)){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<%s>Runner %s:</%s> %s",
+                            runner.getChatColor().getColor().getRGB(),
+                            player.getDisplayName(),
+                            runner.getChatColor().getColor().getRGB(),
+                            message));
+            return true;
+        }
+        return false;
     }
 
     @Override

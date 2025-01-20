@@ -1,6 +1,7 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
 import com.mcmiddleearth.command.Style;
+import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamConquest;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
@@ -123,6 +124,10 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                     color));
+            returnInventory.forEach(item -> {
+                if(item != null && item.getItemMeta() != null)
+                    item.getItemMeta().setUnbreakable(true);
+            });
         });
         return new Kit(invFunc);
     }
@@ -333,6 +338,26 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         ));
     }
     //</editor-fold>
+
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        if(blueTeam.getMembers().contains(player)){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<blue>Blue %s:<blue> %s",
+                            player.getDisplayName(),
+                            message));
+            return true;
+        }
+        if(redTeam.getMembers().contains(player)){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<red>Red %s:<red> %s",
+                            player.getDisplayName(),
+                            message));
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public String getGamemode() {

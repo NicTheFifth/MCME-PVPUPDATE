@@ -127,7 +127,11 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                     color));
-        });
+            returnInventory.forEach(item -> {
+                if(item != null && item.getItemMeta() != null)
+                    item.getItemMeta().setUnbreakable(true);
+                });
+            });
         return new Kit(invFunc);
     }
 
@@ -371,6 +375,31 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         );
         players.forEach(leaveMessage);
         spectator.getMembers().forEach(leaveMessage);
+    }
+
+    @Override
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        if(blueTeam.getMembers().contains(player)){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<%s>Blue %s:</%s> %s",
+                            blueTeam.getChatColor().getColor().getRGB(),
+                            player.getDisplayName(),
+                            blueTeam.getChatColor().getColor().getRGB(),
+                            message));
+            return true;
+        }
+        if(redTeam.getMembers().contains(player)){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<%s>Red %s:</%s> %s",
+                            redTeam.getChatColor().getColor().getRGB(),
+                            player.getDisplayName(),
+                            redTeam.getChatColor().getColor().getRGB(),
+                            message));
+            return true;
+        }
+        return false;
     }
 
     @Override

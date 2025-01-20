@@ -1,6 +1,7 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
 import com.mcmiddleearth.command.Style;
+import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONOneInTheQuiver;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
@@ -147,6 +148,26 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
         playerInventory.setItem(0, new ItemStack(Material.IRON_AXE));
         playerInventory.setItem(1, new ItemStack(Material.BOW));
         playerInventory.setItem(2, new ItemStack(Material.ARROW));
+        playerInventory.forEach(item -> {
+            if(item != null && item.getItemMeta() != null)
+                item.getItemMeta().setUnbreakable(true);
+        });
+    }
+
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        PlayerTeam team = OITQplayers.get(player);
+        if(team != null){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<%s>%s %s:</%s> %s",
+                            team.getChatColor().asBungee().getColor().getRGB(),
+                            team.getChatColor(),
+                            player.getDisplayName(),
+                            team.getChatColor().asBungee().getColor().getRGB(),
+                            message));
+        }
+        return false;
     }
 
     @Override

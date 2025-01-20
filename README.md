@@ -1,12 +1,11 @@
 PVP Plugin version 2
 ===========
 ## To be Implemented
-* Chat
-* Add correct chat colours
 
 ## To be tested
+* Chat
+* Unbreaking on all weapons/armours
 * Infected runner
-* Team Conquest runner
 
 ## To be fixed
 * Infected (assignment of players)
@@ -43,3 +42,4 @@ PVP Plugin version 2
 * Look at a team rework (using Team)
 * Functionality to assign team before game start
 * BossBar implementation to keep track of ingame stats
+* Team Chat

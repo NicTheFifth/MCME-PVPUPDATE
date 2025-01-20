@@ -93,6 +93,10 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                     Color.BLUE));
+            returnInventory.forEach(item -> {
+                if(item != null && item.getItemMeta() != null)
+                    item.getItemMeta().setUnbreakable(true);
+            });
         });
         return new Kit(invFunc);
 
@@ -118,6 +122,10 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                     color));
+            returnInventory.forEach(item -> {
+                if(item != null && item.getItemMeta() != null)
+                    item.getItemMeta().setUnbreakable(true);
+            });
         });
     }
     //</editor-fold>
@@ -317,6 +325,30 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         ));
     }
     //</editor-fold>
+
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        if(infected.getMembers().contains(player)){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<%s>Infected %s:</%s> %s",
+                            infected.getChatColor().getColor().getRGB(),
+                            player.getDisplayName(),
+                            infected.getChatColor().getColor().getRGB(),
+                            message));
+            return true;
+        }
+        if(survivors.getMembers().contains(player)){
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<%s>Survivor %s:</%s> %s",
+                            survivors.getChatColor().getColor().getRGB(),
+                            player.getDisplayName(),
+                            survivors.getChatColor().getColor().getRGB(),
+                            message));
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public int getTimeLimit() {

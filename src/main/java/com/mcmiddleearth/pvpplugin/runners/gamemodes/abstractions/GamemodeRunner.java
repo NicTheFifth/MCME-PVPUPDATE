@@ -20,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -37,7 +38,7 @@ import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 
 public abstract class GamemodeRunner implements Listener {
-    protected enum State{
+    public enum State{
         QUEUED, COUNTDOWN, RUNNING, ENDED
     }
     protected String mapName;
@@ -211,12 +212,24 @@ public abstract class GamemodeRunner implements Listener {
     }
     protected abstract  void  initLeaveActions();
     //</editor-fold>
+
     public String getMapName() {
         return mapName;
     }
 
+    public State getGameState() {return gameState;}
+
     public abstract String getGamemode();
 
+    public abstract Boolean trySendMessage(Player player, String message);
+
+    public Boolean trySendSpectatorMessage(Player player, String message){
+        if(spectator.getMembers().contains(player)) {
+            PVPPlugin.getInstance().sendMessageTo(String.format("<gray>Spectator %s: %s</gray>", player.getDisplayName(), message), spectator.getMembers());
+            return true;
+        }
+        return false;
+    }
     protected abstract class GamemodeListener implements Listener {
         HashMap<UUID, Long> playerAreaLeaveTimer = new HashMap<>();
         protected List<Consumer<PlayerDeathEvent>> onPlayerDeathActions =
