@@ -8,13 +8,13 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -98,7 +98,7 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
                     .map(entry -> entry.getValue().getKills()).orElse(0);
             List<Player> winningPlayers = FFAplayers.entrySet().stream()
                     .filter(entry -> players.contains(entry.getKey()) && entry.getValue().getKills() == maxKills)
-                    .map(Map.Entry::getKey).collect(Collectors.toList());
+                    .map(Map.Entry::getKey).toList();
             players.forEach(player -> {
                 if (winningPlayers.contains(player)) {
                     PlayerStatEditor.addWon(player);
@@ -134,20 +134,21 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
                     player);
             return;
         }
-        ChatColor color = FFAplayers.getOrDefault(player, GenerateNewPlayer(player)).getChatColor();
+        NamedTextColor color = FFAplayers.getOrDefault(player, GenerateNewPlayer(player)).getChatColor();
         KitOutPlayer(player);
         player.setGameMode(GameMode.SURVIVAL);
         TeamHandler.spawn(player, spawns);
 
-        BaseComponent[] joinMessage = new ComponentBuilder(player.getDisplayName() + " has joined the game!")
-                .color(color.asBungee()).create();
-        players.forEach(playerOther -> sendBaseComponent(joinMessage, playerOther));
-        spectator.getMembers().forEach(spectator -> sendBaseComponent(joinMessage, spectator));
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has joined the game!</%s>",
+                        color,
+                        player.getName(),
+                        color));
     }
 
     private FreeForAllRunner.PlayerTeam GenerateNewPlayer(Player player){
         FreeForAllRunner.PlayerTeam playerTeam = new FreeForAllRunner.PlayerTeam();
-        playerTeam.setChatColor(ChatColor.values()[FFAplayers.size() % 16]);
+        playerTeam.setChatColor((NamedTextColor)NamedTextColor.NAMES.values().toArray()[FFAplayers.size() % 16]);
         FFAplayers.put(player, playerTeam);
         return playerTeam;
     }
@@ -164,10 +165,7 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
         bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
         playerInventory.setItem(1, bow);
         playerInventory.setItem(2, new ItemStack(Material.ARROW));
-        playerInventory.forEach(item -> {
-            if(item != null && item.getItemMeta() != null)
-                item.getItemMeta().setUnbreakable(true);
-        });
+        playerInventory.forEach(KitEditor::setUnbreaking);
     }
 
     public Boolean trySendMessage(Player player, String message){
@@ -175,13 +173,14 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
             return false;
         PlayerTeam team = FFAplayers.get(player);
         if(team != null){
-            PVPPlugin.getInstance().sendMessageTo(
+            PVPPlugin.getInstance().sendMessage(
                     String.format("<%s>%s %s:</%s> %s",
-                            team.getChatColor().asBungee().getColor().getRGB(),
+                            team.getChatColor(),
                             team.getChatColor(),
                             player.getDisplayName(),
-                            team.getChatColor().asBungee().getColor().getRGB(),
+                            team.getChatColor(),
                             message));
+            return true;
         }
         return false;
     }
@@ -240,15 +239,15 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
 
     public static class PlayerTeam {
         int kills = 0;
-        ChatColor chatColor;
+        NamedTextColor chatColor;
 
         public void addKill(){
             kills++;
         }
-        public void setChatColor(ChatColor chatColor){
+        public void setChatColor(NamedTextColor chatColor){
             this.chatColor = chatColor;
         }
-        public ChatColor getChatColor(){return chatColor;}
+        public NamedTextColor getChatColor(){return chatColor;}
         public int getKills() {return kills;}
     }
 

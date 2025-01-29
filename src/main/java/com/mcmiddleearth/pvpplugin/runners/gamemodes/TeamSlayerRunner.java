@@ -18,7 +18,6 @@ import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.*;
@@ -33,11 +32,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
+import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     TSTeam redTeam = new TSTeam();
@@ -73,7 +72,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     private void initRedTeam(@NotNull JSONTeamSlayer teamSlayer){
         redTeam.setPrefix("Red");
         redTeam.setTeamColour(Color.RED);
-        redTeam.setChatColor(ChatColor.RED);
+        redTeam.setChatColor(RED);
         redTeam.setKit(createKit(Color.RED));
         redTeam.setSpawnLocations(
             teamSlayer.getRedSpawns()
@@ -84,7 +83,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     public void initBlueTeam(@NotNull JSONTeamSlayer teamSlayer){
         blueTeam.setPrefix("Blue");
         blueTeam.setTeamColour(Color.BLUE);
-        blueTeam.setChatColor(ChatColor.BLUE);
+        blueTeam.setChatColor(BLUE);
         blueTeam.setKit(createKit(blueTeam.getTeamColour()));
         blueTeam.setSpawnLocations(
             teamSlayer.getBlueSpawns()
@@ -108,10 +107,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                 color));
-            returnInventory.forEach(item -> {
-                if(item != null && item.getItemMeta() != null)
-                    item.getItemMeta().setUnbreakable(true);
-            });
+            returnInventory.forEach(KitEditor::setUnbreaking);
         });
         return new Kit(invFunc);
     }
@@ -212,41 +208,29 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
             return;
         }
         if(redTeam.getMembers().contains(player)) {
-            joinRedTeam(player);
+            joinTeam(player, redTeam);
             return;
         }
         if(blueTeam.getMembers().contains(player)) {
-            joinBlueTeam(player);
+            joinTeam(player, blueTeam);
             return;
         }
         TeamHandler.addToTeam((team -> team.getOnlineMembers().size()),
-            Pair.of(redTeam, () -> joinRedTeam(player)),
-            Pair.of(blueTeam, () -> joinBlueTeam(player)));
+            Pair.of(redTeam, () -> joinTeam(player, redTeam)),
+            Pair.of(blueTeam, () -> joinTeam(player, blueTeam)));
 
     }
-    private void joinRedTeam(Player player){
-        redTeam.getOnlineMembers().add(player);
-        Matchmaker.addMember(player, redTeam);
-        TeamHandler.spawn(player, redTeam);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-            String.format("%s has joined the red team!", player.getName()))
-            .color(redTeam.getChatColor()).create();
-        players.forEach(playerOther ->
-            sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-            sendBaseComponent(publicJoinMessage, spectator));
-    }
-    private void joinBlueTeam(Player player){
-        blueTeam.getOnlineMembers().add(player);
-        Matchmaker.addMember(player, blueTeam);
-        TeamHandler.spawn(player, blueTeam);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-            String.format("%s has joined the blue team!", player.getName()))
-            .color(blueTeam.getChatColor()).create();
-        players.forEach(playerOther ->
-            sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-            sendBaseComponent(publicJoinMessage, spectator));
+
+    private void joinTeam(Player player, TSTeam team) {
+        team.getOnlineMembers().add(player);
+        Matchmaker.addMember(player, team);
+        TeamHandler.spawn(player, team);
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has joined the %s</%s>",
+                        team.getChatColor(),
+                        player.getName(),
+                        team.getPrefix(),
+                        team.getChatColor()));
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Leave">
@@ -256,57 +240,43 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     }
     private void leaveTeamSlayer(Player player){
         if (redTeam.getMembers().contains(player)) {
-            leaveRedTeam(player);
+            leaveTeam(player, redTeam);
         } else {
-            leaveBlueTeam(player);
+            leaveTeam(player, blueTeam);
         }
         if(hasEmptyTeam())
             end(true);
     }
 
-    private void leaveRedTeam(Player player){
-        redTeam.getOnlineMembers().remove(player);
-        players.forEach(playerOther->sendBaseComponent(
-            new ComponentBuilder(String.format("%s has left the game.",
-                player.getName()))
-                .color(redTeam.getChatColor()).create(),
-            playerOther
-        ));
-
-    }
-    private void leaveBlueTeam(Player player){
-        blueTeam.getOnlineMembers().remove(player);
-        players.forEach(playerOther->sendBaseComponent(
-            new ComponentBuilder(String.format("%s has left the game.",
-                player.getName()))
-                .color(blueTeam.getChatColor()).create(),
-            playerOther
-        ));
+    private void leaveTeam(Player player, Team team){
+        team.getOnlineMembers().remove(player);
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has left the game.</%s>",
+                        team.getChatColor(),
+                        player.getName(),
+                        team.getChatColor()));
     }
     //</editor-fold>
 
     public Boolean trySendMessage(Player player, String message){
         if(!players.contains(player))
             return false;
-        if(blueTeam.getMembers().contains(player)){
-            PVPPlugin.getInstance().sendMessageTo(
-                    String.format("<%s>Blue %s:</%s> %s",
-                            blueTeam.getChatColor().getColor().getRGB(),
-                            player.getDisplayName(),
-                            blueTeam.getChatColor().getColor().getRGB(),
-                            message));
-            return true;
-        }
-        if(redTeam.getMembers().contains(player)){
-            PVPPlugin.getInstance().sendMessageTo(
-                    String.format("<%s>Red %s:</%s> %s",
-                            redTeam.getChatColor().getColor().getRGB(),
-                            player.getDisplayName(),
-                            redTeam.getChatColor().getColor().getRGB(),
-                            message));
-            return true;
-        }
-        return false;
+        Team team = null;
+        if(redTeam.getMembers().contains(player))
+            team = redTeam;
+        if(blueTeam.getMembers().contains(player))
+            team=blueTeam;
+        if(team == null)
+            return false;
+
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s %s:</%s> %s",
+                        team.getChatColor(),
+                        team.getPrefix(),
+                        player.getDisplayName(),
+                        team.getChatColor(),
+                        message));
+        return true;
     }
 
     public int getScoreGoal(){return scoreGoal;}

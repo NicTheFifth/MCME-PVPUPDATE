@@ -13,6 +13,18 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import java.util.Set;
 
 public class KitEditor {
+
+    public static void setUnbreaking(ItemStack item){
+        if(item == null)
+            return;
+        ItemMeta meta = item.hasItemMeta() ?
+                item.getItemMeta() :
+                Bukkit.getItemFactory().getItemMeta(item.getType());
+        if(meta == null)
+            return;
+        meta.setUnbreakable(true);
+        item.setItemMeta(meta);
+    }
     public static void setItemColour(ItemStack item, Color teamColour) {
         if(item == null)
             return;
@@ -21,8 +33,7 @@ public class KitEditor {
             ItemMeta meta = item.hasItemMeta() ?
                 item.getItemMeta() :
                 Bukkit.getItemFactory().getItemMeta(item.getType());
-            if(meta instanceof LeatherArmorMeta) {
-                LeatherArmorMeta leatherArmorMeta = (LeatherArmorMeta) meta;
+            if(meta instanceof LeatherArmorMeta leatherArmorMeta) {
                 leatherArmorMeta.setColor(teamColour);
                 item.setItemMeta(leatherArmorMeta);
             }
@@ -34,8 +45,7 @@ public class KitEditor {
             DyeColor dyeColor = DyeColor.getByColor(teamColour);
             if(dyeColor == null)
                 return;
-            if(meta instanceof BlockStateMeta) {
-                BlockStateMeta blockStateMeta = (BlockStateMeta) meta;
+            if(meta instanceof BlockStateMeta blockStateMeta) {
                 Banner banner = (Banner) blockStateMeta.getBlockState();
                 banner.setBaseColor(dyeColor);
                 blockStateMeta.setBlockState(banner);

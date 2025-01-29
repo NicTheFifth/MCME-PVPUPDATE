@@ -18,8 +18,8 @@ import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.*;
@@ -90,7 +90,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
     private void initBlueTeam(JSONCaptureTheFlag jsonCaptureTheFlag) {
         blueTeam.setPrefix("Blue");
         blueTeam.setTeamColour(Color.BLUE);
-        blueTeam.setChatColor(ChatColor.BLUE);
+        blueTeam.setChatColor(NamedTextColor.BLUE);
         blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(jsonCaptureTheFlag.getBlueSpawns().stream()
                 .map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
@@ -102,7 +102,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
     private void initRedTeam(JSONCaptureTheFlag jsonCaptureTheFlag) {
         redTeam.setPrefix("Red");
         redTeam.setTeamColour(Color.RED);
-        redTeam.setChatColor(ChatColor.RED);
+        redTeam.setChatColor(NamedTextColor.RED);
         redTeam.setKit(createKit(Color.RED));
         redTeam.setSpawnLocations(jsonCaptureTheFlag.getRedSpawns().stream()
                 .map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
@@ -127,10 +127,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                     color));
-            returnInventory.forEach(item -> {
-                if(item != null && item.getItemMeta() != null)
-                    item.getItemMeta().setUnbreakable(true);
-                });
+            returnInventory.forEach(KitEditor::setUnbreaking);
             });
         return new Kit(invFunc);
     }
@@ -298,44 +295,28 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
             return;
         }
         if(redTeam.getMembers().contains(player)) {
-            joinRedTeam(player);
+            joinTeam(player, redTeam);
             return;
         }
         if(blueTeam.getMembers().contains(player)) {
-            joinBlueTeam(player);
+            joinTeam(player, blueTeam);
             return;
         }
         TeamHandler.addToTeam((team -> team.getOnlineMembers().size()),
-                Pair.of(redTeam, () -> joinRedTeam(player)),
-                Pair.of(blueTeam, () -> joinBlueTeam(player)));
+                Pair.of(redTeam, () -> joinTeam(player, redTeam)),
+                Pair.of(blueTeam, () -> joinTeam(player, blueTeam)));
     }
 
-    private void joinRedTeam(Player player){
-        redTeam.getOnlineMembers().add(player);
-        Matchmaker.addMember(player, redTeam);
-        TeamHandler.spawn(player, redTeam);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-                String.format("%s has joined the red team!", player.getName()))
-                .color(redTeam.getChatColor()).create();
-        players.forEach(playerOther ->
-                sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-                sendBaseComponent(publicJoinMessage, spectator));
-
-    }
-
-    private  void joinBlueTeam(Player player){
-        blueTeam.getOnlineMembers().add(player);
-        Matchmaker.addMember(player, blueTeam);
-        TeamHandler.spawn(player, blueTeam);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-                String.format("%s has joined the blue team!", player.getName()))
-                .color(blueTeam.getChatColor()).create();
-        players.forEach(playerOther ->
-                sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-                sendBaseComponent(publicJoinMessage, spectator));
-
+    private void joinTeam(Player player, CTFTeam team){
+        team.getOnlineMembers().add(player);
+        Matchmaker.addMember(player, team);
+        TeamHandler.spawn(player, team);
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has joined the %s team!</%s>",
+                        team.getChatColor(),
+                        player.getName(),
+                        team.getPrefix(),
+                        team.getChatColor()));
     }
 
     @Override
@@ -345,61 +326,46 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
 
     private void LeaveCaptureTheFlag(Player player){
         if (redTeam.getMembers().contains(player)) {
-            leaveRedTeam(player);
+            leaveTeam(player, redTeam.getChatColor());
+            redTeam.getOnlineMembers().remove(player);
         } else {
-            leaveBlueTeam(player);
+            leaveTeam(player,blueTeam.getChatColor());
+            blueTeam.getOnlineMembers().remove(player);
         }
         if(hasEmptyTeam())
             end(true);
     }
 
-    private void leaveRedTeam(Player player){
-        redTeam.getOnlineMembers().remove(player);
-        Consumer<Player> leaveMessage = playerOther->sendBaseComponent(
-                new ComponentBuilder(String.format("%s has left the game.",
-                        player.getName()))
-                        .color(redTeam.getChatColor()).create(),
-                playerOther
-        );
-        players.forEach(leaveMessage);
-        spectator.getMembers().forEach(leaveMessage);
-    }
-
-    private void leaveBlueTeam(Player player){
-        blueTeam.getOnlineMembers().remove(player);
-        Consumer<Player> leaveMessage = playerOther->sendBaseComponent(
-                new ComponentBuilder(String.format("%s has left the game.",
-                        player.getName()))
-                        .color(redTeam.getChatColor()).create(),
-                playerOther
-        );
-        players.forEach(leaveMessage);
-        spectator.getMembers().forEach(leaveMessage);
+    private void leaveTeam(Player player, NamedTextColor color){
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has left the game.</%s>",
+                        color,
+                        player.getName(),
+                        color));
     }
 
     @Override
     public Boolean trySendMessage(Player player, String message){
         if(!players.contains(player))
             return false;
+        CTFTeam team = null;
         if(blueTeam.getMembers().contains(player)){
-            PVPPlugin.getInstance().sendMessageTo(
-                    String.format("<%s>Blue %s:</%s> %s",
-                            blueTeam.getChatColor().getColor().getRGB(),
-                            player.getDisplayName(),
-                            blueTeam.getChatColor().getColor().getRGB(),
-                            message));
-            return true;
+            team = blueTeam;
         }
         if(redTeam.getMembers().contains(player)){
-            PVPPlugin.getInstance().sendMessageTo(
-                    String.format("<%s>Red %s:</%s> %s",
-                            redTeam.getChatColor().getColor().getRGB(),
-                            player.getDisplayName(),
-                            redTeam.getChatColor().getColor().getRGB(),
-                            message));
-            return true;
+            team=redTeam;
         }
-        return false;
+        if(team == null)
+            return false;
+
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s %s:</%s> %s",
+                        team.getChatColor(),
+                        team.getPrefix(),
+                        player.getDisplayName(),
+                        team.getChatColor(),
+                        message));
+        return true;
     }
 
     @Override

@@ -179,11 +179,13 @@ public class PVPPlugin extends JavaPlugin {
 //    }
 
     //</editor-fold>
-    public void sendMessageTo(String message) {
-        adventure.all().sendMessage(mm.deserialize(message));
+    public void sendMessage(String message) {
+        adventure.players().sendMessage(mm.deserialize(message));
     }
 
     public void sendMessageTo(String message, Player... player){
+        if(player.length == 0)
+            Logger.getLogger("MCME-PVP").log(Level.INFO, "Tried to send a message to an empty list of players.");
         sendMessageTo(message, Arrays.stream(player).collect(Collectors.toSet()));
     }
     public void sendMessageTo(String message, Set<Player> player){
@@ -208,16 +210,16 @@ public class PVPPlugin extends JavaPlugin {
             GamemodeRunner runner = pvpPlugin.getActiveGame();
             if(runner == null || runner.getGameState() == GamemodeRunner.State.QUEUED){
                 if(player.hasPermission(Permissions.PVP_ADMIN.getPermissionNode())){
-                    pvpPlugin.sendMessageTo(String.format("<gold>PVP Staff %s</gold>: %s", player.getDisplayName(), message));
+                    pvpPlugin.sendMessage(String.format("<gold>PVP Staff %s</gold>: %s", player.getDisplayName(), message));
                     e.setCancelled(true);
                     return;
                 }
                 if(player.hasPermission(Permissions.RUN.getPermissionNode())){
-                    pvpPlugin.sendMessageTo(String.format("<gold>Manager %s</gold>: %s", player.getDisplayName(), message));
+                    pvpPlugin.sendMessage(String.format("<gold>Manager %s</gold>: %s", player.getDisplayName(), message));
                     e.setCancelled(true);
                     return;
                 }
-                pvpPlugin.sendMessageTo(String.format("<gray>Lobby %s</gray>: %s", player.getDisplayName(), message));
+                pvpPlugin.sendMessage(String.format("<gray>Lobby %s</gray>: %s", player.getDisplayName(), message));
                 e.setCancelled(true);
                 return;
             }

@@ -1,14 +1,16 @@
 PVP Plugin version 2
 ===========
-## To be Implemented
+## To be implemented before release
+* Replace all sendBaseComponent
+
+## To be implemented
 
 ## To be tested
-* Chat
-* Unbreaking on all weapons/armours
-* Infected runner
 
 ## To be fixed
-* Infected (assignment of players)
+
+## Bug list
+* Double send of game creation
 
 ## Implemented
 * JSON structure
@@ -34,6 +36,7 @@ PVP Plugin version 2
 * Use get block for coordinates of spawns
 * Spawn incrementing
 * Update to 1.21.x
+* /pvp create \<gamemode> \<map>
 
 ## V2
 * Juggernaut

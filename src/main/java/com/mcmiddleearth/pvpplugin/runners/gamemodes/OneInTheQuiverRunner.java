@@ -9,6 +9,7 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
@@ -119,7 +120,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
             return;
         }
 
-        ChatColor color = OITQplayers.getOrDefault(player, GenerateNewPlayer(player)).getChatColor();
+        ChatColor color = OITQplayers.getOrDefault(player.getUniqueId(), GenerateNewPlayer(player)).getChatColor();
         KitOutPlayer(player);
         player.setGameMode(GameMode.SURVIVAL);
         TeamHandler.spawn(player, spawns);
@@ -148,24 +149,22 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
         playerInventory.setItem(0, new ItemStack(Material.IRON_AXE));
         playerInventory.setItem(1, new ItemStack(Material.BOW));
         playerInventory.setItem(2, new ItemStack(Material.ARROW));
-        playerInventory.forEach(item -> {
-            if(item != null && item.getItemMeta() != null)
-                item.getItemMeta().setUnbreakable(true);
-        });
+        playerInventory.forEach(KitEditor::setUnbreaking);
     }
 
     public Boolean trySendMessage(Player player, String message){
         if(!players.contains(player))
             return false;
-        PlayerTeam team = OITQplayers.get(player);
+        PlayerTeam team = OITQplayers.get(player.getUniqueId());
         if(team != null){
-            PVPPlugin.getInstance().sendMessageTo(
+            PVPPlugin.getInstance().sendMessage(
                     String.format("<%s>%s %s:</%s> %s",
                             team.getChatColor().asBungee().getColor().getRGB(),
                             team.getChatColor(),
                             player.getDisplayName(),
                             team.getChatColor().asBungee().getColor().getRGB(),
                             message));
+            return true;
         }
         return false;
     }
@@ -231,19 +230,17 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
         @EventHandler
         public void onEntityShootBowEvent(EntityShootBowEvent e){
-            if(!(e.getEntity() instanceof Player))
+            if(!(e.getEntity() instanceof Player player))
                 return;
-            if(!(e.getProjectile() instanceof Arrow))
+            if(!(e.getProjectile() instanceof Arrow arrow))
                 return;
-            Arrow arrow = (Arrow)e.getProjectile();
-            Player player = (Player) e.getEntity();
             if(!(players.contains(player)))
                 return;
             arrow.setDamage(100);
         }
     }
 
-    public class PlayerTeam {
+    public static class PlayerTeam {
         int kills = 0;
         ChatColor chatColor;
         String playerName;
