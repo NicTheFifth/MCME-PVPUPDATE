@@ -19,13 +19,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class TeamConquestEditor extends RedBlueSpawnEditor implements SpecialPointListEditor {
-    Map<String, AddRemoveIndexTeleportQuartet> specialPointListNames =
+public class TeamConquestEditor extends RedBlueSpawnListEditor implements SpecialPointListEditor {
+    Map<String, SpecialPointListEditor.AddRemoveIndexTeleportQuartet> specialPointListNames =
         new HashMap<>();
 
     public TeamConquestEditor(JSONMap map){
-        if(map.getJSONTeamConquest() == null)
+        if(map.getJSONTeamConquest() == null) {
             map.setJSONTeamConquest(new JSONTeamConquest());
+            map.getJSONTeamConquest().setBlueSpawns(new ArrayList<>());
+            map.getJSONTeamConquest().setRedSpawns(new ArrayList<>());
+        }
         if(map.getJSONTeamConquest().getCapturePoints() == null)
             map.getJSONTeamConquest().setCapturePoints(new ArrayList<>());
         setDisplayString("Team Conquest");
@@ -87,14 +90,14 @@ public class TeamConquestEditor extends RedBlueSpawnEditor implements SpecialPoi
     @Override
     public void initSpecialPointListNames() {
         getSpecialPointListNames().put("capturePoint",
-            new AddRemoveIndexTeleportQuartet(
+            new SpecialPointListEditor.AddRemoveIndexTeleportQuartet(
                 this::AddCapturePoint,
                 this::DeleteCapturePoint,
                 ((JSONTeamConquest)jsonGamemode).getCapturePoints()::size,
                 this::TeleportToPoint
             ));
     }
-    public Map<String, AddRemoveIndexTeleportQuartet> getSpecialPointListNames(){
+    public Map<String, SpecialPointListEditor.AddRemoveIndexTeleportQuartet> getSpecialPointListNames(){
         return specialPointListNames;
     }
 }

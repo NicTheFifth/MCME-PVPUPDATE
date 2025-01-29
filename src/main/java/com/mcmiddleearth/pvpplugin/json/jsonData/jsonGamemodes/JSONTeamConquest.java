@@ -1,11 +1,11 @@
 package com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes;
 
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
-import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
+import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnListGamemode;
 
 import java.util.List;
 
-public class JSONTeamConquest extends JSONRedBlueSpawnGamemode {
+public class JSONTeamConquest extends JSONRedBlueSpawnListGamemode {
     List<JSONLocation> capturePoints;
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">

@@ -20,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -37,7 +38,7 @@ import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 
 public abstract class GamemodeRunner implements Listener {
-    protected enum State{
+    public enum State{
         QUEUED, COUNTDOWN, RUNNING, ENDED
     }
     protected String mapName;
@@ -72,7 +73,7 @@ public abstract class GamemodeRunner implements Listener {
             new ComponentBuilder("Can't join the game during countdown, try " +
                 "again after the countdown is finished.")
                 .color(Style.ERROR).create());
-        joinConditions.put(player -> players.contains(player),
+        joinConditions.put(player -> !players.contains(player),
             new ComponentBuilder("Can't join the game, you've already joined it.")
                     .color(Style.ERROR).create()
         );
@@ -135,34 +136,42 @@ public abstract class GamemodeRunner implements Listener {
     //EndActions is a map where the boolean indicates stopped state
     protected Map<Boolean, List<Runnable>> endActions = Map.of(true,
         new ArrayList<>(), false, new ArrayList<>());
+
     public void end(boolean stopped){
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
         PlayerDeathEvent.getHandlerList().unregister(eventListener);
         PlayerQuitEvent.getHandlerList().unregister(eventListener);
         PlayerMoveEvent.getHandlerList().unregister(eventListener);
+        PlayerDropItemEvent.getHandlerList().unregister(eventListener);
         players.forEach(player -> {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
-            player.setGameMode(GameMode.ADVENTURE);
+            player.setGameMode(GameMode.SURVIVAL);
             //player.teleport(pvpPlugin.getSpawn());
         });
         scoreboard.getObjectives().forEach(Objective::unregister);
         gameState = State.ENDED;
-        if(stopped){
-            endActions.get(true).forEach(Runnable::run);
-            return;
-        }
         endActions.get(false).forEach(Runnable::run);
-        spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
+        if(!stopped)
+            spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
+        Consumer<Player> message = player ->
+                sendBaseComponent(
+                        new ComponentBuilder(String.format("%s on %s has ended.", getGamemode(), mapName)).create(), player);
+        spectator.getMembers().forEach(message);
+        players.forEach(message);
+
         Supplier<GamemodeRunner> nextGame = pvpPlugin.getGameQueue().poll();
         if(nextGame != null)
             pvpPlugin.setActiveGame(nextGame.get());
+        else
+            pvpPlugin.setActiveGame(null);
     }
     protected abstract void initEndActions();
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Joining">
     protected Map<Predicate<Player>, BaseComponent[]> joinConditions =
         new HashMap<>();
+
     public boolean canJoin(Player player){
         List<BaseComponent[]> rejectedMessages =
             joinConditions.entrySet().stream()
@@ -174,11 +183,15 @@ public abstract class GamemodeRunner implements Listener {
             player));
         return false;
     }
+
     protected abstract void initJoinConditions();
+
     protected List<Consumer<Player>> joinActions = new ArrayList<>();
+
     public void Join(Player player){
         joinActions.forEach(joinAction -> joinAction.accept(player));
     }
+
     protected abstract void initJoinActions();
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Leave">
@@ -199,36 +212,54 @@ public abstract class GamemodeRunner implements Listener {
     }
     protected abstract  void  initLeaveActions();
     //</editor-fold>
+
     public String getMapName() {
         return mapName;
     }
+
+    public State getGameState() {return gameState;}
+
     public abstract String getGamemode();
 
+    public abstract Boolean trySendMessage(Player player, String message);
+
+    public Boolean trySendSpectatorMessage(Player player, String message){
+        if(spectator.getMembers().contains(player)) {
+            PVPPlugin.getInstance().sendMessageTo(String.format("<gray>Spectator %s: %s</gray>", player.getDisplayName(), message), spectator.getMembers());
+            return true;
+        }
+        return false;
+    }
     protected abstract class GamemodeListener implements Listener {
         HashMap<UUID, Long> playerAreaLeaveTimer = new HashMap<>();
         protected List<Consumer<PlayerDeathEvent>> onPlayerDeathActions =
             new ArrayList<>();
+
         @EventHandler
         public void onPlayerDeath(PlayerDeathEvent e){
             Player player = e.getEntity();
-            if(!players.contains(player))
+            if(!players.contains(player)) {
                 return;
+            }
             PlayerStatEditor.addDeath(player);
             Player killer = player.getKiller();
             if(killer != null)
                 PlayerStatEditor.addKill(killer);
             onPlayerDeathActions.forEach(action -> action.accept(e));
         }
+
         protected abstract void initOnPlayerDeathActions();
+
         @EventHandler
         public void onPlayerLeave(PlayerQuitEvent e){
             Player player = e.getPlayer();
             spectator.getMembers().remove(player);
             player.getInventory().clear();
-            player.setGameMode(GameMode.ADVENTURE);
+            player.setGameMode(GameMode.SURVIVAL);
             player.teleport(PVPPlugin.getInstance().getSpawn());
             leaveGame(player, true);
         }
+
         @EventHandler
         public void onPlayerMove(PlayerMoveEvent e){
             Location from = e.getFrom();
@@ -240,7 +271,7 @@ public abstract class GamemodeRunner implements Listener {
             if(gameState == State.QUEUED || to == null)
                 return;
             if(gameState == State.COUNTDOWN &&
-                    !spectator.getMembers().contains(e.getPlayer()) &&
+                    players.contains(e.getPlayer()) &&
                     (from.getX() != to.getX() || from.getZ() != to.getZ())) {
                 e.setCancelled(true);
                 return;
@@ -259,6 +290,7 @@ public abstract class GamemodeRunner implements Listener {
                 }
             }
         }
+
         @EventHandler
         public void onInventoryClick(InventoryClickEvent e){
             Player player = (Player) e.getWhoClicked();
@@ -267,6 +299,7 @@ public abstract class GamemodeRunner implements Listener {
             if(e.getSlotType() == InventoryType.SlotType.ARMOR)
                 e.setCancelled(true);
         }
+
         @EventHandler
         public void returnDroppedItems(PlayerDropItemEvent e){
             Player player = e.getPlayer();

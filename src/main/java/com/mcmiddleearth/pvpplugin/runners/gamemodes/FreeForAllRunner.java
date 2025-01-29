@@ -6,13 +6,15 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONFreeForAll;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,10 +35,11 @@ import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
-public class FreeForAllRunner extends GamemodeRunner {
+public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
     private final List<Location> spawns;
     private final Map<Player, PlayerTeam> FFAplayers = new HashMap<>();
     int timeLimitSeconds;
+
     public static int DefaultTimeLimit(){
         return 300;
     }
@@ -49,29 +52,29 @@ public class FreeForAllRunner extends GamemodeRunner {
         mapName = map.getTitle();
         eventListener = new FFAListener();
         this.spawns = freeForAll.getSpawns().stream().map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList());
-        initStartConditions();
         initStartActions();
         initEndActions();
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
         initSpectator(map.getSpawn());
+        ChatUtils.AnnounceNewGame("Free for All", mapName, String.valueOf(maxPlayers));
     }
 
     @Override
     protected void initStartConditions() {
-        startConditions.put(() -> players.size() >= 2,
-                new ComponentBuilder("Cannot start a game unless it has two or more players.")
-                        .color(Style.ERROR).create());
     }
+
     @Override
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::join));
+        startActions.add(() -> players.forEach(player -> JoinFreeForAll(player, true)));
         startActions.add(()-> ScoreboardEditor.InitFreeForAll(scoreboard, FFAplayers, timeLimitSeconds));
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
-                if (gameState == State.COUNTDOWN) {
+                if(gameState == State.ENDED)
+                    this.cancel();
+                if(gameState == State.COUNTDOWN) {
                     return;
                 }
                 if (timeLimitSeconds == 0) {
@@ -89,18 +92,20 @@ public class FreeForAllRunner extends GamemodeRunner {
     @Override
     protected void initEndActions() {
         endActions.get(false).add(() -> {
-            Player winningPlayer = FFAplayers.entrySet().stream()
+            int maxKills = FFAplayers.entrySet().stream()
                     .filter(entry -> players.contains(entry.getKey()))
                     .max(Map.Entry.comparingByValue(Comparator.comparingInt(PlayerTeam::getKills)))
-                    .map(Map.Entry::getKey).orElse(null);
+                    .map(entry -> entry.getValue().getKills()).orElse(0);
+            List<Player> winningPlayers = FFAplayers.entrySet().stream()
+                    .filter(entry -> players.contains(entry.getKey()) && entry.getValue().getKills() == maxKills)
+                    .map(Map.Entry::getKey).toList();
             players.forEach(player -> {
-                if (player == winningPlayer) {
+                if (winningPlayers.contains(player)) {
                     PlayerStatEditor.addWon(player);
                 } else {
                     PlayerStatEditor.addLost(player);
                 }
-                sendBaseComponent(new ComponentBuilder(winningPlayer.getName() + " has won!")
-                                .color(FFAplayers.get(winningPlayer).chatColor.asBungee()).create(),
+                sendBaseComponent(new ComponentBuilder(winningPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) + " has won!").create(),
                         player);
             });
         });
@@ -111,7 +116,7 @@ public class FreeForAllRunner extends GamemodeRunner {
     @Override
     protected void initJoinConditions() {
         joinConditions.put(((player) ->
-                        timeLimitSeconds <=60),
+                    timeLimitSeconds >= 60),
                 new ComponentBuilder("The game is close to over, you cannot join.")
                         .color(Style.INFO)
                         .create());
@@ -119,31 +124,31 @@ public class FreeForAllRunner extends GamemodeRunner {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::join);
+        joinActions.add(player -> JoinFreeForAll(player, false));
     }
 
-    private void join(Player player){
-        if(gameState == State.QUEUED) {
+    private void JoinFreeForAll(Player player, boolean onStart){
+        if(!onStart && gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
                     player);
             return;
         }
-
-        ChatColor color = FFAplayers.getOrDefault(player, GenerateNewPlayer(player)).getChatColor();
+        NamedTextColor color = FFAplayers.getOrDefault(player, GenerateNewPlayer(player)).getChatColor();
         KitOutPlayer(player);
-        player.setGameMode(GameMode.ADVENTURE);
+        player.setGameMode(GameMode.SURVIVAL);
         TeamHandler.spawn(player, spawns);
 
-        BaseComponent[] joinMessage = new ComponentBuilder(player.getDisplayName() + " has joined the game!")
-                .color(color.asBungee()).create();
-        players.forEach(playerOther -> sendBaseComponent(joinMessage, playerOther));
-        spectator.getMembers().forEach(spectator -> sendBaseComponent(joinMessage, spectator));
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has joined the game!</%s>",
+                        color,
+                        player.getName(),
+                        color));
     }
 
     private FreeForAllRunner.PlayerTeam GenerateNewPlayer(Player player){
         FreeForAllRunner.PlayerTeam playerTeam = new FreeForAllRunner.PlayerTeam();
-        playerTeam.setChatColor(ChatColor.values()[FFAplayers.size() % 16]);
+        playerTeam.setChatColor((NamedTextColor)NamedTextColor.NAMES.values().toArray()[FFAplayers.size() % 16]);
         FFAplayers.put(player, playerTeam);
         return playerTeam;
     }
@@ -157,9 +162,27 @@ public class FreeForAllRunner extends GamemodeRunner {
         playerInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
         playerInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.INFINITY, 1);
+        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
         playerInventory.setItem(1, bow);
         playerInventory.setItem(2, new ItemStack(Material.ARROW));
+        playerInventory.forEach(KitEditor::setUnbreaking);
+    }
+
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        PlayerTeam team = FFAplayers.get(player);
+        if(team != null){
+            PVPPlugin.getInstance().sendMessage(
+                    String.format("<%s>%s %s:</%s> %s",
+                            team.getChatColor(),
+                            team.getChatColor(),
+                            player.getDisplayName(),
+                            team.getChatColor(),
+                            message));
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -176,7 +199,17 @@ public class FreeForAllRunner extends GamemodeRunner {
         return Gamemodes.FREEFORALL;
     }
 
-    public class FFAListener extends GamemodeListener{
+    @Override
+    public int getTimeLimit() {
+        return timeLimitSeconds;
+    }
+
+    @Override
+    public void setTimeLimit(int timeLimit) {
+        this.timeLimitSeconds=timeLimit;
+    }
+
+    private class FFAListener extends GamemodeListener{
         public FFAListener(){
             initOnPlayerDeathActions();
         }
@@ -186,8 +219,9 @@ public class FreeForAllRunner extends GamemodeRunner {
             onPlayerDeathActions.add(e -> {
                 Player player = e.getEntity();
                 Player killer = player.getKiller();
-                if(killer == null)
+                if(killer == null) {
                     return;
+                }
                 FreeForAllRunner.PlayerTeam killerTeam = FFAplayers.get(killer);
                 killerTeam.addKill();
                 ScoreboardEditor.UpdateFreeForAll(scoreboard, killer, killerTeam);
@@ -205,15 +239,15 @@ public class FreeForAllRunner extends GamemodeRunner {
 
     public static class PlayerTeam {
         int kills = 0;
-        ChatColor chatColor;
+        NamedTextColor chatColor;
 
         public void addKill(){
             kills++;
         }
-        public void setChatColor(ChatColor chatColor){
+        public void setChatColor(NamedTextColor chatColor){
             this.chatColor = chatColor;
         }
-        public ChatColor getChatColor(){return chatColor;}
+        public NamedTextColor getChatColor(){return chatColor;}
         public int getKills() {return kills;}
     }
 

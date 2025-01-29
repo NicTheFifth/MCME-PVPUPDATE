@@ -1,21 +1,18 @@
 PVP Plugin version 2
 ===========
-## To be Implemented
+## To be implemented before release
+* Replace all sendBaseComponent
+
+## To be implemented
 
 ## To be tested
-* Death Run runner
-* Team Conquest runner
-* Infected runner
-* One in the Quiver runner
-* Ringbearer runner
-* Capture the Flag runner
-* Free for All runner
-* Game queue
 
 ## To be fixed
 
+## Bug list
+* Double send of game creation
+
 ## Implemented
-* Disallow removal of armour and/or banner
 * JSON structure
 * Mechanism for doing private games
 * Whitelist
@@ -27,6 +24,8 @@ PVP Plugin version 2
 * Rules in [Gamemodes](src/main/java/com/mcmiddleearth/pvpplugin/statics/Gamemodes.java)
 * Toggle Auto-Join
 * Teleport to spawns (editor)
+* Game queue
+* Variable editing for gamemode runners with variables
 
 ## V.1.5
 * Add Snowball Fight
@@ -34,12 +33,16 @@ PVP Plugin version 2
 * Add random offset for OITQ colours
 * Custom criteria for scoreboard
 * FBT tag whilst in lobby
-* Variable editing for gamemode runners with variables
 * Use get block for coordinates of spawns
+* Spawn incrementing
+* Update to 1.21.x
+* /pvp create \<gamemode> \<map>
 
 ## V2
 * Juggernaut
+* King of the Hill
 * Kit implementation
-* Look at a team rework
+* Look at a team rework (using Team)
 * Functionality to assign team before game start
 * BossBar implementation to keep track of ingame stats
+* Team Chat

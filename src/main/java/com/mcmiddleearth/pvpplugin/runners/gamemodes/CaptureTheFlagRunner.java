@@ -18,8 +18,8 @@ import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.*;
@@ -90,11 +90,11 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
     private void initBlueTeam(JSONCaptureTheFlag jsonCaptureTheFlag) {
         blueTeam.setPrefix("Blue");
         blueTeam.setTeamColour(Color.BLUE);
-        blueTeam.setChatColor(ChatColor.BLUE);
+        blueTeam.setChatColor(NamedTextColor.BLUE);
         blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(jsonCaptureTheFlag.getBlueSpawns().stream()
                 .map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
-        blueTeam.setGameMode(GameMode.ADVENTURE);
+        blueTeam.setGameMode(GameMode.SURVIVAL);
         blueTeam.setFlag(LocationTranscriber.TranscribeFromJSON(jsonCaptureTheFlag.getBlueFlag()).add(0,1,0));
         blueTeam.setFlagMaterial(Material.BLUE_BANNER);
     }
@@ -102,11 +102,11 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
     private void initRedTeam(JSONCaptureTheFlag jsonCaptureTheFlag) {
         redTeam.setPrefix("Red");
         redTeam.setTeamColour(Color.RED);
-        redTeam.setChatColor(ChatColor.RED);
+        redTeam.setChatColor(NamedTextColor.RED);
         redTeam.setKit(createKit(Color.RED));
         redTeam.setSpawnLocations(jsonCaptureTheFlag.getRedSpawns().stream()
                 .map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
-        redTeam.setGameMode(GameMode.ADVENTURE);
+        redTeam.setGameMode(GameMode.SURVIVAL);
         redTeam.setFlag(LocationTranscriber.TranscribeFromJSON(jsonCaptureTheFlag.getRedFlag()).add(0,1,0));
         redTeam.setFlagMaterial(Material.RED_BANNER);
     }
@@ -122,12 +122,13 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.INFINITY, 1);
+            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                     color));
-        });
+            returnInventory.forEach(KitEditor::setUnbreaking);
+            });
         return new Kit(invFunc);
     }
 
@@ -172,11 +173,15 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
 
     @Override
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::JoinCaptureTheFlag));
+        startActions.add(() -> players.forEach(player -> JoinCaptureTheFlag(player, true)));
         startActions.add(()-> ScoreboardEditor.InitCaptureTheFlag(scoreboard, scoreGoal, timeLimit));
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
+                if (gameState == State.ENDED){
+                    this.cancel();
+                    return;
+                }
                 if(gameState == State.COUNTDOWN)
                 {
                     return;
@@ -184,6 +189,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 if (timeLimit == 0) {
                     if(redTeam.getPoints() == blueTeam.getPoints()){
                         suddenDeath.getAndSet(true);
+                        players.forEach (player -> sendBaseComponent(new ComponentBuilder("Sudden death, the next to score wins!!!").create(), player));
                     } else {
                         end(false);
                         gameState = State.ENDED;
@@ -194,7 +200,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 timeLimit--;
                 ScoreboardEditor.UpdateTimeCaptureTheFlag(scoreboard, timeLimit);
             }
-        }.runTaskTimer(PVPPlugin.getInstance(),5000,20));
+        }.runTaskTimer(PVPPlugin.getInstance(),100,20));
     }
 
     //<editor-fold defaultstate="collapsed" desc="End conditions">
@@ -278,55 +284,39 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::JoinCaptureTheFlag);
+        joinActions.add(player -> JoinCaptureTheFlag(player, false));
     }
 
-    private void JoinCaptureTheFlag(Player player){
-        if(gameState == State.QUEUED) {
+    private void JoinCaptureTheFlag(Player player, boolean onStart){
+        if(!onStart && gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
                     player);
             return;
         }
         if(redTeam.getMembers().contains(player)) {
-            joinRedTeam(player);
+            joinTeam(player, redTeam);
             return;
         }
         if(blueTeam.getMembers().contains(player)) {
-            joinBlueTeam(player);
+            joinTeam(player, blueTeam);
             return;
         }
         TeamHandler.addToTeam((team -> team.getOnlineMembers().size()),
-                Pair.of(redTeam, () -> joinRedTeam(player)),
-                Pair.of(blueTeam, () -> joinBlueTeam(player)));
+                Pair.of(redTeam, () -> joinTeam(player, redTeam)),
+                Pair.of(blueTeam, () -> joinTeam(player, blueTeam)));
     }
 
-    private void joinRedTeam(Player player){
-        redTeam.getOnlineMembers().add(player);
-        Matchmaker.addMember(player, redTeam);
-        TeamHandler.spawn(player, redTeam);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-                String.format("%s has joined the red team!", player.getName()))
-                .color(redTeam.getChatColor()).create();
-        players.forEach(playerOther ->
-                sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-                sendBaseComponent(publicJoinMessage, spectator));
-
-    }
-
-    private  void joinBlueTeam(Player player){
-        blueTeam.getOnlineMembers().add(player);
-        Matchmaker.addMember(player, blueTeam);
-        TeamHandler.spawn(player, blueTeam);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-                String.format("%s has joined the blue team!", player.getName()))
-                .color(blueTeam.getChatColor()).create();
-        players.forEach(playerOther ->
-                sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-                sendBaseComponent(publicJoinMessage, spectator));
-
+    private void joinTeam(Player player, CTFTeam team){
+        team.getOnlineMembers().add(player);
+        Matchmaker.addMember(player, team);
+        TeamHandler.spawn(player, team);
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has joined the %s team!</%s>",
+                        team.getChatColor(),
+                        player.getName(),
+                        team.getPrefix(),
+                        team.getChatColor()));
     }
 
     @Override
@@ -336,36 +326,46 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
 
     private void LeaveCaptureTheFlag(Player player){
         if (redTeam.getMembers().contains(player)) {
-            leaveRedTeam(player);
+            leaveTeam(player, redTeam.getChatColor());
+            redTeam.getOnlineMembers().remove(player);
         } else {
-            leaveBlueTeam(player);
+            leaveTeam(player,blueTeam.getChatColor());
+            blueTeam.getOnlineMembers().remove(player);
         }
         if(hasEmptyTeam())
             end(true);
     }
 
-    private void leaveRedTeam(Player player){
-        redTeam.getOnlineMembers().remove(player);
-        Consumer<Player> leaveMessage = playerOther->sendBaseComponent(
-                new ComponentBuilder(String.format("%s has left the game.",
-                        player.getName()))
-                        .color(redTeam.getChatColor()).create(),
-                playerOther
-        );
-        players.forEach(leaveMessage);
-        spectator.getMembers().forEach(leaveMessage);
+    private void leaveTeam(Player player, NamedTextColor color){
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has left the game.</%s>",
+                        color,
+                        player.getName(),
+                        color));
     }
 
-    private void leaveBlueTeam(Player player){
-        blueTeam.getOnlineMembers().remove(player);
-        Consumer<Player> leaveMessage = playerOther->sendBaseComponent(
-                new ComponentBuilder(String.format("%s has left the game.",
-                        player.getName()))
-                        .color(redTeam.getChatColor()).create(),
-                playerOther
-        );
-        players.forEach(leaveMessage);
-        spectator.getMembers().forEach(leaveMessage);
+    @Override
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        CTFTeam team = null;
+        if(blueTeam.getMembers().contains(player)){
+            team = blueTeam;
+        }
+        if(redTeam.getMembers().contains(player)){
+            team=redTeam;
+        }
+        if(team == null)
+            return false;
+
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s %s:</%s> %s",
+                        team.getChatColor(),
+                        team.getPrefix(),
+                        player.getDisplayName(),
+                        team.getChatColor(),
+                        message));
+        return true;
     }
 
     @Override
@@ -393,22 +393,23 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         this.timeLimit = timeLimit;
     }
 
-    public class CTFListener extends GamemodeListener{
+    private class CTFListener extends GamemodeListener{
         public CTFListener(){
             initOnPlayerDeathActions();
         }
-
         @Override
         protected void initOnPlayerDeathActions() {
             onPlayerDeathActions.add(e -> {
                 Player player = e.getEntity();
-                if(Objects.equals(player.getInventory().getHelmet(), new ItemStack(blueTeam.getFlagMaterial()))) {
+                if(player.getInventory().getHelmet() == null)
+                    return;
+                if(Objects.equals(player.getInventory().getHelmet().getType(), blueTeam.getFlagMaterial())) {
                     players.forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Red team has dropped blue's flag.").create(), playerOther));
                     spectator.getMembers().forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Red team has dropped blue's flag.").create(), playerOther));
                     blueTeam.getFlag().getBlock().setType(blueTeam.getFlagMaterial());
                     redTeam.getKit().getInventory().accept(player);
                 }
-                if(Objects.equals(player.getInventory().getHelmet(), new ItemStack(redTeam.getFlagMaterial()))) {
+                if(Objects.equals(player.getInventory().getHelmet().getType(), redTeam.getFlagMaterial())) {
                     players.forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Blue team has dropped red's flag.").create(), playerOther));
                     spectator.getMembers().forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Blue team has dropped red's flag.").create(), playerOther));
                     redTeam.getFlag().getBlock().setType(redTeam.getFlagMaterial());
@@ -438,7 +439,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 return;
             if(!players.contains(player))
                 return;
-            if(block.getLocation() != redTeam.getFlag() || block.getLocation() != blueTeam.getFlag())
+            if(!block.getLocation().equals(redTeam.getFlag()) && !block.getLocation().equals(blueTeam.getFlag()))
                 return;
             if(redTeam.getMembers().contains(player) && Objects.equals(block.getType(), blueTeam.getFlagMaterial())){
                 player.getInventory().setHelmet(new ItemStack(blueTeam.getFlagMaterial()));
@@ -457,7 +458,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         }
 
         @EventHandler
-        public void onPlayerMove(PlayerMoveEvent e){
+        public void onPlayerMoveCTF(PlayerMoveEvent e){
             Player player = e.getPlayer();
             if(gameState != State.RUNNING )
                 return;
@@ -465,7 +466,9 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 return;
             if(e.getTo() == null)
                 return;
-            if(Objects.equals(player.getInventory().getHelmet(), new ItemStack(blueTeam.getFlagMaterial()))){
+            if(player.getInventory().getHelmet() == null)
+                return;
+            if(Objects.equals(player.getInventory().getHelmet().getType(), blueTeam.getFlagMaterial())){
                 if(redTeam.getFlag().distance(e.getTo()) <= 5){
                     redTeam.addPoint();
                     redTeam.getKit().getInventory().accept(player);
@@ -476,11 +479,14 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                     players.forEach(message);
                     spectator.getMembers().forEach(message);
                     if(suddenDeath.get()){
+                        redTeam.WinSuddenDeath(scoreGoal);
                         end(false);
+                        return;
                     }
+                    blueTeam.getFlag().getBlock().setType(blueTeam.getFlagMaterial());
                 }
             }
-            if(Objects.equals(player.getInventory().getHelmet(), new ItemStack(redTeam.getFlagMaterial()))){
+            if(Objects.equals(player.getInventory().getHelmet().getType(), redTeam.getFlagMaterial())){
                 if(blueTeam.getFlag().distance(e.getTo()) <= 5){
                     blueTeam.addPoint();
                     blueTeam.getKit().getInventory().accept(player);
@@ -491,9 +497,16 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                     players.forEach(message);
                     spectator.getMembers().forEach(message);
                     if(suddenDeath.get()){
+                        blueTeam.WinSuddenDeath(scoreGoal);
                         end(false);
+                        return;
                     }
+                    redTeam.getFlag().getBlock().setType(redTeam.getFlagMaterial());
                 }
+            }
+            if(isScoreGoalReached()) {
+                end(false);
+                return;
             }
             ScoreboardEditor.UpdatePointsCaptureTheFlag(scoreboard, blueTeam, redTeam);
         }
@@ -503,6 +516,9 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         Location flag;
         Material flagMaterial;
 
+        public void WinSuddenDeath(int scoreGoal){
+            points = scoreGoal;
+        }
 
         public void setFlagMaterial(Material flagMaterial){ this.flagMaterial = flagMaterial;}
         public Material getFlagMaterial(){return flagMaterial;}

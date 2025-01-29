@@ -4,14 +4,19 @@ import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 public class ChatUtils {
     public static void sendBroadcast(BaseComponent[] message){
-        PVPPlugin.getInstance().getServer().getOnlinePlayers().forEach( player ->
-                sendBaseComponent(message, player)
-        );
+//        PVPPlugin.getInstance().getServer().getOnlinePlayers().forEach( player ->
+//                sendBaseComponent(message, player)
+//        );
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Message");
+        out.writeUTF("ALL");
+        out.writeUTF(BaseComponent.toLegacyText(message));
+        PVPPlugin.getInstance().getServer().sendPluginMessage(PVPPlugin.getInstance(), "BungeeCord", out.toByteArray());
     }
 
     public static void AnnounceNewGame(String gamemode, String map, String max){

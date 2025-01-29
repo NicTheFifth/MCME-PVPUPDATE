@@ -18,6 +18,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class ScoreboardEditor {
     //<editor-fold defaultstate="collapsed" desc="Team Deathmatch">
@@ -98,16 +99,17 @@ public class ScoreboardEditor {
 
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="One in the Quiver">
-    public static void InitOneInTheQuiver(Scoreboard scoreboard, Map<Player, OneInTheQuiverRunner.PlayerTeam> players, int scoreGoal) {
+    public static void InitOneInTheQuiver(Scoreboard scoreboard, Map<UUID, OneInTheQuiverRunner.PlayerTeam> players, int scoreGoal) {
         Objective Points = scoreboard.registerNewObjective("Points",
                 Criteria.DUMMY, "Points");
         Points.getScore(ChatColor.WHITE + "Goal:").setScore(scoreGoal);
         players.forEach((player, playerTeam) ->
-                Points.getScore(playerTeam.getChatColor() + player.getName() + ":").setScore(0));
+                Points.getScore(playerTeam.getChatColor() + playerTeam.getPlayerName()+ ":").setScore(0));
+        Points.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
-    public static void UpdateOneInTheQuiver(Scoreboard scoreboard, Player player, OneInTheQuiverRunner.PlayerTeam playerTeam){
+    public static void UpdateOneInTheQuiver(Scoreboard scoreboard, OneInTheQuiverRunner.PlayerTeam playerTeam){
         scoreboard.getObjective("Points")
-                .getScore(playerTeam.getChatColor() + player.getName() + ":").setScore(playerTeam.getKills());
+                .getScore(playerTeam.getChatColor() + playerTeam.getPlayerName() + ":").setScore(playerTeam.getKills());
     }
     //</editor-fold>
 
@@ -118,6 +120,7 @@ public class ScoreboardEditor {
         Points.getScore(ChatColor.WHITE + "Time:").setScore(timeLimitSeconds);
         players.forEach((player, playerTeam) ->
                 Points.getScore(playerTeam.getChatColor() + player.getName() + ":").setScore(0));
+        Points.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
     public static void UpdateFreeForAll(Scoreboard scoreboard, Player player, FreeForAllRunner.PlayerTeam playerTeam){
         scoreboard.getObjective("Points")

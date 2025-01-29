@@ -9,6 +9,7 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -17,8 +18,8 @@ import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Color;
@@ -30,6 +31,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,6 +43,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
+import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
 
 public class InfectedRunner extends GamemodeRunner implements TimeLimit {
     int timeLimit;
@@ -65,6 +69,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
+        ChatUtils.AnnounceNewGame("Infected", mapName, String.valueOf(maxPlayers));
     }
     //<editor-fold defaultstate="collapsed" desc="Teams">
     private void initTeams(JSONMap map){
@@ -72,15 +77,16 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         initSurvivor(map.getJSONInfected().getSurvivorSpawn());
         initInfected(map.getJSONInfected().getInfectedSpawn());
     }
+
     private void initSurvivor(JSONLocation survivorSpawn){
         survivors.setPrefix("Survivor");
         survivors.setTeamColour(Color.BLUE);
-        survivors.setChatColor(ChatColor.BLUE);
-        survivors.setGameMode(GameMode.ADVENTURE);
+        survivors.setChatColor(BLUE);
+        survivors.setGameMode(GameMode.SURVIVAL);
         survivors.setKit(createSurvivorKit());
         survivors.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(survivorSpawn)));
-
     }
+
     private Kit createSurvivorKit(){
         Consumer<Player> invFunc = (player -> {
             createInfectedKit(Color.BLUE).accept(player);
@@ -91,19 +97,22 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                     Color.BLUE));
+            returnInventory.forEach(KitEditor::setUnbreaking);
         });
         return new Kit(invFunc);
 
     }
+
     private void initInfected(JSONLocation infectedSpawn){
         infected.setPrefix("Infected");
         infected.setTeamColour(Color.RED);
-        infected.setChatColor(ChatColor.RED);
-        infected.setGameMode(GameMode.ADVENTURE);
+        infected.setChatColor(NamedTextColor.RED);
+        infected.setGameMode(GameMode.SURVIVAL);
         //TODO: Fix the infected kit to be slightly stronger
         infected.setKit(new Kit(createInfectedKit(Color.RED)));
         infected.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(infectedSpawn)));
     }
+
     private @NotNull Consumer<Player> createInfectedKit(Color color){
         return (x -> {
             PlayerInventory returnInventory = x.getInventory();
@@ -111,11 +120,12 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
             returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.INFINITY, 1);
+            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                     color));
+            returnInventory.forEach(KitEditor::setUnbreaking);
         });
     }
     //</editor-fold>
@@ -138,12 +148,18 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
     //<editor-fold defaultstate="collapsed" desc="Start Actions">
     @Override
     protected void initStartActions() {
-        startActions.add(this::initWithRandomInfected);
-        startActions.add(() -> players.forEach(this::JoinInfected));
+        startActions.add(() -> {
+            initWithRandomInfected();
+            players.forEach(player -> JoinInfected(player, true));
+        });
         startActions.add(()-> ScoreboardEditor.InitInfected(scoreboard, timeLimit, infected, survivors));
         startActions.add(() -> new BukkitRunnable() {
             @Override
             public void run() {
+                if (gameState == State.ENDED){
+                    this.cancel();
+                    return;
+                }
                 if(gameState == State.COUNTDOWN)
                 {
                     return;
@@ -159,43 +175,42 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
             }
         }.runTaskTimer(PVPPlugin.getInstance(),100,20));
     }
+
     private void initWithRandomInfected() {
         if (!infected.getOnlineMembers().isEmpty())
             return;
-        Player player = null;
-        while (survivors.getOnlineMembers().contains(player)) {
-            int randomInfectedIndex = ThreadLocalRandom.current().nextInt(0, players.size() + 1);
-            player = (Player) players.toArray()[randomInfectedIndex];
-        }
-        infected.getMembers().add(player);
+        int randomInfectedIndex = ThreadLocalRandom.current().nextInt(0, players.size());
+        infected.getMembers().add((Player) players.toArray()[randomInfectedIndex]);
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="End Actions">
     @Override
     protected void initEndActions() {
-            endActions.get(false).add(() ->
-                    getWinningTeamMembers().forEach(player -> {
-                        PlayerStatEditor.addWon(player);
-                        PlayerStatEditor.addPlayed(player);
-                    }));
-            endActions.get(false).add(() ->
-                    getLosingTeamMembers().forEach(player -> {
-                        PlayerStatEditor.addLost(player);
-                        PlayerStatEditor.addPlayed(player);
-                    }));
-            endActions.get(false).add(() ->{
-                if(survivors.getOnlineMembers().isEmpty())
-                    players.forEach(player ->
-                            sendBaseComponent(
-                                    new ComponentBuilder("Infected Won!!!").color(ChatColor.RED)
-                                            .create(), player)) ;
-                else
-                    players.forEach(player ->
-                            sendBaseComponent(
-                                    new ComponentBuilder("Survivors Won!!!").color(ChatColor.BLUE)
-                                            .create(), player));});
-            endActions.get(false).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
-            endActions.get(true).add(()-> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
+        endActions.get(false).add(() ->
+                getWinningTeamMembers().forEach(player -> {
+                    PlayerStatEditor.addWon(player);
+                    PlayerStatEditor.addPlayed(player);
+                }));
+        endActions.get(false).add(() ->
+                getLosingTeamMembers().forEach(player -> {
+                    PlayerStatEditor.addLost(player);
+                    PlayerStatEditor.addPlayed(player);
+                }));
+        endActions.get(false).add(() ->{
+            if(survivors.getOnlineMembers().isEmpty())
+                players.forEach(player ->
+                        sendBaseComponent(
+                                new ComponentBuilder("Infected Won!!!").color(ChatColor.RED)
+                                        .create(), player)) ;
+            else
+                players.forEach(player ->
+                        sendBaseComponent(
+                                new ComponentBuilder("Survivors Won!!!").color(ChatColor.BLUE)
+                                        .create(), player));});
+        endActions.get(false).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
+        endActions.get(true).add(()-> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
+        endActions.get(false).add(() -> players.forEach(player -> player.removePotionEffect(PotionEffectType.SPEED)));
+        endActions.get(true).add(() -> players.forEach(player -> player.removePotionEffect(PotionEffectType.SPEED)));
     }
     private Set<Player> getLosingTeamMembers() {
         if(survivors.getOnlineMembers().isEmpty())
@@ -220,53 +235,42 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::JoinInfected);
+        joinActions.add(player -> JoinInfected(player, false));
     }
 
-    private void JoinInfected(Player player){
-        if(gameState == State.QUEUED) {
+    private void JoinInfected(Player player, boolean onStart){
+        if(!onStart && gameState == State.QUEUED) {
             sendBaseComponent(
                     new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
                     player);
             return;
         }
         if(infected.getMembers().contains(player)) {
-            JoinInfectedTeam(player);
+            join(player, infected);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 1));
             return;
         }
         if(survivors.getMembers().contains(player)) {
-            JoinSurvivorsTeam(player);
+            join(player, survivors);
             return;
         }
         TeamHandler.addToTeamInfected(
-                Pair.of(infected, () -> JoinInfectedTeam(player)),
-                Pair.of(survivors, () -> JoinSurvivorsTeam(player)));
+                Pair.of(infected, () ->{
+                    join(player, infected);
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 2));}),
+                Pair.of(survivors, () -> join(player, survivors)));
     }
 
-    private void JoinInfectedTeam(Player player){
-        infected.getOnlineMembers().add(player);
-        Matchmaker.addMember(player, infected);
-        TeamHandler.spawn(player, infected);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-                String.format("%s has joined the infected!", player.getName()))
-                .color(infected.getChatColor()).create();
-        players.forEach(playerOther ->
-                sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-                sendBaseComponent(publicJoinMessage, spectator));
-    }
-    
-    private void JoinSurvivorsTeam(Player player){
-        survivors.getOnlineMembers().add(player);
-        Matchmaker.addMember(player, survivors);
-        TeamHandler.spawn(player, survivors);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-                String.format("%s has joined the survivors!", player.getName()))
-                .color(survivors.getChatColor()).create();
-        players.forEach(playerOther ->
-                sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-                sendBaseComponent(publicJoinMessage, spectator));
+    private void join(Player player, Team team){
+        team.getOnlineMembers().add(player);
+        Matchmaker.addMember(player, team);
+        TeamHandler.spawn(player, team);
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has joined the %s</%s>",
+                        team.getChatColor(),
+                        player.getName(),
+                        team.getPrefix(),
+                        team.getChatColor()));
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Leave">
@@ -277,9 +281,9 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
 
     private void leave(Player player){
         if (infected.getMembers().contains(player)) {
-            leaveInfected(player);
+            leave(player, infected);
         } else {
-            leaveSurvivors(player);
+            leave(player, survivors);
         }
         if(infected.getOnlineMembers().isEmpty())
             end(true);
@@ -287,27 +291,35 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
             end(false);
     }
 
-    private void leaveInfected(Player player){
-        infected.getOnlineMembers().remove(player);
-        players.forEach(playerOther->sendBaseComponent(
-                new ComponentBuilder(String.format("%s has left the game.",
-                        player.getName()))
-                        .color(infected.getChatColor()).create(),
-                playerOther
-        ));
-
-    }
-
-    private void leaveSurvivors(Player player){
-        survivors.getOnlineMembers().remove(player);
-        players.forEach(playerOther->sendBaseComponent(
-                new ComponentBuilder(String.format("%s has left the game.",
-                        player.getName()))
-                        .color(survivors.getChatColor()).create(),
-                playerOther
-        ));
+    private void leave(Player player, Team team){
+        team.getOnlineMembers().remove(player);
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has left the game</%s>",
+                        team.getChatColor(),
+                        player.getName(),
+                        team.getChatColor()));
     }
     //</editor-fold>
+
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        Team team = null;
+        if(infected.getMembers().contains(player))
+            team = infected;
+        if(survivors.getMembers().contains(player))
+            team=survivors;
+        if(team == null)
+            return false;
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s %s:</%s> %s",
+                        team.getChatColor(),
+                        team.getPrefix(),
+                        player.getDisplayName(),
+                        team.getChatColor(),
+                        message));
+        return true;
+    }
 
     @Override
     public int getTimeLimit() {
@@ -323,7 +335,8 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
     public String getGamemode() {
         return Gamemodes.INFECTED;
     }
-    public class IListener extends GamemodeListener{
+
+    private class IListener extends GamemodeListener{
         public IListener(){
             initOnPlayerDeathActions();
         }
@@ -344,9 +357,10 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             Player player = e.getPlayer();
-            if(infected.getMembers().contains(player))
+            if(infected.getMembers().contains(player)) {
                 TeamHandler.respawn(e, infected);
-
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 1));
+            }
         }
 
     }

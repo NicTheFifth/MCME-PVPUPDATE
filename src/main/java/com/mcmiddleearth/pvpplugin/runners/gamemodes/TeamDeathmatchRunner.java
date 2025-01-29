@@ -1,12 +1,14 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
 import com.mcmiddleearth.command.Style;
+import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamDeathMatch;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -16,7 +18,6 @@ import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Color;
@@ -37,6 +38,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
+import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 public class TeamDeathmatchRunner extends GamemodeRunner {
     TDMTeam redTeam = new TDMTeam();
@@ -54,6 +57,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
+        ChatUtils.AnnounceNewGame("Team Deathmatch", mapName, String.valueOf(maxPlayers));
     }
     //<editor-fold defaultstate="collapsed" desc="Teams">
     private void initTeams(JSONMap map){
@@ -65,21 +69,21 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     private void initTeamBlue(JSONLocation blueSpawn){
         blueTeam.setPrefix("Blue");
         blueTeam.setTeamColour(Color.BLUE);
-        blueTeam.setChatColor(ChatColor.BLUE);
+        blueTeam.setChatColor(BLUE);
         blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(
             List.of(LocationTranscriber.TranscribeFromJSON(blueSpawn)));
-        blueTeam.setGameMode(GameMode.ADVENTURE);
+        blueTeam.setGameMode(GameMode.SURVIVAL);
     }
 
     private void initTeamRed(JSONLocation redSpawn){
         redTeam.setPrefix("Red");
         redTeam.setTeamColour(Color.RED);
-        redTeam.setChatColor(ChatColor.RED);
+        redTeam.setChatColor(RED);
         redTeam.setKit(createKit(Color.RED));
         redTeam.setSpawnLocations(
             List.of(LocationTranscriber.TranscribeFromJSON(redSpawn)));
-        redTeam.setGameMode(GameMode.ADVENTURE);
+        redTeam.setGameMode(GameMode.SURVIVAL);
     }
 
     private @NotNull Kit createKit(Color color){
@@ -93,11 +97,12 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.INFINITY, 1);
+            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                 color));
+            returnInventory.forEach(KitEditor::setUnbreaking);
         });
         return new Kit(invFunc);
     }
@@ -122,7 +127,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     //<editor-fold defaultstate="collapsed" desc="Start actions"
     @Override
     protected void initStartActions() {
-        startActions.add(() -> players.forEach(this::JoinTeamDeathmatch));
+        startActions.add(() -> players.forEach(player -> JoinTeamDeathmatch(player, true)));
         startActions.add(()-> ScoreboardEditor.InitTeamDeathmatch(scoreboard,
             redTeam, blueTeam
             ));
@@ -190,73 +195,45 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
 
     @Override
     protected void initJoinActions() {
-        joinActions.add(this::JoinTeamDeathmatch);
+        joinActions.add(player -> JoinTeamDeathmatch(player, false));
     }
 
-    private void JoinTeamDeathmatch(Player player){
-        if(gameState == State.QUEUED) {
+    private void JoinTeamDeathmatch(Player player, boolean onStart){
+        if(!onStart && gameState == State.QUEUED) {
             sendBaseComponent(
                 new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
                 player);
             return;
         }
         if(redTeam.getMembers().contains(player)) {
-            joinRedTeam(player);
+            join(player, redTeam);
             return;
         }
         if(blueTeam.getMembers().contains(player)) {
-            joinBlueTeam(player);
+            join(player, blueTeam);
             return;
         }
         TeamHandler.addToTeam((team -> team.getOnlineMembers().size()),
-            Pair.of(redTeam, () -> joinRedTeam(player)),
-            Pair.of(blueTeam, () -> joinBlueTeam(player)));
+            Pair.of(redTeam, () -> join(player, redTeam)),
+            Pair.of(blueTeam, () -> join(player, blueTeam)));
     }
-
-    private void joinRedTeam(Player player){
-        redTeam.getOnlineMembers().add(player);
-        Matchmaker.addMember(player, redTeam);
-        if(redTeam.getDeadMembers().contains(player)) {
+    private void join(Player player, TDMTeam team){
+        team.getOnlineMembers().add(player);
+        Matchmaker.addMember(player, team);
+        if(team.getDeadMembers().contains(player)){
             TeamHandler.spawn(player, spectator);
-            sendBaseComponent(
-                new ComponentBuilder("You've joined the red team, but were " +
-                    "already dead.")
-                    .color(Style.INFO)
-                    .create(),
-                player);
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<aqua>You've joined the %s team, but were already dead.</aqua>",
+                            team.getPrefix()), player);
             return;
         }
-        TeamHandler.spawn(player, redTeam);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-            String.format("%s has joined the red team!", player.getName()))
-            .color(redTeam.getChatColor()).create();
-        players.forEach(playerOther ->
-            sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-            sendBaseComponent(publicJoinMessage, spectator));
-    }
-
-    private void joinBlueTeam(Player player){
-        blueTeam.getOnlineMembers().add(player);
-        Matchmaker.addMember(player, blueTeam);
-        if(redTeam.getDeadMembers().contains(player)) {
-            TeamHandler.spawn(player, spectator);
-            sendBaseComponent(
-                new ComponentBuilder("You've joined the blue team, but were " +
-                    "already dead.")
-                    .color(Style.INFO)
-                    .create(),
-                player);
-            return;
-        }
-        TeamHandler.spawn(player, blueTeam);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-            String.format("%s has joined the blue team!", player.getName()))
-            .color(blueTeam.getChatColor()).create();
-        players.forEach(playerOther ->
-            sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-            sendBaseComponent(publicJoinMessage, spectator));
+        TeamHandler.spawn(player, team);
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has joined the %s team!</%s>",
+                        team.getChatColor(),
+                        player.getName(),
+                        team.getPrefix(),
+                        team.getChatColor()));
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Leave">
@@ -267,9 +244,9 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
 
     private void leaveTeamDeathmatch(Player player){
         if (redTeam.getMembers().contains(player)) {
-            leaveRedTeam(player);
+            leave(player,redTeam);
         } else {
-            leaveBlueTeam(player);
+            leave(player,blueTeam);
         }
         if(!blueTeam.hasAliveMembers() || !redTeam.hasAliveMembers()) {
             end(true);
@@ -277,32 +254,68 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         ScoreboardEditor.updateValueTeamDeathmatch(scoreboard, redTeam,blueTeam);
     }
 
-    private void leaveRedTeam(Player player){
-        redTeam.getOnlineMembers().remove(player);
-        players.forEach(playerOther->sendBaseComponent(
-            new ComponentBuilder(String.format("%s has left the game.",
-                player.getName()))
-                .color(redTeam.getChatColor()).create(),
-            playerOther
-        ));
-    }
-
-    private void leaveBlueTeam(Player player){
-        blueTeam.getOnlineMembers().remove(player);
-        players.forEach(playerOther->sendBaseComponent(
-            new ComponentBuilder(String.format("%s has left the game.",
-                player.getName()))
-                .color(blueTeam.getChatColor()).create(),
-            playerOther
-        ));
+    private void leave(Player player, Team team){
+        team.getOnlineMembers().remove(player);
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has left the game</%s>",
+                        team.getChatColor(),
+                        player.getName(),
+                        team.getChatColor()));
     }
     //</editor-fold>
+
+    @Override
+    public Boolean trySendSpectatorMessage(Player player, String message){
+        return trySendMessage(player, message);
+    }
+
+    public Boolean trySendMessage(Player player, String message){
+        if(!players.contains(player))
+            return false;
+        String prefix = null;
+        if(blueTeam.getDeadMembers().contains(player))
+            prefix = "Dead Blue";
+        if(redTeam.getDeadMembers().contains(player))
+            prefix = "Dead Red";
+        if(spectator.getMembers().contains(player))
+            prefix = "Spectator";
+
+        if(prefix != null){
+            Set<Player> deads = new HashSet<>(blueTeam.getDeadMembers());
+            deads.addAll(spectator.getMembers());
+            deads.addAll(redTeam.getDeadMembers());
+            PVPPlugin.getInstance().sendMessageTo(
+                    String.format("<gray>%s %s:</gray> %s",
+                            prefix,
+                            player.getDisplayName(),
+                            message),
+                    deads);
+            return true;
+        }
+        Team team = null;
+        if(redTeam.getMembers().contains(player))
+            team = redTeam;
+        if(blueTeam.getMembers().contains(player))
+            team=blueTeam;
+        if(team == null)
+            return false;
+
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s %s:</%s> %s",
+                        team.getChatColor(),
+                        team.getPrefix(),
+                        player.getDisplayName(),
+                        team.getChatColor(),
+                        message));
+        return true;
+    }
+
     @Override
     public String getGamemode() {
         return Gamemodes.TEAMDEATHMATCH;
     }
 
-    public class TDMListener extends GamemodeListener{
+    private class TDMListener extends GamemodeListener{
         public TDMListener(){
             initOnPlayerDeathActions();
         }

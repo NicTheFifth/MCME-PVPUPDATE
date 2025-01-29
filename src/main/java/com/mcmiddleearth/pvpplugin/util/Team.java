@@ -1,6 +1,6 @@
 package com.mcmiddleearth.pvpplugin.util;
 
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -12,7 +12,7 @@ public class Team {
     protected Set<Player> members = new HashSet<>();
     protected Set<Player> onlineMembers = new HashSet<>();
     Color teamColour;
-    ChatColor chatColor;
+    NamedTextColor chatColor;
     String Prefix;
     Kit kit;
     List<Location> spawnLocations = new ArrayList<>();
@@ -31,8 +31,8 @@ public class Team {
     public void setTeamColour(final Color teamColour) {
         this.teamColour = teamColour;
     }
-    public ChatColor getChatColor(){return this.chatColor;}
-    public void setChatColor(ChatColor chatColor){this.chatColor = chatColor;}
+    public NamedTextColor getChatColor(){return this.chatColor;}
+    public void setChatColor(NamedTextColor chatColor){this.chatColor = chatColor;}
     public String getPrefix() {
         return this.Prefix;
     }

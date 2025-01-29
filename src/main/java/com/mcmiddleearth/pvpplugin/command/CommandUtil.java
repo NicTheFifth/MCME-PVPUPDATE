@@ -1,6 +1,8 @@
 package com.mcmiddleearth.pvpplugin.command;
 
 import com.mcmiddleearth.command.sender.McmeCommandSender;
+import com.mcmiddleearth.pvpplugin.PVPPlugin;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 
