@@ -14,9 +14,11 @@ import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -32,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
@@ -86,7 +89,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
             } else {
                 PlayerStatEditor.addLost(player);
             }
-            sendBaseComponent(new ComponentBuilder(winningPlayer.getDisplayName() + " has won!").create(),
+            sendBaseComponent(new ComponentBuilder(winningPlayer.getName() + " has won!").create(),
                     player);
         }}));
         endActions.get(false).add(() -> {
@@ -120,21 +123,22 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
             return;
         }
 
-        ChatColor color = OITQplayers.getOrDefault(player.getUniqueId(), GenerateNewPlayer(player)).getChatColor();
+        NamedTextColor color = OITQplayers.getOrDefault(player.getUniqueId(), GenerateNewPlayer(player)).getChatColor();
         KitOutPlayer(player);
         player.setGameMode(GameMode.SURVIVAL);
         TeamHandler.spawn(player, spawns);
 
-        BaseComponent[] joinMessage = new ComponentBuilder(player.getDisplayName() + " has joined the game!")
-                .color(color.asBungee()).create();
-        players.forEach(playerOther -> sendBaseComponent(joinMessage, playerOther));
-        spectator.getMembers().forEach(spectator -> sendBaseComponent(joinMessage, spectator));
+        PVPPlugin.getInstance().sendMessage(
+                String.format("<%s>%s has joined the game!</%s>",
+                        color,
+                        player.getName(),
+                        color));
     }
 
     private PlayerTeam GenerateNewPlayer(Player player){
         PlayerTeam playerTeam = new PlayerTeam();
-        playerTeam.setChatColor(ChatColor.values()[OITQplayers.size() % 16]);
-        playerTeam.setPlayerName(player.getDisplayName());
+        playerTeam.setChatColor((NamedTextColor)NamedTextColor.NAMES.values().toArray()[OITQplayers.size() % 16]);
+        playerTeam.setPlayerName(player.getName());
         OITQplayers.put(player.getUniqueId(), playerTeam);
         return playerTeam;
     }
@@ -152,18 +156,14 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
         playerInventory.forEach(KitEditor::setUnbreaking);
     }
 
-    public Boolean trySendMessage(Player player, String message){
+    public Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
         if(!players.contains(player))
             return false;
         PlayerTeam team = OITQplayers.get(player.getUniqueId());
         if(team != null){
-            PVPPlugin.getInstance().sendMessage(
-                    String.format("<%s>%s %s:</%s> %s",
-                            team.getChatColor().asBungee().getColor().getRGB(),
-                            team.getChatColor(),
-                            player.getDisplayName(),
-                            team.getChatColor().asBungee().getColor().getRGB(),
-                            message));
+            PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
+                    List.of(Placeholder.parsed("prefix", team.getChatColor().examinableName()),
+                            Placeholder.styling("color", team.getChatColor()))));
             return true;
         }
         return false;
@@ -242,16 +242,16 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     public static class PlayerTeam {
         int kills = 0;
-        ChatColor chatColor;
+        NamedTextColor chatColor;
         String playerName;
 
         public void addKill(){
             kills++;
         }
-        public void setChatColor(ChatColor chatColor){
+        public void setChatColor(NamedTextColor chatColor){
             this.chatColor = chatColor;
         }
-        public ChatColor getChatColor(){return chatColor;}
+        public NamedTextColor getChatColor(){return chatColor;}
         public void setPlayerName(String playerName) { this.playerName = playerName;}
         public String getPlayerName(){return playerName;}
         public int getKills() {return kills;}

@@ -4,6 +4,7 @@ PVP Plugin version 2
 * Replace all sendBaseComponent
 
 ## To be implemented
+* Migration to Paper
 
 ## To be tested
 

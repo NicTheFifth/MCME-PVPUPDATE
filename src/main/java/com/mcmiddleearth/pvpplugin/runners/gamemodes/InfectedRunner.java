@@ -18,7 +18,10 @@ import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
@@ -40,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
@@ -120,7 +124,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
             returnInventory.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+            bow.addEnchantment(Enchantment.INFINITY, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
@@ -301,7 +305,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
     }
     //</editor-fold>
 
-    public Boolean trySendMessage(Player player, String message){
+    public Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
         if(!players.contains(player))
             return false;
         Team team = null;
@@ -311,13 +315,10 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
             team=survivors;
         if(team == null)
             return false;
-        PVPPlugin.getInstance().sendMessage(
-                String.format("<%s>%s %s:</%s> %s",
-                        team.getChatColor(),
-                        team.getPrefix(),
-                        player.getDisplayName(),
-                        team.getChatColor(),
-                        message));
+
+        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
+                List.of(Placeholder.parsed("prefix", team.getPrefix()),
+                        Placeholder.styling("color", team.getChatColor()))));
         return true;
     }
 

@@ -13,7 +13,10 @@ import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -31,6 +34,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
@@ -162,24 +166,20 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
         playerInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
         playerInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+        bow.addEnchantment(Enchantment.INFINITY, 1);
         playerInventory.setItem(1, bow);
         playerInventory.setItem(2, new ItemStack(Material.ARROW));
         playerInventory.forEach(KitEditor::setUnbreaking);
     }
 
-    public Boolean trySendMessage(Player player, String message){
+    public Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
         if(!players.contains(player))
             return false;
         PlayerTeam team = FFAplayers.get(player);
         if(team != null){
-            PVPPlugin.getInstance().sendMessage(
-                    String.format("<%s>%s %s:</%s> %s",
-                            team.getChatColor(),
-                            team.getChatColor(),
-                            player.getDisplayName(),
-                            team.getChatColor(),
-                            message));
+            PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
+                    List.of(Placeholder.parsed("prefix", team.getChatColor().examinableName()),
+                            Placeholder.styling("color", team.getChatColor()))));
             return true;
         }
         return false;

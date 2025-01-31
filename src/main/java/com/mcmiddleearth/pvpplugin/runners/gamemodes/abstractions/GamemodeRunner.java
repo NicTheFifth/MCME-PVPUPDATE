@@ -11,6 +11,9 @@ import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.*;
@@ -20,7 +23,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -30,9 +32,9 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
@@ -98,7 +100,7 @@ public abstract class GamemodeRunner implements Listener {
         List<BaseComponent[]> errorMessage =
             startConditions.entrySet().stream()
                 .filter(condition -> !condition.getKey().get())
-                .map(Map.Entry::getValue).collect(Collectors.toList());
+                .map(Map.Entry::getValue).toList();
         if(errorMessage.isEmpty()) {
             return true;
         }
@@ -176,7 +178,7 @@ public abstract class GamemodeRunner implements Listener {
         List<BaseComponent[]> rejectedMessages =
             joinConditions.entrySet().stream()
             .filter(entry -> !entry.getKey().test(player))
-            .map(Map.Entry::getValue).collect(Collectors.toList());
+            .map(Map.Entry::getValue).toList();
         if(rejectedMessages.isEmpty())
             return true;
         rejectedMessages.forEach(message -> sendBaseComponent(message,
@@ -221,11 +223,14 @@ public abstract class GamemodeRunner implements Listener {
 
     public abstract String getGamemode();
 
-    public abstract Boolean trySendMessage(Player player, String message);
+    public abstract Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder);
 
-    public Boolean trySendSpectatorMessage(Player player, String message){
+    public Boolean trySendSpectatorMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
         if(spectator.getMembers().contains(player)) {
-            PVPPlugin.getInstance().sendMessageTo(String.format("<gray>Spectator %s: %s</gray>", player.getDisplayName(), message), spectator.getMembers());
+            PVPPlugin.getInstance().sendMessageTo(messageBuilder.apply(
+                    List.of(Placeholder.styling("color", spectator.getChatColor()),
+                            Placeholder.parsed("prefix", spectator.getPrefix()))),
+                    spectator.getMembers());
             return true;
         }
         return false;
@@ -268,7 +273,7 @@ public abstract class GamemodeRunner implements Listener {
             Player player = e.getPlayer();
             UUID uuid = player.getUniqueId();
 
-            if(gameState == State.QUEUED || to == null)
+            if(gameState == State.QUEUED)
                 return;
             if(gameState == State.COUNTDOWN &&
                     players.contains(e.getPlayer()) &&

@@ -51,47 +51,25 @@ public class GameExecutor {
             c.getArgument(ArgumentNames.MAP_NAME, String.class));
         String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-        Supplier<GamemodeRunner> runner = null;
-        switch(gamemode){
-            case(Gamemodes.CAPTURETHEFLAG):
-                runner = () -> new CaptureTheFlagRunner(map, CaptureTheFlagRunner.GetDefaultScoreGoal(), CaptureTheFlagRunner.GetDefaultTimeLimit());
-                break;
-            case(Gamemodes.DEATHRUN):
-                runner = () -> new DeathRunRunner(map, DeathRunRunner.DefaultTimeLimit());
-                break;
-            case(Gamemodes.FREEFORALL):
-                runner = () -> new FreeForAllRunner(map, FreeForAllRunner.DefaultTimeLimit());
-                break;
-            case(Gamemodes.INFECTED):
-                runner = () -> new InfectedRunner(map, InfectedRunner.DefaultTimeLimit());
-                break;
-            case(Gamemodes.ONEINTHEQUIVER):
-                runner = () -> new OneInTheQuiverRunner(map, OneInTheQuiverRunner.DefaultScoreGoal());
-                break;
-            case(Gamemodes.RINGBEARER):
-                runner = () -> new RingBearerRunner(map);
-                break;
-            case(Gamemodes.TEAMCONQUEST):
-                runner = () -> new TeamConquestRunner(map, TeamConquestRunner.DefaultScoreGoal());
-                break;
-            case(Gamemodes.TEAMDEATHMATCH):
-                runner = () -> new TeamDeathmatchRunner(map);
-                break;
-            case(Gamemodes.TEAMSLAYER):
-                runner = () -> new TeamSlayerRunner(map, TeamSlayerRunner.DefaultScoreGoal());
-        }
+        Supplier<GamemodeRunner> runner = switch (gamemode) {
+            case (Gamemodes.CAPTURETHEFLAG) ->
+                    () -> new CaptureTheFlagRunner(map, CaptureTheFlagRunner.GetDefaultScoreGoal(), CaptureTheFlagRunner.GetDefaultTimeLimit());
+            case (Gamemodes.DEATHRUN) -> () -> new DeathRunRunner(map, DeathRunRunner.DefaultTimeLimit());
+            case (Gamemodes.FREEFORALL) -> () -> new FreeForAllRunner(map, FreeForAllRunner.DefaultTimeLimit());
+            case (Gamemodes.INFECTED) -> () -> new InfectedRunner(map, InfectedRunner.DefaultTimeLimit());
+            case (Gamemodes.ONEINTHEQUIVER) ->
+                    () -> new OneInTheQuiverRunner(map, OneInTheQuiverRunner.DefaultScoreGoal());
+            case (Gamemodes.RINGBEARER) -> () -> new RingBearerRunner(map);
+            case (Gamemodes.TEAMCONQUEST) -> () -> new TeamConquestRunner(map, TeamConquestRunner.DefaultScoreGoal());
+            case (Gamemodes.TEAMDEATHMATCH) -> () -> new TeamDeathmatchRunner(map);
+            case (Gamemodes.TEAMSLAYER) -> () -> new TeamSlayerRunner(map, TeamSlayerRunner.DefaultScoreGoal());
+            default -> null;
+        };
         if(runner == null)
             return 0;
         if(pvpPlugin.getActiveGame() == null) {
             GamemodeRunner activeGame = runner.get();
             pvpPlugin.setActiveGame(activeGame);
-            sendBaseComponent(
-                new ComponentBuilder(
-                    String.format("Game created: %s on %s",
-                        activeGame.getGamemode(), activeGame.getMapName()))
-                    .color(Style.INFO)
-                    .create(),
-                player);
             pvpPlugin.getAutojoiners().forEach(activeGame::Join);
             return 1;
         }
@@ -113,21 +91,14 @@ public class GameExecutor {
         String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
         Integer timeLimit = c.getArgument(ArgumentNames.TIME_LIMIT, Integer.class);
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-        Supplier<GamemodeRunner> runner = null;
-        switch(gamemode) {
-            case(Gamemodes.FREEFORALL):
-                runner = () -> new FreeForAllRunner(map, timeLimit);
-                break;
-            case (Gamemodes.CAPTURETHEFLAG):
-                runner = () -> new CaptureTheFlagRunner(map, CaptureTheFlagRunner.GetDefaultScoreGoal(), timeLimit);
-                break;
-            case (Gamemodes.DEATHRUN):
-                runner = () -> new DeathRunRunner(map, timeLimit);
-                break;
-            case (Gamemodes.INFECTED):
-                runner = () -> new InfectedRunner(map, timeLimit);
-                break;
-        }
+        Supplier<GamemodeRunner> runner = switch (gamemode) {
+            case (Gamemodes.FREEFORALL) -> () -> new FreeForAllRunner(map, timeLimit);
+            case (Gamemodes.CAPTURETHEFLAG) ->
+                    () -> new CaptureTheFlagRunner(map, CaptureTheFlagRunner.GetDefaultScoreGoal(), timeLimit);
+            case (Gamemodes.DEATHRUN) -> () -> new DeathRunRunner(map, timeLimit);
+            case (Gamemodes.INFECTED) -> () -> new InfectedRunner(map, timeLimit);
+            default -> null;
+        };
         if(runner == null)
             return 0;
         if(pvpPlugin.getActiveGame() == null) {
@@ -161,20 +132,14 @@ public class GameExecutor {
         String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
         Integer scoreGoal = c.getArgument(ArgumentNames.SCORE_GOAL, Integer.class);
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-        Supplier<GamemodeRunner> runner = null;
-        switch(gamemode){
-            case(Gamemodes.CAPTURETHEFLAG):
-                runner = () -> new CaptureTheFlagRunner(map, scoreGoal, CaptureTheFlagRunner.GetDefaultTimeLimit());
-                break;
-            case(Gamemodes.ONEINTHEQUIVER):
-                runner = () -> new OneInTheQuiverRunner(map, scoreGoal);
-                break;
-            case(Gamemodes.TEAMCONQUEST):
-                runner = () -> new TeamConquestRunner(map, scoreGoal);
-                break;
-            case(Gamemodes.TEAMSLAYER):
-                runner = () -> new TeamSlayerRunner(map, scoreGoal);
-        }
+        Supplier<GamemodeRunner> runner = switch (gamemode) {
+            case (Gamemodes.CAPTURETHEFLAG) ->
+                    () -> new CaptureTheFlagRunner(map, scoreGoal, CaptureTheFlagRunner.GetDefaultTimeLimit());
+            case (Gamemodes.ONEINTHEQUIVER) -> () -> new OneInTheQuiverRunner(map, scoreGoal);
+            case (Gamemodes.TEAMCONQUEST) -> () -> new TeamConquestRunner(map, scoreGoal);
+            case (Gamemodes.TEAMSLAYER) -> () -> new TeamSlayerRunner(map, scoreGoal);
+            default -> null;
+        };
         if(runner == null)
             return 0;
         if(pvpPlugin.getActiveGame() == null) {
@@ -209,7 +174,7 @@ public class GameExecutor {
         Integer timeLimit = c.getArgument(ArgumentNames.TIME_LIMIT, Integer.class);
         Integer scoreGoal = c.getArgument(ArgumentNames.SCORE_GOAL, Integer.class);
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-        Supplier<GamemodeRunner> runner = null;
+        Supplier<GamemodeRunner> runner;
         if(Objects.equals(gamemode, Gamemodes.CAPTURETHEFLAG))
             runner = () -> new CaptureTheFlagRunner(map, scoreGoal, timeLimit);
         else

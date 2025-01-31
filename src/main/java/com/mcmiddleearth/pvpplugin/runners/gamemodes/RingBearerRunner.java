@@ -17,6 +17,9 @@ import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -112,7 +116,7 @@ public class RingBearerRunner extends GamemodeRunner {
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+            bow.addEnchantment(Enchantment.INFINITY, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
@@ -343,11 +347,11 @@ public class RingBearerRunner extends GamemodeRunner {
     }
 
     @Override
-    public Boolean trySendSpectatorMessage(Player player, String message){
-        return trySendMessage(player, message);
+    public Boolean trySendSpectatorMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
+        return trySendMessage(player, messageBuilder);
     }
 
-    public Boolean trySendMessage(Player player, String message){
+    public Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
         if(!players.contains(player))
             return false;
         String prefix = null;
@@ -362,11 +366,9 @@ public class RingBearerRunner extends GamemodeRunner {
             Set<Player> deads = new HashSet<>(blueTeam.getDeadMembers());
             deads.addAll(spectator.getMembers());
             deads.addAll(redTeam.getDeadMembers());
-            PVPPlugin.getInstance().sendMessageTo(
-                    String.format("<gray>%s %s:</gray> %s",
-                            prefix,
-                            player.getDisplayName(),
-                            message),
+            PVPPlugin.getInstance().sendMessageTo(messageBuilder.apply(
+                    List.of(Placeholder.parsed("prefix", prefix),
+                            Placeholder.styling("color", spectator.getChatColor()))),
                     deads);
             return true;
         }
@@ -378,13 +380,9 @@ public class RingBearerRunner extends GamemodeRunner {
         if(team == null)
             return false;
 
-        PVPPlugin.getInstance().sendMessage(
-                String.format("<%s>%s %s:</%s> %s",
-                        team.getChatColor(),
-                        team.getPrefix(),
-                        player.getDisplayName(),
-                        team.getChatColor(),
-                        message));
+        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
+                List.of(Placeholder.parsed("prefix", team.getPrefix()),
+                        Placeholder.styling("color", team.getChatColor()))));
         return true;
     }
 
