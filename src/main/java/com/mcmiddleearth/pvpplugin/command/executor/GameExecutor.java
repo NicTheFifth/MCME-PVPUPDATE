@@ -1,7 +1,6 @@
 package com.mcmiddleearth.pvpplugin.command.executor;
 
 import com.mcmiddleearth.command.sender.McmeCommandSender;
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
@@ -12,14 +11,14 @@ import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mojang.brigadier.context.CommandContext;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
 import java.util.function.Supplier;
-
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class GameExecutor {
     /*public static int Action(CommandContext<McmeCommandSender> c){
@@ -38,10 +37,7 @@ public class GameExecutor {
             pvpPlugin.getAutojoiners().add(player);
             text = "you'll automatically join games now.";
         }
-        sendBaseComponent(
-                new ComponentBuilder("Toggled autojoin, " + text).color(Style.INFO).create(),
-                player
-        );
+        player.sendMessage(Component.text().content("Toggled Auto-Join, " + text).color(NamedTextColor.BLUE).build());
         return 1;
     }
 
@@ -74,13 +70,10 @@ public class GameExecutor {
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
-        sendBaseComponent(
-            new ComponentBuilder(
-                String.format("Game created, added to queue: %s on %s",
-                    gamemode, map.getTitle()))
-                .color(Style.INFO)
-                .create(),
-            player);
+        player.sendMessage(MiniMessage.miniMessage().deserialize(
+                "<aqua>Game created, added to queue: <gamemode> on <title></aqua>",
+                Placeholder.parsed("gamemode", gamemode),
+                Placeholder.parsed("title", map.getTitle())));
         return 1;
     }
 
@@ -104,24 +97,20 @@ public class GameExecutor {
         if(pvpPlugin.getActiveGame() == null) {
             GamemodeRunner activeGame = runner.get();
             pvpPlugin.setActiveGame(activeGame);
-            sendBaseComponent(
-                    new ComponentBuilder(
-                            String.format("Game created: %s on %s with time limit %d",
-                                    activeGame.getGamemode(), activeGame.getMapName(), timeLimit))
-                            .color(Style.INFO)
-                            .create(),
-                    player);
+            player.sendMessage(MiniMessage.miniMessage().deserialize(
+                    "<aqua>Game created: <gamemode> on <title> with time limit <time></aqua>",
+                    Placeholder.parsed("gamemode", activeGame.getGamemode()),
+                    Placeholder.parsed("title", activeGame.getMapName()),
+                    Placeholder.parsed("time", timeLimit.toString())));
             pvpPlugin.getAutojoiners().forEach(activeGame::Join);
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
-        sendBaseComponent(
-                new ComponentBuilder(
-                        String.format("Game created, added to queue: %s on %s with time limit %d",
-                                gamemode, map.getTitle(), timeLimit))
-                        .color(Style.INFO)
-                        .create(),
-                player);
+        player.sendMessage(MiniMessage.miniMessage().deserialize(
+                "<aqua>Game created: <gamemode> on <title> with time limit <time></aqua>",
+                Placeholder.parsed("gamemode", gamemode),
+                Placeholder.parsed("title", map.getTitle()),
+                Placeholder.parsed("time", timeLimit.toString())));
         return 1;
     }
 
@@ -145,24 +134,22 @@ public class GameExecutor {
         if(pvpPlugin.getActiveGame() == null) {
             GamemodeRunner activeGame = runner.get();
             pvpPlugin.setActiveGame(activeGame);
-            sendBaseComponent(
-                    new ComponentBuilder(
-                            String.format("Game created: %s on %s with score goal %d",
-                                    activeGame.getGamemode(), activeGame.getMapName(), scoreGoal))
-                            .color(Style.INFO)
-                            .create(),
-                    player);
+
+            player.sendMessage(MiniMessage.miniMessage().deserialize(
+                    "<aqua>Game created: <gamemode> on <title> with score goal <score></aqua>",
+                    Placeholder.parsed("gamemode", activeGame.getGamemode()),
+                    Placeholder.parsed("title", activeGame.getMapName()),
+                    Placeholder.parsed("score", scoreGoal.toString())));
+
             pvpPlugin.getAutojoiners().forEach(activeGame::Join);
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
-        sendBaseComponent(
-                new ComponentBuilder(
-                        String.format("Game created, added to queue: %s on %s with score goal %d",
-                                gamemode, map.getTitle(), scoreGoal))
-                        .color(Style.INFO)
-                        .create(),
-                player);
+        player.sendMessage(MiniMessage.miniMessage().deserialize(
+                "<aqua>Game created: <gamemode> on <title> with score goal <score></aqua>",
+                Placeholder.parsed("gamemode", gamemode),
+                Placeholder.parsed("title", map.getTitle()),
+                Placeholder.parsed("score", scoreGoal.toString())));
         return 1;
     }
 
@@ -182,24 +169,22 @@ public class GameExecutor {
         if(pvpPlugin.getActiveGame() == null) {
             GamemodeRunner activeRunner = runner.get();
             pvpPlugin.setActiveGame(activeRunner);
-            sendBaseComponent(
-                    new ComponentBuilder(
-                            String.format("Game created: %s on %s with time limit %d and score goal %d",
-                                    activeRunner.getGamemode(), activeRunner.getMapName(), timeLimit, scoreGoal))
-                            .color(Style.INFO)
-                            .create(),
-                    player);
+            player.sendMessage(MiniMessage.miniMessage().deserialize(
+                    "<aqua>Game created: <gamemode> on <title> with time limit <time> and score goal <score></aqua>",
+                    Placeholder.parsed("gamemode", activeRunner.getGamemode()),
+                    Placeholder.parsed("title", activeRunner.getMapName()),
+                    Placeholder.parsed("score", scoreGoal.toString()),
+                    Placeholder.parsed("time", timeLimit.toString())));
             pvpPlugin.getAutojoiners().forEach(activeRunner::Join);
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
-        sendBaseComponent(
-                new ComponentBuilder(
-                        String.format("Game created: %s on %s with time limit %d and score goal %d",
-                                gamemode, map.getTitle(), timeLimit, scoreGoal))
-                        .color(Style.INFO)
-                        .create(),
-                player);
+        player.sendMessage(MiniMessage.miniMessage().deserialize(
+                "<aqua>Game created: <gamemode> on <title> with time limit <time> and score goal <score></aqua>",
+                Placeholder.parsed("gamemode", gamemode),
+                Placeholder.parsed("title", map.getTitle()),
+                Placeholder.parsed("score", scoreGoal.toString()),
+                Placeholder.parsed("time", timeLimit.toString())));
         return 1;
     }
 
@@ -239,13 +224,14 @@ public class GameExecutor {
     public static int SendRules(CommandContext<McmeCommandSender> c) {
         Player player = CommandUtil.getPlayer(c.getSource());
         String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
-        BaseComponent[] message = Gamemodes.getRules.get(gamemode);
+        Component message = Gamemodes.getRules.get(gamemode);
         if(message == null){
-            sendBaseComponent(new ComponentBuilder(String.format("Please report in dev-public that %s has no rules set!", gamemode)).color(Style.ERROR).create(),
-                    player);
+            player.sendMessage(MiniMessage.miniMessage().deserialize(
+                    "<red>Please report in dev-public that <gamemode> has no rules set!</red>",
+                    Placeholder.parsed("gamemode", gamemode)));
             return 0;
         }
-        sendBaseComponent(message, player);
+        player.sendMessage(message);
         return 1;
     }
 
@@ -253,48 +239,49 @@ public class GameExecutor {
         Player player = CommandUtil.getPlayer(c.getSource());
         GamemodeRunner gamemodeRunner = PVPPlugin.getInstance().getActiveGame();
         if(gamemodeRunner == null){
-            sendBaseComponent(new ComponentBuilder("There is no active game running.").color(Style.ERROR).create(),
-                    player);
+            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>There is no active game running.</red>"));
             return 0;
         }
         String gamemode = gamemodeRunner.getGamemode();
-        BaseComponent[] message = Gamemodes.getRules.get(gamemode);
+        Component message = Gamemodes.getRules.get(gamemode);
         if(message == null){
-            sendBaseComponent(new ComponentBuilder(String.format("Please report in dev-public that %s has no rules set!", gamemode)).color(Style.ERROR).create(),
-                    player);
+            player.sendMessage(MiniMessage.miniMessage().deserialize(
+                    "<red>Please report in dev-public that <gamemode> has no rules set!</red>",
+                    Placeholder.parsed("gamemode", gamemode)));
             return 0;
         }
-        sendBaseComponent(message, player);
+        player.sendMessage(message);
         return 1;
     }
 
     public static int SetGoal(CommandContext<McmeCommandSender> c) {
         Player player = CommandUtil.getPlayer(c.getSource());
-        int scoreGoal = c.getArgument(ArgumentNames.SCORE_GOAL, Integer.class);
+        Integer scoreGoal = c.getArgument(ArgumentNames.SCORE_GOAL, Integer.class);
 
         GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
 
         ((ScoreGoal) runner).setScoreGoal(scoreGoal);
-        sendBaseComponent(
-            new ComponentBuilder(String.format("Goal set to %d for %s on %s."
-                , scoreGoal, runner.getGamemode(), runner.getMapName()))
-                .color(Style.INFO).create(),
-            player);
+        player.sendMessage(MiniMessage.miniMessage().deserialize(
+                "<aqua>Goal set to <goal> for <gamemode> on <title>.</aqua>",
+                Placeholder.parsed("gamemode", runner.getGamemode()),
+                Placeholder.parsed("title", runner.getMapName()),
+                Placeholder.parsed("score", scoreGoal.toString())));
         return 1;
     }
 
     public static int SetTimeLimit(CommandContext<McmeCommandSender> c) {
         Player player = CommandUtil.getPlayer(c.getSource());
-        int timeLimit = c.getArgument(ArgumentNames.TIME_LIMIT, Integer.class);
+        Integer timeLimit = c.getArgument(ArgumentNames.TIME_LIMIT, Integer.class);
 
         GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
 
         ((TimeLimit) runner).setTimeLimit(timeLimit);
-        sendBaseComponent(
-                new ComponentBuilder(String.format("Time limit set to %d for %s on %s."
-                        , timeLimit, runner.getGamemode(), runner.getMapName()))
-                        .color(Style.INFO).create(),
-                player);
+
+        player.sendMessage(MiniMessage.miniMessage().deserialize(
+                "<aqua>Time limit set to <time> for <gamemode> on <title>.</aqua>",
+                Placeholder.parsed("gamemode", runner.getGamemode()),
+                Placeholder.parsed("title", runner.getMapName()),
+                Placeholder.parsed("time", timeLimit.toString())));
         return 1;
     }
 

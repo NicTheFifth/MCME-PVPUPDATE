@@ -1,16 +1,15 @@
 package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
 
-import com.mcmiddleearth.command.Style;
+import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONCaptureTheFlag;
-import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnGamemode;
-import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONRedBlueSpawnListGamemode;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpecialPointEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -18,13 +17,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class CaptureTheFlagEditor extends RedBlueSpawnListEditor implements SpecialPointEditor {
     /**
      * SpecialPointNames is a map of &lt;name, setter of said point&gt;
      */
-
+    MiniMessage mm = PVPPlugin.getInstance().getMiniMessage();
     Map<String, SpecialPointEditor.SetterTeleporterPair> specialPointNames = new HashMap<>();
     public CaptureTheFlagEditor(JSONMap map){
         setDisplayString("Capture the Flag");
@@ -41,45 +39,29 @@ public class CaptureTheFlagEditor extends RedBlueSpawnListEditor implements Spec
         Location blueFlag = player.getLocation();
         JSONLocation JSONBlueFlag = new JSONLocation(blueFlag);
         ((JSONCaptureTheFlag)jsonGamemode).setBlueFlag(JSONBlueFlag);
-        sendBaseComponent(
-            new ComponentBuilder(String.format("Blue flag set for %s.",
-                getDisplayString()))
-                .color(Style.INFO)
-                .create(),
-            player);
+        player.sendMessage(mm.deserialize(
+                "<aqua>Blue flag set for <title>.</aqua>",
+                Placeholder.parsed("title", getDisplayString())));
     }
     public void teleportToBlueFlag(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
                 ((JSONCaptureTheFlag)jsonGamemode).getBlueFlag()));
-        sendBaseComponent(
-            new ComponentBuilder("Teleported to blueflag")
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage(mm.deserialize("<aqua>Teleported to the blue flag.</aqua>"));
     }
     public void setRedFlag(Player player){
         Location redFlag = player.getLocation();
         JSONLocation JSONRedFlag = new JSONLocation(redFlag);
         ((JSONCaptureTheFlag)jsonGamemode).setRedFlag(JSONRedFlag);
-        sendBaseComponent(
-            new ComponentBuilder(String.format("Red flag set for %s.",
-                getDisplayString()))
-                .color(Style.INFO)
-                .create(),
-            player);
+        player.sendMessage(mm.deserialize(
+                "<aqua>Red flag set for <title>.</aqua>",
+                Placeholder.parsed("title", getDisplayString())));
     }
     public void teleportToRedFlag(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
                 ((JSONCaptureTheFlag)jsonGamemode).getRedFlag()));
-        sendBaseComponent(
-            new ComponentBuilder("Teleported to redflag")
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage(mm.deserialize("<aqua>Teleported to the blue flag.</aqua>"));
     }
     @Override
     public String getGamemode() {return Gamemodes.CAPTURETHEFLAG;}
@@ -94,27 +76,22 @@ public class CaptureTheFlagEditor extends RedBlueSpawnListEditor implements Spec
     }
     @Override
     public void sendStatus(Player player){
-        sendBaseComponent(
-            new ComponentBuilder("Current selected gamemode: Capture the Flag.")
-                .color(Style.INFO)
-                .append(String.format("\nMax players: %d",
-                    jsonGamemode.getMaximumPlayers()))
-                .color(Style.INFO)
-                .append(String.format("Blue spawns set: %d",
-                    ((JSONRedBlueSpawnListGamemode)jsonGamemode).getBlueSpawns().size()))
-                .color(Style.INFO)
-                .append(String.format("Blue flag set: %b",
-                            ((JSONCaptureTheFlag) jsonGamemode).getBlueFlag()))
-                .color(Style.INFO)
-                .append(String.format("Red spawns set: %d",
-                    ((JSONRedBlueSpawnListGamemode)jsonGamemode).getRedSpawns().size()))
-                .color(Style.INFO)
-                .append(String.format("Red flag set: %b",
-                    ((JSONCaptureTheFlag) jsonGamemode).getRedFlag()))
-                .color(Style.INFO)
-                .create(),
-            player);
+        JSONCaptureTheFlag ctf = (JSONCaptureTheFlag) jsonGamemode;
+        player.sendMessage(mm.deserialize("""
+                <aqua>Current selected gamemode: Capture the Flag.
+                Max players: <max>
+                Blue Spawns set: <bs>
+                Blue flag set: <bf>
+                Red spawns set: <rs
+                Red flag set: <rf></aqua>
+                """,
+                Placeholder.parsed("max", String.valueOf(ctf.getMaximumPlayers())),
+                Placeholder.parsed("bs", String.valueOf(ctf.getBlueSpawns().size())),
+                Placeholder.parsed("bf", String.valueOf(ctf.getBlueFlag() == null)),
+                Placeholder.parsed("rs", String.valueOf(ctf.getRedSpawns().size())),
+                Placeholder.parsed("rf", String.valueOf(ctf.getRedFlag() == null))));
     }
+
     @Override
     public void initSpecialPointNames() {
         getSpecialPointNames().put("blueflag",

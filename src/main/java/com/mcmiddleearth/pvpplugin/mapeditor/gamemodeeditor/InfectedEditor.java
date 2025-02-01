@@ -1,6 +1,6 @@
 package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
 
-import com.mcmiddleearth.command.Style;
+import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONInfected;
@@ -8,13 +8,14 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class InfectedEditor extends TeamSpawnEditor {
+    MiniMessage mm = PVPPlugin.getInstance().getMiniMessage();
     public InfectedEditor(JSONMap map){
         if(map.getJSONInfected() == null)
             map.setJSONInfected(new JSONInfected());
@@ -26,43 +27,25 @@ public class InfectedEditor extends TeamSpawnEditor {
         Location infectedSpawn = player.getLocation();
         JSONLocation JSONInfectedSpawn = new JSONLocation(infectedSpawn);
         ((JSONInfected)jsonGamemode).setInfectedSpawn(JSONInfectedSpawn);
-        sendBaseComponent(
-            new ComponentBuilder("Infected spawn set for Infected.")
-                .color(Style.INFO)
-                .create(),
-            player);
+        player.sendMessage("<aqua>Infected spawn set for Infected.</aqua>");
     }
     public void teleportToInfectedSpawn(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
                 ((JSONInfected)jsonGamemode).getInfectedSpawn()));
-        sendBaseComponent(
-            new ComponentBuilder("Teleported to infected spawn")
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage("<aqua>Teleported to infected spawn.</aqua>");
     }
     public void setSurvivorSpawn(Player player){
         Location survivorSpawn = player.getLocation();
         JSONLocation JSONSurvivorSpawn = new JSONLocation(survivorSpawn);
         ((JSONInfected)jsonGamemode).setSurvivorSpawn(JSONSurvivorSpawn);
-        sendBaseComponent(
-            new ComponentBuilder("Survivor spawn set for Infected.")
-                .color(Style.INFO)
-                .create(),
-            player);
+        player.sendMessage("<aqua>Survivor spawn set for Infected.</aqua>");
     }
     public void teleportToSurvivorSpawn(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
                 ((JSONInfected)jsonGamemode).getSurvivorSpawn()));
-        sendBaseComponent(
-            new ComponentBuilder("Teleported to survivor spawn")
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage("<aqua>Teleported to survivor spawn.</aqua>");
     }
     public String getGamemode(){return Gamemodes.INFECTED;}
     @Override
@@ -77,21 +60,16 @@ public class InfectedEditor extends TeamSpawnEditor {
     }
     @Override
     public void sendStatus(Player player){
-        sendBaseComponent(
-            new ComponentBuilder("Current selected gamemode: Infected.")
-                .color(Style.INFO)
-                .append(String.format("  Max players: %d",
-                    jsonGamemode.getMaximumPlayers()))
-                .color(Style.INFO)
-                .append(String.format("  Survivor spawn set: %b",
-                    ((JSONInfected)jsonGamemode).getSurvivorSpawn()))
-                .color(Style.INFO)
-                .append(String.format("  Infected spawn set: %b",
-                    ((JSONInfected)jsonGamemode).getInfectedSpawn()))
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        JSONInfected infected = (JSONInfected) jsonGamemode;
+        player.sendMessage(mm.deserialize("""
+                <aqua>Current selected gamemode: Infected.
+                  Max players: <max>
+                  Survivor spawn set: <ss>
+                  Infected spawn set: <is></aqua>""",
+                Placeholder.parsed("max", String.valueOf(infected.getMaximumPlayers())),
+                Placeholder.parsed("ss", String.valueOf(infected.getSurvivorSpawn() == null)),
+                Placeholder.parsed("is", String.valueOf(infected.getInfectedSpawn() == null))
+                ));
     }
 
     @Override

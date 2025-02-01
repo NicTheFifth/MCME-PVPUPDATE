@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONOneInTheQuiver;
@@ -18,7 +17,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -37,7 +35,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
@@ -70,8 +67,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
     @Override
     protected void initStartConditions() {
         startConditions.put(() -> players.size() >= 2,
-                new ComponentBuilder("Cannot start a game unless it has two or more players.")
-                        .color(Style.ERROR).create());
+                mm.deserialize("<red>Cannot start a game unless it has two or more players.</red>"));
     }
 
     @Override
@@ -82,16 +78,17 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     @Override
     protected void initEndActions() {
-        endActions.get(false).add(() -> players.forEach(player -> {
+        endActions.get(false).add(() -> {players.forEach(player -> {
             if(winningPlayer != null){
             if (player == winningPlayer) {
                 PlayerStatEditor.addWon(player);
             } else {
                 PlayerStatEditor.addLost(player);
             }
-            sendBaseComponent(new ComponentBuilder(winningPlayer.getName() + " has won!").create(),
-                    player);
-        }}));
+            }});
+            PVPPlugin.getInstance().sendMessage(mm.deserialize("<winner> has won!!!",
+                    Placeholder.parsed("winner", winningPlayer.getName())));
+        });
         endActions.get(false).add(() -> {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
             EntityShootBowEvent.getHandlerList().unregister(eventListener);
@@ -105,9 +102,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
     @Override
     protected void initJoinConditions() {
         joinConditions.put((player -> OITQplayers.values().stream().noneMatch(playerTeam -> playerTeam.getKills() <= (scoreGoal * 0.9))),
-                new ComponentBuilder("The game is close to over, you cannot join.")
-                .color(Style.INFO)
-                .create());
+                mm.deserialize("<red>The game is close to over, you cannot join.</red>"));
     }
 
     @Override
@@ -117,9 +112,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     private void JoinOneInTheQuiver(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            sendBaseComponent(
-                    new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
-                    player);
+            mm.deserialize("<aqua>You joined the game.</aqua>");
             return;
         }
 

@@ -1,29 +1,29 @@
 package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor;
 
-import com.mcmiddleearth.command.Style;
+import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONDeathRun;
-import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONGamemode;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.SpecialPointEditor;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.TeamSpawnEditor;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEditor {
 
     /**
      * SpecialPointNames is a map of &lt;name, setter of said point&gt;
      */
+    MiniMessage mm = PVPPlugin.getInstance().getMiniMessage();
     Map<String, SpecialPointEditor.SetterTeleporterPair> specialPointNames = new HashMap<>();
     public DeathRunEditor(JSONMap map){
         if(map.getJSONDeathRun() == null)
@@ -38,84 +38,49 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
         Location deathSpawn = player.getLocation();
         JSONLocation JSONDeathSpawn = new JSONLocation(deathSpawn);
         ((JSONDeathRun)jsonGamemode).setDeathSpawn(JSONDeathSpawn);
-        sendBaseComponent(
-            new ComponentBuilder("Death spawn set for Death Run.")
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage(mm.deserialize("<aqua>Death spawn set for Death Run.</aqua>"));
     }
 
     public void teleportToDeathSpawn(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
                 ((JSONDeathRun)jsonGamemode).getDeathSpawn()));
-        sendBaseComponent(
-            new ComponentBuilder("Teleported to death spawn")
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage(mm.deserialize("<aqua>Teleported to death spawn.</aqua>"));
     }
 
     public void setRunnerSpawn(Player player){
         Location runnerSpawn = player.getLocation();
         JSONLocation JSONRunnerSpawn = new JSONLocation(runnerSpawn);
         ((JSONDeathRun)jsonGamemode).setRunnerSpawn(JSONRunnerSpawn);
-        sendBaseComponent(
-            new ComponentBuilder("Runner spawn set for Death Run.")
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage(mm.deserialize("<aqua>Runner spawn set for Death Run.</aqua>"));
     }
 
     public void teleportToRunnerSpawn(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
                 ((JSONDeathRun)jsonGamemode).getRunnerSpawn()));
-        sendBaseComponent(
-            new ComponentBuilder("Teleported to runner spawn")
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage(mm.deserialize("<aqua>Teleported to runner spawn.</aqua>"));
     }
 
     public void setKillHeight(Player player){
         int height = player.getLocation().getBlockY();
         ((JSONDeathRun)jsonGamemode).setKillHeight(height);
-
-        sendBaseComponent(
-                new ComponentBuilder(String.format("Kill height set to %d for Death Run.", height))
-                        .color(Style.INFO)
-                        .create(),
-                player
-        );
+        player.sendMessage(mm.deserialize(
+                "<aqua>Kill height set to <height> for Death Run.</aqua>",
+                Placeholder.parsed("height", String.valueOf(height))));
     }
 
     public void setGoal(Player player){
         Location goal = player.getLocation();
         JSONLocation JSONGoal = new JSONLocation(goal);
         ((JSONDeathRun)jsonGamemode).setGoal(JSONGoal);
-
-        sendBaseComponent(
-            new ComponentBuilder("Goal set for Death Run.")
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage(mm.deserialize("<aqua>Goal set for Death Run.</aqua>"));
     }
     public void teleportToGoal(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
                 ((JSONDeathRun)jsonGamemode).getGoal()));
-        sendBaseComponent(
-            new ComponentBuilder("Teleported to goal")
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage(mm.deserialize("<aqua>Teleported to goal.</aqua>"));
     }
     @Override
     public String getGamemode() {
@@ -132,20 +97,20 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
     }
     @Override
     public void sendStatus(Player player){
-        sendBaseComponent(
-            new ComponentBuilder("Current selected gamemode: Death Run.")
-                .color(Style.INFO)
-                .append(String.format("  Max players: %d",
-                    jsonGamemode.getMaximumPlayers()))
-                .color(Style.INFO)
-                .append(String.format("  Runner spawn set: %b",
-                    ((JSONDeathRun)jsonGamemode).getRunnerSpawn()))
-                .color(Style.INFO)
-                .append(String.format("  Death spawn set: %b",
-                    ((JSONDeathRun)jsonGamemode).getDeathSpawn()))
-                .color(Style.INFO)
-                .create(),
-            player);
+        JSONDeathRun deathRun = (JSONDeathRun) jsonGamemode;
+        player.sendMessage(mm.deserialize("""
+                <aqua>Current selected gamemode: Death Run.
+                  Max players: <max>
+                  Runner spawn set: <rs>
+                  Death spawn set: <ds>
+                  Goal set: <goal>
+                  Kill height: <kh></aqua>""",
+                Placeholder.parsed("max", String.valueOf(deathRun.getMaximumPlayers())),
+                Placeholder.parsed("rs", String.valueOf(deathRun.getRunnerSpawn() == null)),
+                Placeholder.parsed("ds", String.valueOf(deathRun.getDeathSpawn() == null)),
+                Placeholder.parsed("goal", String.valueOf(deathRun.getGoal() == null)),
+                Placeholder.parsed("kh", String.valueOf(deathRun.getKillHeight()))
+                ));
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamConquest;
@@ -20,8 +19,6 @@ import com.mcmiddleearth.pvpplugin.util.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -46,7 +43,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
 import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
@@ -164,13 +160,9 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         Supplier<Integer> totalInTeams = () ->
                 redTeam.getOnlineMembers().size() + blueTeam.getOnlineMembers().size();
         startConditions.put(() -> totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, red team has to have at least " +
-                        "one online player.")
-                        .color(Style.ERROR).create());
+                mm.deserialize("<red>Can't start, red team has to have at least one online player.</red>"));
         startConditions.put(() -> totalInTeams.get() != players.size() ||!blueTeam.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, blue team has to have at least" +
-                        " one online player.")
-                        .color(Style.ERROR).create());
+                mm.deserialize("<red>Can't start, blue team has to have at least one online player.</red>"));
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start Actions">
@@ -196,15 +188,9 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                 }));
         endActions.get(false).add(() ->{
             if(redTeam.getPoints() == scoreGoal)
-                players.forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Red Won!!!").color(ChatColor.RED)
-                                        .create(), player)) ;
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<red>Red Won!!!</red>"));
             else
-                players.forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Blue Won!!!").color(ChatColor.BLUE)
-                                        .create(), player));});
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<blue>Blue Won!!!</blue>"));});
         endActions.get(false).add(() ->
                 capturePointsProgress.keySet().forEach(this::deleteCapturePoint));
         endActions.get(true).add(() ->
@@ -248,9 +234,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         joinConditions.put(((player) ->
                         redTeam.getPoints() <=(scoreGoal *0.9) ||
                                 blueTeam.getPoints() <=(scoreGoal *0.9)),
-                new ComponentBuilder("The game is close to over, you cannot join.")
-                        .color(Style.INFO)
-                        .create());
+                mm.deserialize("<aqua>The game is close to over, you cannot join.</aqua>"));
     }
 
     @Override
@@ -259,9 +243,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
     }
     private void JoinTeamConquest(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            sendBaseComponent(
-                    new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
-                    player);
+            player.sendMessage(mm.deserialize("<aqua>You joined the game.</aqua>"));
             return;
         }
         if(redTeam.getMembers().contains(player)) {
@@ -408,7 +390,9 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                             redTeam.removeControlledPoint();
                     }
                     capturePoint.getBlock().setType(Material.AIR);
-                    sendBaseComponent(new ComponentBuilder("Point is neutral!").color(ChatColor.GRAY).create(),p);
+                    p.sendMessage(mm.deserialize("<color>Point is neutralised!!</color>",
+                            Placeholder.styling("color",
+                                    (newPointValue<oldPointValue)? blueTeam.getChatColor() : redTeam.getChatColor())));
                     break;
                 case 50:
                     redTeam.addControlledPoint();
@@ -427,7 +411,8 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                                     blueTeam.getChatColor()));
                     break;
             }
-            sendBaseComponent(new ComponentBuilder(String.format("Point is now at %d!", newPointValue)).color(ChatColor.GRAY).create(),p);
+            p.sendMessage(mm.deserialize("<gray>Point is now at <value>!</gray>",
+                    Placeholder.parsed("value", String.valueOf(newPointValue))));
             capturePointsProgress.put(keyPoint, newPointValue);
         }
     }

@@ -1,7 +1,6 @@
 package com.mcmiddleearth.pvpplugin.command.executor;
 
 import com.mcmiddleearth.command.sender.McmeCommandSender;
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
@@ -10,13 +9,12 @@ import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mojang.brigadier.context.CommandContext;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class EditExecutor {
             //Structure function
@@ -192,7 +190,7 @@ public class EditExecutor {
             String.class);
         Optional<MapEditor> result = getMapEditor(player, true);
 
-        if(!result.isPresent()) {
+        if(result.isEmpty()) {
             return 0;
         }
         if(result.get().getGamemodeEditor() instanceof TeamSpawnEditor) {
@@ -200,13 +198,9 @@ public class EditExecutor {
                 .getSpawnNames().get(spawnName).Teleport(player);
             return 1;
         }
-        sendBaseComponent(
-            new ComponentBuilder("Please add an index, you have a Team Spawn " +
-                "List editor")
-                .color(Style.ERROR)
-                .create(),
-            player
-        );
+        player.sendMessage(Component.text()
+                .content("Please add an index, you have a Team Spawn List editor")
+                .color(NamedTextColor.RED).build());
         return 0;
     }
 
@@ -277,17 +271,13 @@ public class EditExecutor {
             String.class);
         Optional<MapEditor> result = getMapEditor(player, true);
 
-        if(!result.isPresent()) {
+        if(result.isEmpty()) {
             return 0;
         }
         if(result.get() instanceof SpecialPointListEditor) {
-            sendBaseComponent(
-                new ComponentBuilder("Please add an index, you have a special " +
-                    "point list editor")
-                    .color(Style.ERROR)
-                    .create(),
-                player
-            );
+            player.sendMessage(Component.text()
+                    .content("Please add an index, you have a Special Point List editor")
+                    .color(NamedTextColor.RED).build());
             return 0;
         }
         ((SpecialPointEditor)result.get().getGamemodeEditor())
@@ -398,10 +388,9 @@ public class EditExecutor {
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(player.getUniqueId());
         if(me == null) {
             if(sendMessage)
-                sendBaseComponent(new ComponentBuilder("Please select which map you " +
-                "wish to edit with /mapedit <map name>")
-                .color(Style.ERROR)
-                .create(),player);
+                player.sendMessage(Component.text()
+                        .content("Please select which map you wish to edit with /mapedit <map name>")
+                        .color(NamedTextColor.RED).build());
             return Optional.empty();
         }
         return Optional.of(me);

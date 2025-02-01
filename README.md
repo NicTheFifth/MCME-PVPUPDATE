@@ -4,7 +4,6 @@ PVP Plugin version 2
 * Replace all sendBaseComponent
 
 ## To be implemented
-* Migration to Paper
 
 ## To be tested
 
@@ -14,19 +13,6 @@ PVP Plugin version 2
 * Double send of game creation
 
 ## Implemented
-* JSON structure
-* Mechanism for doing private games
-* Whitelist
-* Save and Load
-* Spawn display functionality
-* Multi spawns for every relevant gamemode
-* Validator
-* Variable instantiation for gamemode runners with variables
-* Rules in [Gamemodes](src/main/java/com/mcmiddleearth/pvpplugin/statics/Gamemodes.java)
-* Toggle Auto-Join
-* Teleport to spawns (editor)
-* Game queue
-* Variable editing for gamemode runners with variables
 
 ## V.1.5
 * Add Snowball Fight
@@ -36,7 +22,6 @@ PVP Plugin version 2
 * FBT tag whilst in lobby
 * Use get block for coordinates of spawns
 * Spawn incrementing
-* Update to 1.21.x
 * /pvp create \<gamemode> \<map>
 
 ## V2

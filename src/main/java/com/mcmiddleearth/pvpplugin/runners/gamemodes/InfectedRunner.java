@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
@@ -22,8 +21,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -46,7 +43,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
 
 public class InfectedRunner extends GamemodeRunner implements TimeLimit {
@@ -139,14 +135,9 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         Supplier<Integer> totalInTeams = () ->
                 infected.getOnlineMembers().size() + survivors.getOnlineMembers().size();
         startConditions.put(() -> totalInTeams.get() != players.size() || !infected.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, infected has to have at least " +
-                        "one online player.")
-                        .color(Style.ERROR).create());
+                mm.deserialize("<red>Can't start, infected has to have at least one online player.</red>"));
         startConditions.put(() -> totalInTeams.get() != players.size() ||!survivors.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, survivors has to have at least" +
-                        " one online player.")
-                        .color(Style.ERROR).create());
-
+                mm.deserialize("<red>Can't start, survivors has to have at least one online player.</red>"));
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start Actions">
@@ -200,27 +191,23 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
                     PlayerStatEditor.addLost(player);
                     PlayerStatEditor.addPlayed(player);
                 }));
-        endActions.get(false).add(() ->{
-            if(survivors.getOnlineMembers().isEmpty())
-                players.forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Infected Won!!!").color(ChatColor.RED)
-                                        .create(), player)) ;
-            else
-                players.forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Survivors Won!!!").color(ChatColor.BLUE)
-                                        .create(), player));});
-        endActions.get(false).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
+        endActions.get(false).add(() -> {
+                    if (survivors.getOnlineMembers().isEmpty())
+                        PVPPlugin.getInstance().sendMessage(mm.deserialize("<red>Infected Won!!!</red>"));
+                    else
+                        PVPPlugin.getInstance().sendMessage(mm.deserialize("<blue>Survivors Won!!!</blue>"));
+                });
         endActions.get(true).add(()-> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
         endActions.get(false).add(() -> players.forEach(player -> player.removePotionEffect(PotionEffectType.SPEED)));
         endActions.get(true).add(() -> players.forEach(player -> player.removePotionEffect(PotionEffectType.SPEED)));
     }
+
     private Set<Player> getLosingTeamMembers() {
         if(survivors.getOnlineMembers().isEmpty())
             return survivors.getMembers();
         return infected.getMembers();
     }
+
     private Set<Player> getWinningTeamMembers() {
         if(survivors.getOnlineMembers().isEmpty())
             return infected.getMembers();
@@ -232,9 +219,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
     protected void initJoinConditions() {
         joinConditions.put((player ->
                         timeLimit <=60),
-                new ComponentBuilder("The game is close to over, you cannot join.")
-                        .color(Style.INFO)
-                        .create());
+                mm.deserialize("<aqua>The game is close to over, you cannot join.</aqua>"));
     }
 
     @Override
@@ -244,9 +229,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
 
     private void JoinInfected(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            sendBaseComponent(
-                    new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
-                    player);
+            player.sendMessage(mm.deserialize("<aqua>You joined the game.</aqua>"));
             return;
         }
         if(infected.getMembers().contains(player)) {

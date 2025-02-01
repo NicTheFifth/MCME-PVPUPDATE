@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONCaptureTheFlag;
@@ -22,8 +21,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -47,8 +44,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, TimeLimit {
 
@@ -166,14 +161,10 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 redTeam.getOnlineMembers().size() + blueTeam.getOnlineMembers().size();
         startConditions.put(() ->
                         totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, red team has to have at least " +
-                        "one online player.")
-                        .color(Style.ERROR).create());
+                mm.deserialize("<red>Can't start, red team has to have at least one online player.</red>"));
         startConditions.put(() ->
                         totalInTeams.get() != players.size() ||!blueTeam.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, blue team has to have at least" +
-                        " one online player.")
-                        .color(Style.ERROR).create());
+                mm.deserialize("<red>Can't start, blue team has to have at least one online player.</red>"));
     }
 
     @Override
@@ -194,7 +185,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 if (timeLimit == 0) {
                     if(redTeam.getPoints() == blueTeam.getPoints()){
                         suddenDeath.getAndSet(true);
-                        players.forEach (player -> sendBaseComponent(new ComponentBuilder("Sudden death, the next to score wins!!!").create(), player));
+                        PVPPlugin.getInstance().sendMessage(mm.deserialize("<pride>Sudden death, next to score wins!!!</pride>"));
                     } else {
                         end(false);
                         gameState = State.ENDED;
@@ -232,15 +223,14 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 }));
         endActions.get(false).add(() ->{
             if(redTeam.getPoints() == scoreGoal)
-                players.forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Red Won!!!").color(ChatColor.RED)
-                                        .create(), player)) ;
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<<color>><prefix> won!!!</<color>>",
+                                Placeholder.styling("color", redTeam.getChatColor()),
+                                Placeholder.parsed("prefix", redTeam.getPrefix())));
             else
-                players.forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Blue Won!!!").color(ChatColor.BLUE)
-                                        .create(), player));});
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<<color>><prefix> won!!!</<color>>",
+                                        Placeholder.styling("color", blueTeam.getChatColor()),
+                                        Placeholder.parsed("prefix", blueTeam.getPrefix())));
+        });
         endActions.get(false).add(() -> {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
@@ -282,9 +272,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         joinConditions.put(((player) ->
                         redTeam.getPoints() <=(scoreGoal *0.9) ||
                                 blueTeam.getPoints() <=(scoreGoal *0.9)),
-                new ComponentBuilder("The game is close to over, you cannot join.")
-                        .color(Style.INFO)
-                        .create());
+                mm.deserialize("<aqua>The game is close to over, you cannot join.</aqua"));
     }
 
     @Override
@@ -294,9 +282,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
 
     private void JoinCaptureTheFlag(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            sendBaseComponent(
-                    new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
-                    player);
+            player.sendMessage(mm.deserialize("<aqua>You joined the game.</aqua>"));
             return;
         }
         if(redTeam.getMembers().contains(player)) {
@@ -405,14 +391,12 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 if(player.getInventory().getHelmet() == null)
                     return;
                 if(Objects.equals(player.getInventory().getHelmet().getType(), blueTeam.getFlagMaterial())) {
-                    players.forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Red team has dropped blue's flag.").create(), playerOther));
-                    spectator.getMembers().forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Red team has dropped blue's flag.").create(), playerOther));
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("Red team has dropped blue's flag!"));
                     blueTeam.getFlag().getBlock().setType(blueTeam.getFlagMaterial());
                     redTeam.getKit().getInventory().accept(player);
                 }
                 if(Objects.equals(player.getInventory().getHelmet().getType(), redTeam.getFlagMaterial())) {
-                    players.forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Blue team has dropped red's flag.").create(), playerOther));
-                    spectator.getMembers().forEach(playerOther -> sendBaseComponent(new ComponentBuilder("Blue team has dropped red's flag.").create(), playerOther));
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("Blue team has dropped red's flag!"));
                     redTeam.getFlag().getBlock().setType(redTeam.getFlagMaterial());
                     blueTeam.getKit().getInventory().accept(player);
                 }
@@ -445,16 +429,12 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
             if(redTeam.getMembers().contains(player) && Objects.equals(block.getType(), blueTeam.getFlagMaterial())){
                 player.getInventory().setHelmet(new ItemStack(blueTeam.getFlagMaterial()));
                 blueTeam.getFlag().getBlock().setType(Material.AIR);
-                Consumer<Player> message = playerOther -> sendBaseComponent(new ComponentBuilder(String.format("%s has taken blue's flag!", player.getName())).create(), playerOther);
-                players.forEach(message);
-                spectator.getMembers().forEach(message);
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<name> has taken blue's flag!", Placeholder.parsed("name", player.getName())));
             }
             if(blueTeam.getMembers().contains(player) && Objects.equals(block.getType(), redTeam.getFlagMaterial())){
                 player.getInventory().setHelmet(new ItemStack(redTeam.getFlagMaterial()));
                 redTeam.getFlag().getBlock().setType(Material.AIR);
-                Consumer<Player> message = playerOther -> sendBaseComponent(new ComponentBuilder(String.format("%s has taken red's flag!", player.getName())).create(), playerOther);
-                players.forEach(message);
-                spectator.getMembers().forEach(message);
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<name> has taken red's flag!", Placeholder.parsed("name", player.getName())));
             }
         }
 
@@ -465,20 +445,14 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 return;
             if(!players.contains(player))
                 return;
-            if(e.getTo() == null)
-                return;
             if(player.getInventory().getHelmet() == null)
                 return;
             if(Objects.equals(player.getInventory().getHelmet().getType(), blueTeam.getFlagMaterial())){
                 if(redTeam.getFlag().distance(e.getTo()) <= 5){
                     redTeam.addPoint();
                     redTeam.getKit().getInventory().accept(player);
-                    Consumer<Player> message = otherPlayer -> sendBaseComponent(
-                            new ComponentBuilder(String.format("%s scored a point for the red Team!", player.getName())).create(),
-                            otherPlayer
-                    );
-                    players.forEach(message);
-                    spectator.getMembers().forEach(message);
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<name> scored a point for the red team!",
+                            Placeholder.parsed("name", player.getName())));
                     if(suddenDeath.get()){
                         redTeam.WinSuddenDeath(scoreGoal);
                         end(false);
@@ -491,12 +465,8 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 if(blueTeam.getFlag().distance(e.getTo()) <= 5){
                     blueTeam.addPoint();
                     blueTeam.getKit().getInventory().accept(player);
-                    Consumer<Player> message = otherPlayer -> sendBaseComponent(
-                            new ComponentBuilder(String.format("%s scored a point for the blue Team!", player.getName())).create(),
-                            otherPlayer
-                    );
-                    players.forEach(message);
-                    spectator.getMembers().forEach(message);
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<name> scored a point for the blue team!",
+                            Placeholder.parsed("name", player.getName())));
                     if(suddenDeath.get()){
                         blueTeam.WinSuddenDeath(scoreGoal);
                         end(false);

@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONFreeForAll;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
@@ -17,7 +16,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
     private final List<Location> spawns;
@@ -109,9 +105,9 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
                 } else {
                     PlayerStatEditor.addLost(player);
                 }
-                sendBaseComponent(new ComponentBuilder(winningPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) + " has won!").create(),
-                        player);
             });
+            PVPPlugin.getInstance().sendMessage(mm.deserialize("<players> won!",
+                    Placeholder.parsed("players",winningPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")))));
         });
         endActions.get(false).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
         endActions.get(true).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
@@ -121,9 +117,7 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
     protected void initJoinConditions() {
         joinConditions.put(((player) ->
                     timeLimitSeconds >= 60),
-                new ComponentBuilder("The game is close to over, you cannot join.")
-                        .color(Style.INFO)
-                        .create());
+                mm.deserialize("<aqua>The game is close to over, you cannot join.</aqua>"));
     }
 
     @Override
@@ -133,9 +127,7 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
 
     private void JoinFreeForAll(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            sendBaseComponent(
-                    new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
-                    player);
+            player.sendMessage(mm.deserialize("<aqua>You joined the game.</aqua>"));
             return;
         }
         NamedTextColor color = FFAplayers.getOrDefault(player, GenerateNewPlayer(player)).getChatColor();

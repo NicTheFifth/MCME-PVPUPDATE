@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
@@ -20,8 +19,6 @@ import com.mcmiddleearth.pvpplugin.util.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -41,7 +38,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
 import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
@@ -115,17 +111,11 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     @Override
     protected void initStartConditions() {
         Supplier<Integer> totalInTeams = () ->
-            redTeam.getOnlineMembers().size() + blueTeam.getOnlineMembers().size();
-        startConditions.put(() ->
-                totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
-            new ComponentBuilder("Can't start, red team has to have at least " +
-                "one online player.")
-                .color(Style.ERROR).create());
-        startConditions.put(() ->
-                totalInTeams.get() != players.size() ||!blueTeam.getOnlineMembers().isEmpty(),
-            new ComponentBuilder("Can't start, blue team has to have at least" +
-                " one online player.")
-                .color(Style.ERROR).create());
+                redTeam.getOnlineMembers().size() + blueTeam.getOnlineMembers().size();
+        startConditions.put(() -> totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
+                mm.deserialize("<red>Can't start, red team has to have at least one online player.</red>"));
+        startConditions.put(() -> totalInTeams.get() != players.size() ||!blueTeam.getOnlineMembers().isEmpty(),
+                mm.deserialize("<red>Can't start, blue team has to have at least one online player.</red>"));
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start actions"
@@ -150,25 +140,10 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
                 PlayerStatEditor.addPlayed(player);
             }));
         endActions.get(false).add(() ->{
-            if(redTeam.hasAliveMembers()) {
-                players.forEach(player ->
-                    sendBaseComponent(
-                        new ComponentBuilder("Red Won!!!").color(ChatColor.RED)
-                            .create(), player));
-                spectator.getMembers().forEach(player ->
-                    sendBaseComponent(
-                        new ComponentBuilder("Red Won!!!").color(ChatColor.RED)
-                            .create(), player));
-            }
-            else{
-                players.forEach(player ->
-                    sendBaseComponent(
-                        new ComponentBuilder("Blue Won!!!").color(ChatColor.BLUE)
-                            .create(), player));
-                spectator.getMembers().forEach(player ->
-                    sendBaseComponent(
-                        new ComponentBuilder("Blue Won!!!").color(ChatColor.BLUE)
-                            .create(), player));}});
+            if(redTeam.hasAliveMembers())
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<red>Red won!!!</red>"));
+            else
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<blue>Blue won!!!</blue>"));});
         endActions.get(false).add(() ->
             PlayerRespawnEvent.getHandlerList().unregister(eventListener));
         endActions.get(true).add(()->
@@ -192,9 +167,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     protected void initJoinConditions() {
         joinConditions.put(((player) ->
                 redTeam.AliveMembers() >= 3 && blueTeam.AliveMembers() >= 3),
-            new ComponentBuilder("The game is close to over, you cannot join.")
-                .color(Style.INFO)
-                .create());
+            mm.deserialize("<red>The game is close to over, you cannot join.</red>"));
     }
 
     @Override
@@ -204,9 +177,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
 
     private void JoinTeamDeathmatch(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            sendBaseComponent(
-                new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
-                player);
+            player.sendMessage(mm.deserialize("<aqua>You joined the game.</aqua>"));
             return;
         }
         if(redTeam.getMembers().contains(player)) {

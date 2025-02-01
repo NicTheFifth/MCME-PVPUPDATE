@@ -1,11 +1,10 @@
 package com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.abstractions.JSONGamemode;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public abstract class GamemodeEditor {
     protected JSONGamemode jsonGamemode;
@@ -13,12 +12,9 @@ public abstract class GamemodeEditor {
     private String displayString;
     public void setMaxPlayers(Integer maxPlayers, Player player){
         jsonGamemode.setMaximumPlayers(maxPlayers);
-        sendBaseComponent(
-            new ComponentBuilder(String.format("Set the max players to %d.",
-                maxPlayers))
-                .color(Style.INFO)
-                .create(),
-            player);
+        player.sendMessage(MiniMessage.miniMessage().deserialize(
+                "<aqua>Set the max players to <amount>.</aqua>",
+                Placeholder.parsed("amount", String.valueOf(maxPlayers))));
     }
     protected void setDisplayString(String displayString){
         this.displayString = displayString;

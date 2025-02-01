@@ -130,6 +130,10 @@ public class PVPPlugin extends JavaPlugin {
 
     }
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
+    public MiniMessage getMiniMessage(){
+        return mm;
+    }
+
     public WorldEditPlugin getWorldEditPlugin(){
         Plugin p = pluginManager.getPlugin("WorldEdit");
 

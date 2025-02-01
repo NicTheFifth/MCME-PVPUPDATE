@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
@@ -20,8 +19,6 @@ import com.mcmiddleearth.pvpplugin.util.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -46,7 +43,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
 import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
@@ -130,16 +126,10 @@ public class RingBearerRunner extends GamemodeRunner {
     protected void initStartConditions() {
         Supplier<Integer> totalInTeams = () ->
                 redTeam.getOnlineMembers().size() + blueTeam.getOnlineMembers().size();
-        startConditions.put(() ->
-                        totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, red team has to have at least " +
-                        "one online player.")
-                        .color(Style.ERROR).create());
-        startConditions.put(() ->
-                        totalInTeams.get() != players.size() ||!blueTeam.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, blue team has to have at least" +
-                        " one online player.")
-                        .color(Style.ERROR).create());
+        startConditions.put(() -> totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
+                mm.deserialize("<red>Can't start, red team has to have at least one online player.</red>"));
+        startConditions.put(() -> totalInTeams.get() != players.size() ||!blueTeam.getOnlineMembers().isEmpty(),
+                mm.deserialize("<red>Can't start, blue team has to have at least one online player.</red>"));
     }
 
     @Override
@@ -150,18 +140,20 @@ public class RingBearerRunner extends GamemodeRunner {
                 TeamHandler.SetRingBearer(redTeam);
             if(blueTeam.getRingBearer() == null)
                 TeamHandler.SetRingBearer(blueTeam);
-            redTeam.getOnlineMembers().forEach(player -> {
-                if (redTeam.getRingBearer() == player)
-                    sendBaseComponent(new ComponentBuilder("You're the ringbearer, survive as long as possible!").create(), player);
-                else
-                    sendBaseComponent(new ComponentBuilder(redTeam.getRingBearer().getName() + " is your ringbearer, kill the enemy ringbearer and team to win!").create(), player);
-            });
-            blueTeam.getOnlineMembers().forEach(player -> {
-                if (blueTeam.getRingBearer() == player)
-                    sendBaseComponent(new ComponentBuilder("You're the ringbearer, survive as long as possible!").create(), player);
-                else
-                    sendBaseComponent(new ComponentBuilder(blueTeam.getRingBearer().getName() + " is your ringbearer, kill the enemy ringbearer and team to win!").create(), player);
-            });
+            Set<Player> redMinusRB = new HashSet<>(redTeam.getOnlineMembers());
+            redMinusRB.remove(redTeam.getRingBearer());
+            Set<Player> blueMinusRB = new HashSet<>(blueTeam.getOnlineMembers());
+            blueMinusRB.remove(blueTeam.getRingBearer());
+            PVPPlugin.getInstance().sendMessageTo(mm.deserialize(
+                    "<rb> is your ringbearer, kill the enemy ringbearer and team to win!",
+                    Placeholder.parsed("rb", redTeam.ringBearer.getName())),
+                    redMinusRB);
+            PVPPlugin.getInstance().sendMessageTo(mm.deserialize(
+                    "<rb> is your ringbearer, kill the enemy ringbearer and team to win!",
+                    Placeholder.parsed("rb", blueTeam.ringBearer.getName())),
+                    blueMinusRB);
+            redTeam.ringBearer.sendMessage(mm.deserialize("You're the ringbearer, survive as long as possible!"));
+            blueTeam.ringBearer.sendMessage(mm.deserialize("You're the ringbearer, survive as long as possible!"));
         });
         startActions.add(()-> ScoreboardEditor.InitRingBearer(scoreboard, redTeam, blueTeam));
         startActions.add(() -> new BukkitRunnable() {
@@ -198,25 +190,11 @@ public class RingBearerRunner extends GamemodeRunner {
                     PlayerStatEditor.addPlayed(player);
                 }));
         endActions.get(false).add(() ->{
-            if(redTeam.hasAliveMembers()) {
-                players.forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Red Won!!!").color(ChatColor.RED)
-                                        .create(), player));
-                spectator.getMembers().forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Red Won!!!").color(ChatColor.RED)
-                                        .create(), player));
-            }
-            else{
-                players.forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Blue Won!!!").color(ChatColor.BLUE)
-                                        .create(), player));
-                spectator.getMembers().forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Blue Won!!!").color(ChatColor.BLUE)
-                                        .create(), player));}});
+            if(redTeam.hasAliveMembers())
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<red>Red Won!!!</red>"));
+
+            else
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<blue>Blue Won!!!</blue>"));});
         endActions.get(false).add(() -> {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
@@ -245,9 +223,7 @@ public class RingBearerRunner extends GamemodeRunner {
     protected void initJoinConditions() {
         joinConditions.put(((player) ->
                         gameState == State.QUEUED || (redTeam.AliveMembers() >= 3 && blueTeam.AliveMembers() >= 3)),
-                new ComponentBuilder("The game is close to over, you cannot join.")
-                        .color(Style.INFO)
-                        .create());
+                mm.deserialize("<aqua>The game is close to over, you cannot join.</aqua>"));
     }
 
     @Override
@@ -257,9 +233,7 @@ public class RingBearerRunner extends GamemodeRunner {
 
     private void JoinRingBearer(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            sendBaseComponent(
-                    new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
-                    player);
+            player.sendMessage(mm.deserialize("<aqua>You joined the game.</aqua>"));
             return;
         }
         if(redTeam.getMembers().contains(player)) {
@@ -470,7 +444,7 @@ public class RingBearerRunner extends GamemodeRunner {
                 player.getInventory().setLeggings(empty);
                 player.getInventory().setBoots(empty);
                 player.getInventory().setItemInOffHand(empty);
-                sendBaseComponent(new ComponentBuilder("You've turned invisible, keep your hands empty and run!").create(), player);
+                player.sendMessage(mm.deserialize("You've turned invisible, keep your hands empty and run!"));
             }
         }
 
@@ -484,7 +458,7 @@ public class RingBearerRunner extends GamemodeRunner {
                 redTeam.getRingBearerKit().getInventory().accept(player);
             if(blueTeam.getRingBearer() == player)
                 blueTeam.getRingBearerKit().getInventory().accept(player);
-            sendBaseComponent(new ComponentBuilder("You've turned visible again!").create(), player);
+            player.sendMessage(mm.deserialize("You've turned visible again"));
         }
     }
 
