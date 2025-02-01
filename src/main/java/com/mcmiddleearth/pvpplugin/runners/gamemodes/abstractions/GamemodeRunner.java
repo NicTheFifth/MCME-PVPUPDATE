@@ -27,6 +27,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -212,7 +213,7 @@ public abstract class GamemodeRunner implements Listener {
 
     public abstract Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder);
 
-    public Boolean trySendSpectatorMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
+    public @NonNull Boolean trySendSpectatorMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
         if(spectator.getMembers().contains(player)) {
             PVPPlugin.getInstance().sendMessageTo(messageBuilder.apply(
                     List.of(Placeholder.styling("color", spectator.getChatColor()),

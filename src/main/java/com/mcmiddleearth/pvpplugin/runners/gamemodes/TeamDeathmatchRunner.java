@@ -240,7 +240,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
     //</editor-fold>
 
     @Override
-    public Boolean trySendSpectatorMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
+    public @NotNull Boolean trySendSpectatorMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
         return trySendMessage(player, messageBuilder);
     }
 

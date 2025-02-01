@@ -34,6 +34,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.List;
@@ -321,7 +322,7 @@ public class RingBearerRunner extends GamemodeRunner {
     }
 
     @Override
-    public Boolean trySendSpectatorMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
+    public @NotNull Boolean trySendSpectatorMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
         return trySendMessage(player, messageBuilder);
     }
 
