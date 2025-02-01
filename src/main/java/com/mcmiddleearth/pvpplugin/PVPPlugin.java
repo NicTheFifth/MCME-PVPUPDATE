@@ -91,7 +91,7 @@ public class PVPPlugin extends JavaPlugin {
     }
 
     private void setup() {
-        this.adventure = Audience.audience(Bukkit.getServer());
+        this.adventure = Bukkit.getServer();
         MapLoader.loadMaps();
         StatLoader.loadStats();
         pluginManager = this.getServer().getPluginManager();
