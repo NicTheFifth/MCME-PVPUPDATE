@@ -7,7 +7,6 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -77,7 +76,6 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
-        ChatUtils.AnnounceNewGame("Team Conquest", mapName, String.valueOf(maxPlayers));
     }
     //<editor-fold defaultstate="collapsed" desc="Teams">
     private void initTeams(JSONMap map){
@@ -91,7 +89,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         blueTeam.setPrefix("Blue");
         blueTeam.setTeamColour(Color.BLUE);
         blueTeam.setChatColor(BLUE);
-        blueTeam.setGameMode(GameMode.SURVIVAL);
+        blueTeam.setGameMode(GameMode.ADVENTURE);
         blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(jsonTeamConquest.getBlueSpawns()
                 .stream().map(LocationTranscriber::TranscribeFromJSON)
@@ -102,7 +100,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         redTeam.setPrefix("Red");
         redTeam.setChatColor(RED);
         redTeam.setTeamColour(Color.RED);
-        redTeam.setGameMode(GameMode.SURVIVAL);
+        redTeam.setGameMode(GameMode.ADVENTURE);
         redTeam.setKit(createKit(Color.RED));
         redTeam.setSpawnLocations(jsonTeamConquest.getRedSpawns()
                 .stream().map(LocationTranscriber::TranscribeFromJSON)

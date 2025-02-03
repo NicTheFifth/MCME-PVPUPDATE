@@ -8,7 +8,6 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -76,7 +75,6 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
-        ChatUtils.AnnounceNewGame("Death Run", mapName, String.valueOf(maxPlayers));
     }
     public void initGoal(){
         goal.getBlock().setType(Material.BEACON);
@@ -91,7 +89,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         runner.setPrefix("Runner");
         runner.setTeamColour(Color.BLUE);
         runner.setChatColor(NamedTextColor.BLUE);
-        runner.setGameMode(GameMode.SURVIVAL);
+        runner.setGameMode(GameMode.ADVENTURE);
         runner.setKit(new Kit(player -> {
             PlayerInventory returnInventory = player.getInventory();
             returnInventory.clear();}));
@@ -102,7 +100,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         death.setPrefix("Death");
         death.setTeamColour(Color.BLACK);
         death.setChatColor(NamedTextColor.BLACK);
-        death.setGameMode(GameMode.SURVIVAL);
+        death.setGameMode(GameMode.ADVENTURE);
         death.setKit(DeathKit());
         death.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(deathSpawn)));
     }
@@ -178,14 +176,14 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
                 if(runner.getFinished().isEmpty()) {
                     death.getMembers().forEach(PlayerStatEditor::addWon);
                     runner.getMembers().forEach(PlayerStatEditor::addLost);
-                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<<color>><prefix> won!!!</<color>>",
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<color><prefix> won!!!</color>",
                             Placeholder.styling("color", death.getChatColor()),
                             Placeholder.parsed("prefix", death.getPrefix())));
                 } else{
                     runner.getFinished().forEach(PlayerStatEditor::addWon);
                     runner.getDeadMembers().forEach(PlayerStatEditor::addLost);
                     death.getMembers().forEach(PlayerStatEditor::addLost);
-                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<<color>><names> won!!!</<color>>",
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<color><names> won!!!</color>",
                             Placeholder.styling("color", death.getChatColor()),
                             Placeholder.parsed("names",
                                     runner.getFinished().stream().map(Player::getName).collect(

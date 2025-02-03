@@ -106,9 +106,9 @@ public class DeathRunEditor extends TeamSpawnEditor implements SpecialPointEdito
                   Goal set: <goal>
                   Kill height: <kh></aqua>""",
                 Placeholder.parsed("max", String.valueOf(deathRun.getMaximumPlayers())),
-                Placeholder.parsed("rs", String.valueOf(deathRun.getRunnerSpawn() == null)),
-                Placeholder.parsed("ds", String.valueOf(deathRun.getDeathSpawn() == null)),
-                Placeholder.parsed("goal", String.valueOf(deathRun.getGoal() == null)),
+                Placeholder.parsed("rs", String.valueOf(deathRun.getRunnerSpawn() != null)),
+                Placeholder.parsed("ds", String.valueOf(deathRun.getDeathSpawn() != null)),
+                Placeholder.parsed("goal", String.valueOf(deathRun.getGoal() != null)),
                 Placeholder.parsed("kh", String.valueOf(deathRun.getKillHeight()))
                 ));
     }

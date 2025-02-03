@@ -7,7 +7,6 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONRingBearer;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -66,7 +65,6 @@ public class RingBearerRunner extends GamemodeRunner {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
-        ChatUtils.AnnounceNewGame("Ring Bearer", mapName, String.valueOf(maxPlayers));
     }
 
     private void initTeams(JSONMap map) {
@@ -83,7 +81,7 @@ public class RingBearerRunner extends GamemodeRunner {
         blueTeam.setRingBearerKit(createKit(Color.BLUE, true));
         blueTeam.setSpawnLocations(
                 blueSpawns.stream().map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
-        blueTeam.setGameMode(GameMode.SURVIVAL);
+        blueTeam.setGameMode(GameMode.ADVENTURE);
     }
 
     private void initRed(List<JSONLocation> redSpawns) {
@@ -94,7 +92,7 @@ public class RingBearerRunner extends GamemodeRunner {
         redTeam.setRingBearerKit(createKit(Color.RED, true));
         redTeam.setSpawnLocations(
                 redSpawns.stream().map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
-        redTeam.setGameMode(GameMode.SURVIVAL);
+        redTeam.setGameMode(GameMode.ADVENTURE);
     }
 
     private Kit createKit(Color color, boolean isRingbearer) {

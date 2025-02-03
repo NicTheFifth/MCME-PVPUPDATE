@@ -39,6 +39,13 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
                     .then(Arguments.NonExistingMap()
                         .executes(EditExecutor::CreateMap)))
             .then(
+                HelpfulLiteralBuilder.literal("delete")
+                    .requires(Requirements::isAdmin)
+                    .then(Arguments.ExistingMap()
+                        .executes(EditExecutor::DeleteMap)
+                        .then(Arguments.ExistingGamemode()
+                            .executes(EditExecutor::DeleteGamemode))))
+            .then(
                 ActiveMapEditorLiteral("rename")
                     .then(Arguments.NonExistingMap()
                         .executes(EditExecutor::SetTitle)))
@@ -139,7 +146,7 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
     public boolean onCommand(@NotNull CommandSender sender,
                              @NotNull Command command,
                              @NotNull String s,
-                             @NotNull String[] args) {
+                             @NotNull String @NotNull [] args) {
         PVPCommandSender wrappedSender = new PVPCommandSender(sender);
         execute(wrappedSender, args);
         return true;
@@ -149,7 +156,7 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender,
                                                 @NotNull Command command,
                                                 @NotNull String alias,
-                                                @NotNull String[] args) {
+                                                @NotNull String @NotNull [] args) {
         TabCompleteRequest request = new SimpleTabCompleteRequest(PVPCommandSender.wrap(sender),
                 String.format("/%s %s", alias, Joiner.on(' ').join(args)));
         onTabComplete(request);

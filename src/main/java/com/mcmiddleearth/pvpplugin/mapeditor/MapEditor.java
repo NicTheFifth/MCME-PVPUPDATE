@@ -141,8 +141,8 @@ public class MapEditor {
                           Team Slayer: <ts></aqua>""",
                 Placeholder.parsed("title", map.getTitle()),
                 Placeholder.parsed("rp", map.getResourcePack()),
-                Placeholder.parsed("region", String.valueOf(map.getRegionPoints() == null)),
-                Placeholder.parsed("spawn", String.valueOf(map.getSpawn() == null)),
+                Placeholder.parsed("region", String.valueOf(map.getRegionPoints() != null)),
+                Placeholder.parsed("spawn", String.valueOf(map.getSpawn() != null)),
                 Placeholder.parsed("ctf", String.valueOf(map.getJSONCaptureTheFlag() != null)),
                 Placeholder.parsed("dr", String.valueOf(map.getJSONDeathRun() != null)),
                 Placeholder.parsed("ffa", String.valueOf(map.getJSONFreeForAll() != null)),
@@ -199,7 +199,7 @@ public class MapEditor {
                 break;
         }
         player.sendMessage(mm.deserialize("<aqua>Set the gamemode to <gamemode>!</aqua>",
-                Placeholder.parsed("title", map.getTitle())));
+                Placeholder.parsed("gamemode", gamemode)));
         gamemodeEditor.sendStatus(player);
     }
     public void showSpawns(Player player) {

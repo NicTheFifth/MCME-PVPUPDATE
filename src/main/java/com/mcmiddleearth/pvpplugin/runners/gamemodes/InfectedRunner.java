@@ -8,7 +8,6 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -69,7 +68,6 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
-        ChatUtils.AnnounceNewGame("Infected", mapName, String.valueOf(maxPlayers));
     }
     //<editor-fold defaultstate="collapsed" desc="Teams">
     private void initTeams(JSONMap map){
@@ -82,7 +80,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         survivors.setPrefix("Survivor");
         survivors.setTeamColour(Color.BLUE);
         survivors.setChatColor(BLUE);
-        survivors.setGameMode(GameMode.SURVIVAL);
+        survivors.setGameMode(GameMode.ADVENTURE);
         survivors.setKit(createSurvivorKit());
         survivors.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(survivorSpawn)));
     }
@@ -107,7 +105,7 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         infected.setPrefix("Infected");
         infected.setTeamColour(Color.RED);
         infected.setChatColor(NamedTextColor.RED);
-        infected.setGameMode(GameMode.SURVIVAL);
+        infected.setGameMode(GameMode.ADVENTURE);
         //TODO: Fix the infected kit to be slightly stronger
         infected.setKit(new Kit(createInfectedKit(Color.RED)));
         infected.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(infectedSpawn)));

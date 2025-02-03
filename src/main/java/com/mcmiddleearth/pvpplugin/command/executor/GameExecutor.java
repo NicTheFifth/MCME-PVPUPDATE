@@ -15,6 +15,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
@@ -32,12 +33,12 @@ public class GameExecutor {
     public static int ToggleAutojoin(CommandContext<McmeCommandSender> c) {
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
         Player player = CommandUtil.getPlayer(c.getSource());
-        String text = "you won't automatically join games anymore.";
+        String text = "you'll automatically join games now.";
         if(!pvpPlugin.getAutojoiners().remove(player)) {
             pvpPlugin.getAutojoiners().add(player);
-            text = "you'll automatically join games now.";
+            text = "you won't automatically join games anymore.";
         }
-        player.sendMessage(Component.text().content("Toggled Auto-Join, " + text).color(NamedTextColor.BLUE).build());
+        player.sendMessage(Component.text().content("Toggled Auto-Join, " + text).color(NamedTextColor.AQUA).build());
         return 1;
     }
 
@@ -66,7 +67,10 @@ public class GameExecutor {
         if(pvpPlugin.getActiveGame() == null) {
             GamemodeRunner activeGame = runner.get();
             pvpPlugin.setActiveGame(activeGame);
-            pvpPlugin.getAutojoiners().forEach(activeGame::Join);
+            Bukkit.getServer().getOnlinePlayers().forEach(p -> {
+                if (!pvpPlugin.getAutojoiners().contains(p))
+                    activeGame.Join(p);
+            });
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
@@ -102,7 +106,10 @@ public class GameExecutor {
                     Placeholder.parsed("gamemode", activeGame.getGamemode()),
                     Placeholder.parsed("title", activeGame.getMapName()),
                     Placeholder.parsed("time", timeLimit.toString())));
-            pvpPlugin.getAutojoiners().forEach(activeGame::Join);
+            Bukkit.getServer().getOnlinePlayers().forEach(p -> {
+                if (!pvpPlugin.getAutojoiners().contains(p))
+                    activeGame.Join(p);
+            });
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
@@ -141,7 +148,10 @@ public class GameExecutor {
                     Placeholder.parsed("title", activeGame.getMapName()),
                     Placeholder.parsed("score", scoreGoal.toString())));
 
-            pvpPlugin.getAutojoiners().forEach(activeGame::Join);
+            Bukkit.getServer().getOnlinePlayers().forEach(p -> {
+                if (!pvpPlugin.getAutojoiners().contains(p))
+                    activeGame.Join(p);
+            });
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
@@ -175,7 +185,10 @@ public class GameExecutor {
                     Placeholder.parsed("title", activeRunner.getMapName()),
                     Placeholder.parsed("score", scoreGoal.toString()),
                     Placeholder.parsed("time", timeLimit.toString())));
-            pvpPlugin.getAutojoiners().forEach(activeRunner::Join);
+            Bukkit.getServer().getOnlinePlayers().forEach(p -> {
+                if (!pvpPlugin.getAutojoiners().contains(p))
+                    activeRunner.Join(p);
+            });
             return 1;
         }
         pvpPlugin.getGameQueue().add(runner);
@@ -265,7 +278,7 @@ public class GameExecutor {
                 "<aqua>Goal set to <goal> for <gamemode> on <title>.</aqua>",
                 Placeholder.parsed("gamemode", runner.getGamemode()),
                 Placeholder.parsed("title", runner.getMapName()),
-                Placeholder.parsed("score", scoreGoal.toString())));
+                Placeholder.parsed("goal", scoreGoal.toString())));
         return 1;
     }
 

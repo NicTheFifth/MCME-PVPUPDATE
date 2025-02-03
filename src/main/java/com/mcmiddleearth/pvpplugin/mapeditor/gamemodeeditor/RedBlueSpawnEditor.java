@@ -65,8 +65,8 @@ public class RedBlueSpawnEditor extends TeamSpawnEditor {
                   Red spawn set: <rs>""",
                 Placeholder.parsed("gamemode", getDisplayString()),
                 Placeholder.parsed("max", String.valueOf(redBlueSpawn.getMaximumPlayers())),
-                Placeholder.parsed("bs", String.valueOf(redBlueSpawn.getBlueSpawn() == null)),
-                Placeholder.parsed("rs", String.valueOf(redBlueSpawn.getRedSpawn() == null))));
+                Placeholder.parsed("bs", String.valueOf(redBlueSpawn.getBlueSpawn() != null)),
+                Placeholder.parsed("rs", String.valueOf(redBlueSpawn.getRedSpawn() != null))));
     }
     protected void initSpawnNames() {
         getSpawnNames().put("red",

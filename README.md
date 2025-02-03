@@ -1,16 +1,21 @@
 PVP Plugin version 2
 ===========
 ## To be implemented before release
-* Replace all sendBaseComponent
 
 ## To be implemented
 
 ## To be tested
+* Teleport to spawn (world spawn)
+* Rules gamemodes
+* Set gamemode adventure for players
+* Win text
+* Delete maps
+* Delete gamemodes
+* Double send of game creation
 
 ## To be fixed
 
 ## Bug list
-* Double send of game creation
 
 ## Implemented
 

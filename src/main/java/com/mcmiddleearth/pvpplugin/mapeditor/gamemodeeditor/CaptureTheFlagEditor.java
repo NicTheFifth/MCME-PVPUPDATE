@@ -82,14 +82,14 @@ public class CaptureTheFlagEditor extends RedBlueSpawnListEditor implements Spec
                 Max players: <max>
                 Blue Spawns set: <bs>
                 Blue flag set: <bf>
-                Red spawns set: <rs
+                Red spawns set: <rs>
                 Red flag set: <rf></aqua>
                 """,
                 Placeholder.parsed("max", String.valueOf(ctf.getMaximumPlayers())),
                 Placeholder.parsed("bs", String.valueOf(ctf.getBlueSpawns().size())),
-                Placeholder.parsed("bf", String.valueOf(ctf.getBlueFlag() == null)),
+                Placeholder.parsed("bf", String.valueOf(ctf.getBlueFlag() != null)),
                 Placeholder.parsed("rs", String.valueOf(ctf.getRedSpawns().size())),
-                Placeholder.parsed("rf", String.valueOf(ctf.getRedFlag() == null))));
+                Placeholder.parsed("rf", String.valueOf(ctf.getRedFlag() != null))));
     }
 
     @Override

@@ -7,7 +7,6 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -61,7 +60,6 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
-        ChatUtils.AnnounceNewGame("Team Slayer", mapName, String.valueOf(maxPlayers));
     }
     //<editor-fold defaultstate="collapsed" desc="Teams">
     public void initTeams(@NotNull JSONMap map){
@@ -78,7 +76,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
             teamSlayer.getRedSpawns()
                 .stream().map(LocationTranscriber::TranscribeFromJSON)
                 .collect(Collectors.toList()));
-        redTeam.setGameMode(GameMode.SURVIVAL);
+        redTeam.setGameMode(GameMode.ADVENTURE);
     }
     public void initBlueTeam(@NotNull JSONTeamSlayer teamSlayer){
         blueTeam.setPrefix("Blue");
@@ -89,7 +87,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
             teamSlayer.getBlueSpawns()
                 .stream().map(LocationTranscriber::TranscribeFromJSON)
                 .collect(Collectors.toList()));
-        blueTeam.setGameMode(GameMode.SURVIVAL);
+        blueTeam.setGameMode(GameMode.ADVENTURE);
     }
     private @NotNull Kit createKit(Color color){
         Consumer<Player> invFunc = (x -> {

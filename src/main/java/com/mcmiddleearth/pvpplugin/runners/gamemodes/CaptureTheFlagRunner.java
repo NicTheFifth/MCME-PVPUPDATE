@@ -8,7 +8,6 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -78,7 +77,6 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
-        ChatUtils.AnnounceNewGame("Capture the Flag", mapName, String.valueOf(maxPlayers));
     }
 
     private void initTeams(JSONMap map){
@@ -94,7 +92,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(jsonCaptureTheFlag.getBlueSpawns().stream()
                 .map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
-        blueTeam.setGameMode(GameMode.SURVIVAL);
+        blueTeam.setGameMode(GameMode.ADVENTURE);
         blueTeam.setFlag(LocationTranscriber.TranscribeFromJSON(jsonCaptureTheFlag.getBlueFlag()).add(0,1,0));
         blueTeam.setFlagMaterial(Material.BLUE_BANNER);
     }
@@ -106,7 +104,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         redTeam.setKit(createKit(Color.RED));
         redTeam.setSpawnLocations(jsonCaptureTheFlag.getRedSpawns().stream()
                 .map(LocationTranscriber::TranscribeFromJSON).collect(Collectors.toList()));
-        redTeam.setGameMode(GameMode.SURVIVAL);
+        redTeam.setGameMode(GameMode.ADVENTURE);
         redTeam.setFlag(LocationTranscriber.TranscribeFromJSON(jsonCaptureTheFlag.getRedFlag()).add(0,1,0));
         redTeam.setFlagMaterial(Material.RED_BANNER);
     }
@@ -223,11 +221,11 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
                 }));
         endActions.get(false).add(() ->{
             if(redTeam.getPoints() == scoreGoal)
-                PVPPlugin.getInstance().sendMessage(mm.deserialize("<<color>><prefix> won!!!</<color>>",
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<color><prefix> won!!!</color>",
                                 Placeholder.styling("color", redTeam.getChatColor()),
                                 Placeholder.parsed("prefix", redTeam.getPrefix())));
             else
-                PVPPlugin.getInstance().sendMessage(mm.deserialize("<<color>><prefix> won!!!</<color>>",
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<color><prefix> won!!!</color>",
                                         Placeholder.styling("color", blueTeam.getChatColor()),
                                         Placeholder.parsed("prefix", blueTeam.getPrefix())));
         });

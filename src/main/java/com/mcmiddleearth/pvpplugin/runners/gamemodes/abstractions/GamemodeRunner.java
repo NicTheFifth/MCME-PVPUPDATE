@@ -4,6 +4,7 @@ import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
@@ -63,7 +64,12 @@ public abstract class GamemodeRunner implements Listener {
         startActions.add(() ->
             spectator.getMembers().forEach(player -> player.setScoreboard(scoreboard)));
         startActions.add(() -> MapEditor.hideSpawns(null, false));
-        startActions.add(() ->TeamHandler.spawnAll(spectator));
+        startActions.add(() ->{
+            Bukkit.getServer().getOnlinePlayers().forEach(player -> {
+                if(!players.contains(player))
+                    spectator.getMembers().add(player);
+            } );
+            TeamHandler.spawnAll(spectator);});
 
         joinConditions.put(player -> players.size() < maxPlayers,
             mm.deserialize("<red>Can't join the game, as it is full.</red>"));
@@ -76,6 +82,7 @@ public abstract class GamemodeRunner implements Listener {
         joinActions.add(player -> spectator.getMembers().remove(player));
 
         leaveActions.add(players::remove);
+        ChatUtils.AnnounceNewGame(getGamemode(), mapName, String.valueOf(maxPlayers));
     }
     protected void initSpectator(JSONLocation spawn){
         spectator.setPrefix("Spectator");
@@ -141,12 +148,13 @@ public abstract class GamemodeRunner implements Listener {
         players.forEach(player -> {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
-            player.setGameMode(GameMode.SURVIVAL);
-            //player.teleport(pvpPlugin.getSpawn());
+            player.setGameMode(GameMode.ADVENTURE);
+            player.teleport(player.getWorld().getSpawnLocation());
         });
         scoreboard.getObjectives().forEach(Objective::unregister);
         gameState = State.ENDED;
         endActions.get(false).forEach(Runnable::run);
+        spectator.getMembers().forEach(spec -> spec.teleport(spec.getWorld().getSpawnLocation()));
         if(!stopped)
             spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
         PVPPlugin.getInstance().sendMessage(mm.deserialize("<aqua><gamemode> on <name> has ended.</aqua>",

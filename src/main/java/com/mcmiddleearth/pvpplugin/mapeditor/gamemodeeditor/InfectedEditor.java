@@ -67,8 +67,8 @@ public class InfectedEditor extends TeamSpawnEditor {
                   Survivor spawn set: <ss>
                   Infected spawn set: <is></aqua>""",
                 Placeholder.parsed("max", String.valueOf(infected.getMaximumPlayers())),
-                Placeholder.parsed("ss", String.valueOf(infected.getSurvivorSpawn() == null)),
-                Placeholder.parsed("is", String.valueOf(infected.getInfectedSpawn() == null))
+                Placeholder.parsed("ss", String.valueOf(infected.getSurvivorSpawn() != null)),
+                Placeholder.parsed("is", String.valueOf(infected.getInfectedSpawn() != null))
                 ));
     }
 

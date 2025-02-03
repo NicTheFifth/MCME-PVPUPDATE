@@ -7,7 +7,6 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -61,7 +60,6 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
         initJoinActions();
         initLeaveActions();
         initSpectator(map.getSpawn());
-        ChatUtils.AnnounceNewGame("One in the Quiver", mapName, String.valueOf(maxPlayers));
     }
 
     @Override
@@ -118,7 +116,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
         NamedTextColor color = OITQplayers.getOrDefault(player.getUniqueId(), GenerateNewPlayer(player)).getChatColor();
         KitOutPlayer(player);
-        player.setGameMode(GameMode.SURVIVAL);
+        player.setGameMode(GameMode.ADVENTURE);
         TeamHandler.spawn(player, spawns);
 
         PVPPlugin.getInstance().sendMessage(

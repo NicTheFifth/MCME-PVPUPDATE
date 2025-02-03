@@ -30,6 +30,7 @@ public class TimeLimitArgument implements ArgumentType<Integer> {
     }
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        builder.suggest("Time Limit Argument (seconds)");
         return innerArgument.listSuggestions(context, builder);
     }
 }
