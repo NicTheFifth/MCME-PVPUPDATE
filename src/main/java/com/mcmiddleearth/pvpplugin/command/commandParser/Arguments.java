@@ -2,45 +2,31 @@ package com.mcmiddleearth.pvpplugin.command.commandParser;
 
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.command.sender.McmeCommandSender;
-import com.mcmiddleearth.pvpplugin.PVPPlugin;
-import com.mcmiddleearth.pvpplugin.command.Validator;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.command.argumentTypes.*;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.statics.Resourcepacks;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
 public class Arguments {
     public static HelpfulRequiredArgumentBuilder<String> ExistingMap() {
-        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAP_NAME, ExistingMaps());
+        return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAP_NAME, new ExistingMapArgument());
     }
 
-    private static CommandStringArgument ExistingMaps() {
-        return new CommandStringArgument(PVPPlugin.getInstance().getMaps().keySet());
-    }
     public static HelpfulRequiredArgumentBuilder<String> ValidMap(){
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAP_NAME,
-            ValidMaps());
+            new ValidMapArgument());
     }
-    private static CommandStringArgument ValidMaps(){
-        return new CommandStringArgument(
-            PVPPlugin.getInstance().getMaps().entrySet().stream()
-                .filter(stringJSONMapEntry ->
-                    Validator.isMapValid(stringJSONMapEntry.getValue()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet())
-        );
-    }
+
     public static HelpfulRequiredArgumentBuilder<String> NonExistingMap(){
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.MAP_NAME, new NonExistingMapArgument());
     }
+
     public static HelpfulRequiredArgumentBuilder<String> RPArgument(){
         return HelpfulRequiredArgumentBuilder.argument(ArgumentNames.RESOURCEPACK,
             ResourcePacks());
     }
+
     private static CommandStringArgument ResourcePacks(){
         return new CommandStringArgument(Resourcepacks.getAll);
     }

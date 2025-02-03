@@ -15,6 +15,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.Playerstat;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
+import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.util.*;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -166,7 +167,9 @@ public class PVPPlugin extends JavaPlugin {
         return gameQueue;
     }
 
-    public void setActiveGame(final GamemodeRunner activeGame) {
+    public void setActiveGame(GamemodeRunner activeGame) {
+        if(activeGame != null)
+            ChatUtils.AnnounceNewGame(activeGame.getGamemode(), activeGame.getMapName(), String.valueOf(activeGame.getMax()));
         this.activeGame = activeGame;
     }
     public File getMapDirectory() {
@@ -182,8 +185,11 @@ public class PVPPlugin extends JavaPlugin {
 //    public Boolean isPVPServer(){
 //        return isPVPServer;
 //    }
+    public Set<String> getMapNames() {
+        return maps.keySet();
+    }
+// </editor-fold>
 
-    //</editor-fold>
     public void sendMessage(Component message){
         adventure.filterAudience(audience -> audience instanceof Player).sendMessage(message);
     }
@@ -191,12 +197,12 @@ public class PVPPlugin extends JavaPlugin {
     public void sendMessage(String message) {
         adventure.filterAudience(audience -> audience instanceof Player).sendMessage(mm.deserialize(message));
     }
-
     public void sendMessageTo(Component message, Player... player){
         if(player.length == 0)
             Logger.getLogger("MCME-PVP").log(Level.INFO, "Tried to send a message to an empty list of players.");
         sendMessageTo(message, Arrays.stream(player).collect(Collectors.toSet()));
     }
+
     public void sendMessageTo(Component message, Set<Player> player){
             Audience subAud = adventure.filterAudience(member -> member instanceof Player && player.contains(member));
             subAud.sendMessage(message);

@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class TimeLimitArgument implements ArgumentType<Integer> {
@@ -30,7 +31,8 @@ public class TimeLimitArgument implements ArgumentType<Integer> {
     }
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        builder.suggest("Time Limit Argument (seconds)");
+        if(Objects.equals(builder.getRemaining(), ""))
+            builder.suggest("Time Limit Argument (seconds)");
         return innerArgument.listSuggestions(context, builder);
     }
 }

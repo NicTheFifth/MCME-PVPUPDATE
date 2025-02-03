@@ -363,11 +363,11 @@ public class EditExecutor {
         Player player = CommandUtil.getPlayer(c.getSource());
         String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-        pvpPlugin.getMaps().remove(mapName);
         File f = new File(PVPPlugin.getInstance().getMapDirectory() +
                 FileSystems.getDefault().getSeparator() +
-                mapName);
+                mapName + ".json");
         if(f.delete()){
+            pvpPlugin.getMaps().remove(mapName);
             player.sendMessage(pvpPlugin.getMiniMessage().deserialize("<aqua>Deleted <mapname>!</aqua>",
                     Placeholder.parsed("mapname", mapName)));
             return 1;

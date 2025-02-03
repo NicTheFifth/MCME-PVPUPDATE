@@ -4,7 +4,6 @@ import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
@@ -82,7 +81,6 @@ public abstract class GamemodeRunner implements Listener {
         joinActions.add(player -> spectator.getMembers().remove(player));
 
         leaveActions.add(players::remove);
-        ChatUtils.AnnounceNewGame(getGamemode(), mapName, String.valueOf(maxPlayers));
     }
     protected void initSpectator(JSONLocation spawn){
         spectator.setPrefix("Spectator");
@@ -153,7 +151,7 @@ public abstract class GamemodeRunner implements Listener {
         });
         scoreboard.getObjectives().forEach(Objective::unregister);
         gameState = State.ENDED;
-        endActions.get(false).forEach(Runnable::run);
+        endActions.get(stopped).forEach(Runnable::run);
         spectator.getMembers().forEach(spec -> spec.teleport(spec.getWorld().getSpawnLocation()));
         if(!stopped)
             spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
@@ -213,6 +211,10 @@ public abstract class GamemodeRunner implements Listener {
 
     public String getMapName() {
         return mapName;
+    }
+
+    public Integer getMax(){
+        return maxPlayers;
     }
 
     public State getGameState() {return gameState;}
