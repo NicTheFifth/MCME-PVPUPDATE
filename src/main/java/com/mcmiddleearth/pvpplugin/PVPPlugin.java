@@ -281,6 +281,9 @@ public class PVPPlugin extends JavaPlugin {
                 PVPPlugin.getInstance().getPlayerstats();
             if(!playerStats.containsKey(p.getUniqueId()))
                 playerStats.put(p.getUniqueId(), new Playerstat());
+            GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
+            if(runner != null && runner.getGameState().equals(GamemodeRunner.State.RUNNING))
+                runner.joinSpectator(p);
         }
 
         @EventHandler

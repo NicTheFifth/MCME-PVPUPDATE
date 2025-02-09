@@ -35,6 +35,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static org.bukkit.attribute.Attribute.MAX_HEALTH;
+
 
 public abstract class GamemodeRunner implements Listener {
     public enum State{
@@ -82,6 +84,7 @@ public abstract class GamemodeRunner implements Listener {
 
         leaveActions.add(players::remove);
     }
+
     protected void initSpectator(JSONLocation spawn){
         spectator.setPrefix("Spectator");
         spectator.setTeamColour(Color.SILVER);
@@ -147,6 +150,7 @@ public abstract class GamemodeRunner implements Listener {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
             player.setGameMode(GameMode.ADVENTURE);
+            player.setHealth(player.getAttribute(MAX_HEALTH).getDefaultValue());
             player.teleport(player.getWorld().getSpawnLocation());
         });
         scoreboard.getObjectives().forEach(Objective::unregister);
@@ -190,6 +194,10 @@ public abstract class GamemodeRunner implements Listener {
         joinActions.forEach(joinAction -> joinAction.accept(player));
     }
 
+    public void joinSpectator(Player player){
+        player.setScoreboard(scoreboard);
+        TeamHandler.spawn(player,spectator);
+    }
     protected abstract void initJoinActions();
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Leave">
