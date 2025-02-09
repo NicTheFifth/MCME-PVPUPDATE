@@ -311,7 +311,7 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
         Set<Player> deadMembers = new HashSet<>();
 
         public boolean hasAliveMembers(){
-            return deadMembers.containsAll(onlineMembers);
+            return onlineMembers.containsAll(deadMembers);
         }
         public Set<Player> getDeadMembers() {return  deadMembers;}
 
