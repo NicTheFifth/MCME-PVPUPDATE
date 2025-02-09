@@ -254,9 +254,10 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
         if(team == null)
             return false;
 
-        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
-                List.of(Placeholder.parsed("prefix", team.getPrefix()),
-                        Placeholder.styling("color", team.getChatColor()))));
+        List<TagResolver> resolvers = new ArrayList<>();
+        resolvers.add(Placeholder.parsed("prefix", team.getPrefix()));
+        resolvers.add(Placeholder.styling("color", team.getChatColor()));
+        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
         return true;
     }
 

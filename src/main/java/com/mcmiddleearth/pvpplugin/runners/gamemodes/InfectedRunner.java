@@ -36,6 +36,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -298,9 +299,10 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         if(team == null)
             return false;
 
-        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
-                List.of(Placeholder.parsed("prefix", team.getPrefix()),
-                        Placeholder.styling("color", team.getChatColor()))));
+        List<TagResolver> resolvers = new ArrayList<>();
+        resolvers.add(Placeholder.parsed("prefix", team.getPrefix()));
+        resolvers.add(Placeholder.styling("color", team.getChatColor()));
+        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
         return true;
     }
 

@@ -36,6 +36,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -348,9 +349,10 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         if(team == null)
             return false;
 
-        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
-                List.of(Placeholder.parsed("prefix", team.getPrefix()),
-                        Placeholder.styling("color", team.getChatColor()))));
+        List<TagResolver> resolvers = new ArrayList<>();
+        resolvers.add(Placeholder.parsed("prefix", team.getPrefix()));
+        resolvers.add(Placeholder.styling("color", team.getChatColor()));
+        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
         return true;
     }
 

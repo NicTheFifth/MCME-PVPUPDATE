@@ -27,10 +27,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -152,9 +149,10 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
             return false;
         PlayerTeam team = OITQplayers.get(player.getUniqueId());
         if(team != null){
-            PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
-                    List.of(Placeholder.parsed("prefix", team.getChatColor().examinableName()),
-                            Placeholder.styling("color", team.getChatColor()))));
+            List<TagResolver> resolvers = new ArrayList<>();
+            resolvers.add(Placeholder.parsed("prefix", team.getChatColor().examinableName()));
+            resolvers.add(Placeholder.styling("color", team.getChatColor()));
+            PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
             return true;
         }
         return false;

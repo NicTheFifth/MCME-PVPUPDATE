@@ -36,6 +36,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -329,6 +330,7 @@ public class RingBearerRunner extends GamemodeRunner {
         if(!players.contains(player))
             return false;
         String prefix = null;
+        List<TagResolver> resolvers = new ArrayList<>();
         if(blueTeam.getDeadMembers().contains(player))
             prefix = "Dead Blue";
         if(redTeam.getDeadMembers().contains(player))
@@ -340,10 +342,9 @@ public class RingBearerRunner extends GamemodeRunner {
             Set<Player> deads = new HashSet<>(blueTeam.getDeadMembers());
             deads.addAll(spectator.getMembers());
             deads.addAll(redTeam.getDeadMembers());
-            PVPPlugin.getInstance().sendMessageTo(messageBuilder.apply(
-                    List.of(Placeholder.parsed("prefix", prefix),
-                            Placeholder.styling("color", spectator.getChatColor()))),
-                    deads);
+            resolvers.add(Placeholder.parsed("prefix", prefix));
+            resolvers.add(Placeholder.styling("color", spectator.getChatColor()));
+            PVPPlugin.getInstance().sendMessageTo(messageBuilder.apply(resolvers), deads);
             return true;
         }
         Team team = null;
@@ -354,9 +355,9 @@ public class RingBearerRunner extends GamemodeRunner {
         if(team == null)
             return false;
 
-        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
-                List.of(Placeholder.parsed("prefix", team.getPrefix()),
-                        Placeholder.styling("color", team.getChatColor()))));
+        resolvers.add(Placeholder.parsed("prefix", team.getPrefix()));
+        resolvers.add( Placeholder.styling("color", team.getChatColor()));
+        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
         return true;
     }
 

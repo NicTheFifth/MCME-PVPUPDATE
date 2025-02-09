@@ -39,6 +39,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -276,6 +277,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         if(!players.contains(player))
             return false;
 
+        List<TagResolver> resolvers = new ArrayList<>();
         Set<Player> deads = new HashSet<>(runner.getDeadMembers());
         deads.addAll(spectator.getMembers());
         deads.addAll(runner.finished);
@@ -288,9 +290,9 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         if(spectator.getMembers().contains(player))
             prefix = "Spectator";
         if(prefix != null){
-            PVPPlugin.getInstance().sendMessageTo(messageBuilder.apply(
-                    List.of(Placeholder.parsed("prefix", prefix),
-                            Placeholder.styling("color", spectator.getChatColor()))),
+            resolvers.add(Placeholder.parsed("prefix", prefix));
+            resolvers.add(Placeholder.styling("color", spectator.getChatColor()));
+            PVPPlugin.getInstance().sendMessageTo(messageBuilder.apply(resolvers),
                     deads);
             return true;
         }
@@ -302,9 +304,9 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         if(team == null)
             return false;
 
-        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
-                List.of(Placeholder.parsed("prefix", team.getPrefix()),
-                        Placeholder.styling("color", team.getChatColor()))));
+        resolvers.add(Placeholder.parsed("prefix", team.getPrefix()));
+        resolvers.add(Placeholder.styling("color", team.getChatColor()));
+        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
         return true;
     }
 

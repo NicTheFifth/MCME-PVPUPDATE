@@ -27,10 +27,7 @@ import org.bukkit.inventory.PlayerInventory;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -167,9 +164,10 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
             return false;
         PlayerTeam team = FFAplayers.get(player);
         if(team != null){
-            PVPPlugin.getInstance().sendMessage(messageBuilder.apply(
-                    List.of(Placeholder.parsed("prefix", team.getChatColor().examinableName()),
-                            Placeholder.styling("color", team.getChatColor()))));
+            List<TagResolver> resolvers = new ArrayList<>();
+            resolvers.add(Placeholder.parsed("prefix", team.getChatColor().examinableName()));
+            resolvers.add(Placeholder.styling("color", team.getChatColor()));
+            PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
             return true;
         }
         return false;
