@@ -348,6 +348,8 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             Player player = e.getPlayer();
+            if(gameState != State.RUNNING)
+                return;
             if(redTeam.getMembers().contains(player))
                 TeamHandler.respawn(e, redTeam);
             if(blueTeam.getMembers().contains(player))
