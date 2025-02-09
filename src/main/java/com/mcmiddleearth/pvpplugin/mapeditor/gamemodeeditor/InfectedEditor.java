@@ -27,25 +27,25 @@ public class InfectedEditor extends TeamSpawnEditor {
         Location infectedSpawn = player.getLocation();
         JSONLocation JSONInfectedSpawn = new JSONLocation(infectedSpawn);
         ((JSONInfected)jsonGamemode).setInfectedSpawn(JSONInfectedSpawn);
-        player.sendMessage("<aqua>Infected spawn set for Infected.</aqua>");
+        player.sendMessage(mm.deserialize("<aqua>Infected spawn set for Infected.</aqua>"));
     }
     public void teleportToInfectedSpawn(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
                 ((JSONInfected)jsonGamemode).getInfectedSpawn()));
-        player.sendMessage("<aqua>Teleported to infected spawn.</aqua>");
+        player.sendMessage(mm.deserialize("<aqua>Teleported to infected spawn.</aqua>"));
     }
     public void setSurvivorSpawn(Player player){
         Location survivorSpawn = player.getLocation();
         JSONLocation JSONSurvivorSpawn = new JSONLocation(survivorSpawn);
         ((JSONInfected)jsonGamemode).setSurvivorSpawn(JSONSurvivorSpawn);
-        player.sendMessage("<aqua>Survivor spawn set for Infected.</aqua>");
+        player.sendMessage(mm.deserialize("<aqua>Survivor spawn set for Infected.</aqua>"));
     }
     public void teleportToSurvivorSpawn(Player player){
         player.teleport(
             LocationTranscriber.TranscribeFromJSON(
                 ((JSONInfected)jsonGamemode).getSurvivorSpawn()));
-        player.sendMessage("<aqua>Teleported to survivor spawn.</aqua>");
+        player.sendMessage(mm.deserialize("<aqua>Teleported to survivor spawn.</aqua>"));
     }
     public String getGamemode(){return Gamemodes.INFECTED;}
     @Override

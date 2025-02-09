@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -366,15 +367,14 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         @EventHandler
         public void onPlayerInteract(PlayerInteractEvent e){
             Player player = e.getPlayer();
-            if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
                 return;
-            }
-            if(gameState != State.RUNNING ) {
+            if(gameState != State.RUNNING)
                 return;
-            }
-            if(!players.contains(player)) {
+            if(!players.contains(player))
                 return;
-            }
+            if(e.getClickedBlock() == null)
+                return;
             if(e.getClickedBlock().getType() != Material.BEACON)
                 return;
             Block possibleGoal = e.getClickedBlock();
@@ -388,6 +388,17 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
             if(runner.getOnlineMembers().isEmpty())
                 end(false);
             e.setUseInteractedBlock(Event.Result.DENY);
+        }
+
+        @EventHandler
+        public void onPlayerDamage(EntityDamageByEntityEvent e){
+            if(!(e.getEntity() instanceof Player player))
+                return;
+            if(!(e.getDamager() instanceof Player damager))
+                return;
+            if((death.getMembers().contains(player) && death.getMembers().contains(damager)) ||
+                    (runner.getMembers().contains(player) && runner.getMembers().contains(damager)))
+                e.setCancelled(true);
         }
     }
 

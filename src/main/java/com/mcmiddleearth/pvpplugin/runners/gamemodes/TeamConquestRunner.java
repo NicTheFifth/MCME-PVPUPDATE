@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -261,12 +262,10 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         team.getOnlineMembers().add(player);
         Matchmaker.addMember(player, team);
         TeamHandler.spawn(player, team);
-        PVPPlugin.getInstance().sendMessage(
-                String.format("<%s>%s has joined the %s</%s>",
-                        team.getChatColor(),
-                        player.getName(),
-                        team.getPrefix(),
-                        team.getChatColor()));
+        PVPPlugin.getInstance().sendMessage(mm.deserialize("<color><name> has joined the <prefix></color>",
+                Placeholder.styling("color", team.getChatColor()),
+                Placeholder.parsed("name", player.getName()),
+                Placeholder.parsed("prefix", team.getPrefix())));
     }
 
     //</editor-fold>
@@ -288,11 +287,9 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
 
     private void leaveTeam(Player player, Team team){
         team.getOnlineMembers().remove(player);
-        PVPPlugin.getInstance().sendMessage(
-                String.format("<%s>%s has left the game.</%s>",
-                        team.getChatColor(),
-                        player.getName(),
-                        team.getChatColor()));
+        PVPPlugin.getInstance().sendMessage(mm.deserialize("<color><name> has left the game.</color>",
+                Placeholder.styling("color", team.getChatColor()),
+                Placeholder.parsed("name", player.getName())));
     }
     //</editor-fold>
 
@@ -366,6 +363,8 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                 return;
             if(!players.contains(p))
                 return;
+            if(e.getClickedBlock() == null)
+                return;
             if(!e.getClickedBlock().getType().equals(Material.BEACON))
                 return;
             e.setUseInteractedBlock(Event.Result.DENY);
@@ -395,10 +394,8 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                 case 50:
                     redTeam.addControlledPoint();
                     capturePoint.add(0,1,0).getBlock().setType(Material.RED_STAINED_GLASS);
-                    PVPPlugin.getInstance().sendMessage(
-                            String.format("<%s>Red team has captured a point</%s>",
-                                    redTeam.getChatColor(),
-                                    redTeam.getChatColor()));
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<color>Red team has captured a point</color>",
+                                    Placeholder.styling("color", redTeam.getChatColor())));
                     break;
                 case -50:
                     blueTeam.addControlledPoint();
@@ -412,6 +409,17 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
             p.sendMessage(mm.deserialize("<gray>Point is now at <value>!</gray>",
                     Placeholder.parsed("value", String.valueOf(newPointValue))));
             capturePointsProgress.put(keyPoint, newPointValue);
+        }
+
+        @EventHandler
+        public void onPlayerDamage(EntityDamageByEntityEvent e){
+            if(!(e.getEntity() instanceof Player player))
+                return;
+            if(!(e.getDamager() instanceof Player damager))
+                return;
+            if((redTeam.getMembers().contains(player) && redTeam.getMembers().contains(damager)) ||
+                    (blueTeam.getMembers().contains(player) && blueTeam.getMembers().contains(damager)))
+                e.setCancelled(true);
         }
     }
 

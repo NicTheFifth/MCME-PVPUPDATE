@@ -27,6 +27,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -345,5 +346,15 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
             }
         }
 
+        @EventHandler
+        public void onPlayerDamage(EntityDamageByEntityEvent e){
+            if(!(e.getEntity() instanceof Player player))
+                return;
+            if(!(e.getDamager() instanceof Player damager))
+                return;
+            if((infected.getMembers().contains(player) && infected.getMembers().contains(damager)) ||
+                    (survivors.getMembers().contains(player) && survivors.getMembers().contains(damager)))
+                e.setCancelled(true);
+        }
     }
 }

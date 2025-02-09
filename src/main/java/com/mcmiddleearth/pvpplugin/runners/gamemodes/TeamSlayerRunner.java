@@ -23,6 +23,7 @@ import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -284,6 +285,7 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
                     end(false);
             });
         }
+
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             Player player = e.getPlayer();
@@ -291,6 +293,17 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
                 TeamHandler.respawn(e, redTeam);
             if(blueTeam.getMembers().contains(player))
                 TeamHandler.respawn(e, blueTeam);
+        }
+
+        @EventHandler
+        public void onPlayerDamage(EntityDamageByEntityEvent e){
+            if(!(e.getEntity() instanceof Player player))
+                return;
+            if(!(e.getDamager() instanceof Player damager))
+                return;
+            if((redTeam.getMembers().contains(player) && redTeam.getMembers().contains(damager)) ||
+                    (blueTeam.getMembers().contains(player) && blueTeam.getMembers().contains(damager)))
+                e.setCancelled(true);
         }
     }
     public static class TSTeam extends Team{
