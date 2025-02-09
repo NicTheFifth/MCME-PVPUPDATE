@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.bukkit.entity.Player;
 
 public class ChatUtils {
     public static void sendBroadcast(BaseComponent[] message){
@@ -16,7 +17,7 @@ public class ChatUtils {
         out.writeUTF("Message");
         out.writeUTF("ALL");
         out.writeUTF(BaseComponent.toLegacyText(message));
-        PVPPlugin.getInstance().getServer().sendPluginMessage(PVPPlugin.getInstance(), "BungeeCord", out.toByteArray());
+        ((Player)PVPPlugin.getInstance().getServer().getOnlinePlayers().toArray()[0]).sendPluginMessage(PVPPlugin.getInstance(), "BungeeCord", out.toByteArray());
     }
 
     public static void AnnounceNewGame(String gamemode, String map, String max){
