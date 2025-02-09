@@ -340,6 +340,8 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             Player player = e.getPlayer();
+            if(gameState != State.RUNNING)
+                return;
             if(infected.getMembers().contains(player)) {
                 TeamHandler.respawn(e, infected);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 1));

@@ -405,6 +405,8 @@ public class RingBearerRunner extends GamemodeRunner {
             Player player = e.getPlayer();
             if(!players.contains(player))
                 return;
+            if(gameState != State.RUNNING)
+                return;
             if(blueTeam.getMembers().contains(player)){
                 if(blueTeam.getDeadMembers().contains(player)){
                     player.setGameMode(spectator.getGameMode());

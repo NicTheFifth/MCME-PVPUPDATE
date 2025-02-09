@@ -346,6 +346,8 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             Player player = e.getPlayer();
+            if(gameState != State.RUNNING)
+                return;
             if(death.getMembers().contains(player))
                 TeamHandler.respawn(e, death);
             else

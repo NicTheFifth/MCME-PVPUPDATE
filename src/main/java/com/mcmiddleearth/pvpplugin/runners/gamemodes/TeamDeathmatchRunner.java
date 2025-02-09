@@ -305,6 +305,8 @@ public class TeamDeathmatchRunner extends GamemodeRunner {
 
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
+            if(gameState != State.RUNNING)
+                return;
             TeamHandler.respawn(e, spectator);
         }
 

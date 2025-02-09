@@ -212,6 +212,8 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             Player player = e.getPlayer();
+            if(gameState != State.RUNNING)
+                return;
             if(!players.contains(player))
                 return;
             if(!player.getInventory().contains(Material.ARROW))
