@@ -42,7 +42,10 @@ public abstract class SpawnListEditor extends GamemodeEditor {
     }
     public void sendStatus(Player player){
         player.sendMessage(MiniMessage.miniMessage().deserialize(
-                "<aqua>Current selected gamemode: <gamemode>\n\tMax players: <max>\n\tSpawns:<spawnnum></aqua>",
+                """
+                <aqua>Current selected gamemode: <gamemode>
+                  Max players: <max>
+                  pawns:<spawnnum></aqua>""",
                 Placeholder.parsed("gamemode", getDisplayString()),
                 Placeholder.parsed("max", String.valueOf(jsonGamemode.getMaximumPlayers())),
                 Placeholder.parsed("spawnnum", String.valueOf(((JSONSpawnListGamemode)jsonGamemode).getSpawns().size())))
