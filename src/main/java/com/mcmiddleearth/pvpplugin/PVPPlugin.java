@@ -21,6 +21,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -226,7 +227,7 @@ public class PVPPlugin extends JavaPlugin {
             PVPPlugin pvpPlugin = PVPPlugin.getInstance();
             Player player = e.getPlayer();
             GamemodeRunner runner = pvpPlugin.getActiveGame();
-            String placeholder = "<<color>><prefix> <name></<color>>: <message>";
+            String placeholder = "<color><prefix> <name></color>: <message>";
             TagResolver.Single message = Placeholder.component("message", e.message());
             TagResolver.Single name = Placeholder.parsed("name", player.getName());
 
@@ -236,7 +237,7 @@ public class PVPPlugin extends JavaPlugin {
                             placeholder,
                             message,
                             name,
-                            Placeholder.parsed("color", "gold"),
+                            Placeholder.styling("color", NamedTextColor.GOLD),
                             Placeholder.parsed("prefix", "PVP Staff")));
                     e.setCancelled(true);
                     return;
@@ -246,7 +247,7 @@ public class PVPPlugin extends JavaPlugin {
                             placeholder,
                             message,
                             name,
-                            Placeholder.parsed("color", "gold"),
+                            Placeholder.styling("color", NamedTextColor.GOLD),
                             Placeholder.parsed("prefix", "Manager")));
                     e.setCancelled(true);
                     return;
@@ -255,7 +256,7 @@ public class PVPPlugin extends JavaPlugin {
                         placeholder,
                         message,
                         name,
-                        Placeholder.parsed("color", "gray"),
+                        Placeholder.styling("color", NamedTextColor.GRAY),
                         Placeholder.parsed("prefix", "Lobby")));
                 e.setCancelled(true);
                 return;
