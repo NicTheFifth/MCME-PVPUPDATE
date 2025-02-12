@@ -156,7 +156,10 @@ public abstract class GamemodeRunner implements Listener {
         scoreboard.getObjectives().forEach(Objective::unregister);
         gameState = State.ENDED;
         endActions.get(stopped).forEach(Runnable::run);
-        spectator.getMembers().forEach(spec -> spec.teleport(spec.getWorld().getSpawnLocation()));
+        spectator.getMembers().forEach(spec -> {
+            spec.teleport(spec.getWorld().getSpawnLocation());
+            spec.setGameMode(GameMode.ADVENTURE);
+        });
         if(!stopped)
             spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
         PVPPlugin.getInstance().sendMessage(mm.deserialize("<aqua><gamemode> on <name> has ended.</aqua>",
