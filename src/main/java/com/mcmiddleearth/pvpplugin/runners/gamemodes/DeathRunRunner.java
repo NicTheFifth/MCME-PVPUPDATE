@@ -16,7 +16,6 @@ import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -37,15 +36,12 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -269,45 +265,40 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
     }
 
     @Override
-    public @NotNull Boolean trySendSpectatorMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
-        return trySendMessage(player, messageBuilder);
+    public TagResolver.Single getSpectatorPrefix(Player player){
+        if(runner.getDeadMembers().contains(player))
+            return Placeholder.parsed("prefix", "Dead Runner");
+        if(runner.finished.contains(player))
+            return Placeholder.parsed("prefix", "Finished Runner");
+        if(spectator.getMembers().contains(player))
+            return Placeholder.parsed("prefix", spectator.getPrefix());
+        return null;
     }
 
-    public Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
-        if(!players.contains(player))
-            return false;
+    @Override
+    public TagResolver.Single getSpectatorColor(Player player){
+        return spectator.getMembers().contains(player) ||
+                runner.getDeadMembers().contains(player) ||
+                runner.finished.contains(player)
+                ? Placeholder.styling("color", spectator.getChatColor()) : null;
+    }
 
-        List<TagResolver> resolvers = new ArrayList<>();
-        Set<Player> deads = new HashSet<>(runner.getDeadMembers());
-        deads.addAll(spectator.getMembers());
-        deads.addAll(runner.finished);
-        String prefix = null;
-        if(runner.getDeadMembers().contains(player)){
-            prefix = "Dead Runner";
-        }
-        if(runner.finished.contains(player))
-            prefix = "Finished Runner";
-        if(spectator.getMembers().contains(player))
-            prefix = "Spectator";
-        if(prefix != null){
-            resolvers.add(Placeholder.parsed("prefix", prefix));
-            resolvers.add(Placeholder.styling("color", spectator.getChatColor()));
-            PVPPlugin.getInstance().sendMessageTo(messageBuilder.apply(resolvers),
-                    deads);
-            return true;
-        }
-        Team team = null;
+    @Override
+    public TagResolver.Single getPlayerPrefix(Player player){
         if(death.getMembers().contains(player))
-            team = death;
+            return Placeholder.parsed("prefix", death.getPrefix());
         if(runner.getMembers().contains(player))
-            team = runner;
-        if(team == null)
-            return false;
+            return Placeholder.parsed("prefix", runner.getPrefix());
+        return null;
+    }
 
-        resolvers.add(Placeholder.parsed("prefix", team.getPrefix()));
-        resolvers.add(Placeholder.styling("color", team.getChatColor()));
-        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
-        return true;
+    @Override
+    public TagResolver.Single getPlayerColor(Player player){
+        if(death.getMembers().contains(player))
+            return Placeholder.styling("color", death.getChatColor());
+        if(runner.getMembers().contains(player))
+            return Placeholder.styling("color", runner.getChatColor());
+        return null;
     }
 
     @Override

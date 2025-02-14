@@ -16,7 +16,6 @@ import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -36,13 +35,10 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -336,24 +332,25 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
     }
 
     @Override
-    public Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
+    public TagResolver.Single getPlayerPrefix(Player player){
         if(!players.contains(player))
-            return false;
-        CTFTeam team = null;
-        if(blueTeam.getMembers().contains(player)){
-            team = blueTeam;
-        }
-        if(redTeam.getMembers().contains(player)){
-            team=redTeam;
-        }
-        if(team == null)
-            return false;
+            return null;
+        if(blueTeam.getMembers().contains(player))
+            return Placeholder.parsed("prefix", blueTeam.getPrefix());
+        if(redTeam.getMembers().contains(player))
+            return Placeholder.parsed("prefix", redTeam.getPrefix());
+        return null;
+    }
 
-        List<TagResolver> resolvers = new ArrayList<>();
-        resolvers.add(Placeholder.parsed("prefix", team.getPrefix()));
-        resolvers.add(Placeholder.styling("color", team.getChatColor()));
-        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
-        return true;
+    @Override
+    public TagResolver.Single getPlayerColor(Player player){
+        if(!players.contains(player))
+            return null;
+        if(blueTeam.getMembers().contains(player))
+            return Placeholder.styling("color", blueTeam.getChatColor());
+        if(redTeam.getMembers().contains(player))
+            return Placeholder.styling("color", redTeam.getChatColor());
+        return null;
     }
 
     @Override

@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.function.Function;
 
 import com.mcmiddleearth.pvpplugin.command.commandParser.GameCommand;
 import com.mcmiddleearth.pvpplugin.command.commandParser.MapEditCommand;
@@ -18,13 +17,9 @@ import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.util.*;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
@@ -108,6 +103,11 @@ public class PVPPlugin extends JavaPlugin {
         addEventListener(new GlobalListeners());
         spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58,
                 0.3F, -24.15F);
+        if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new ChatExpansion().register();
+        } else {
+            Logger.getGlobal().warning("PlaceholderAPI not enabled");
+        }
     }
 
     @Override
@@ -221,59 +221,6 @@ public class PVPPlugin extends JavaPlugin {
     }
 
     private static class GlobalListeners implements Listener{
-        MiniMessage mm = MiniMessage.miniMessage();
-        @EventHandler
-        public void onChat(AsyncChatEvent e){
-            PVPPlugin pvpPlugin = PVPPlugin.getInstance();
-            Player player = e.getPlayer();
-            GamemodeRunner runner = pvpPlugin.getActiveGame();
-            String placeholder = "<color><prefix> <name></color>: <message>";
-            TagResolver.Single message = Placeholder.component("message", e.message());
-            TagResolver.Single name = Placeholder.parsed("name", player.getName());
-
-            if(runner == null || runner.getGameState() == GamemodeRunner.State.QUEUED){
-                if(player.hasPermission(Permissions.PVP_ADMIN.getPermissionNode())){
-                    pvpPlugin.sendMessage(mm.deserialize(
-                            placeholder,
-                            message,
-                            name,
-                            Placeholder.styling("color", NamedTextColor.GOLD),
-                            Placeholder.parsed("prefix", "PVP Staff")));
-                    e.setCancelled(true);
-                    return;
-                }
-                if(player.hasPermission(Permissions.RUN.getPermissionNode())){
-                    pvpPlugin.sendMessage(mm.deserialize(
-                            placeholder,
-                            message,
-                            name,
-                            Placeholder.styling("color", NamedTextColor.GOLD),
-                            Placeholder.parsed("prefix", "Manager")));
-                    e.setCancelled(true);
-                    return;
-                }
-                pvpPlugin.sendMessage(mm.deserialize(
-                        placeholder,
-                        message,
-                        name,
-                        Placeholder.styling("color", NamedTextColor.GRAY),
-                        Placeholder.parsed("prefix", "Lobby")));
-                e.setCancelled(true);
-                return;
-            }
-            Function<List<TagResolver>, Component> messageBuilder = (List<TagResolver> resolvers) -> {
-                resolvers.add(message);
-                resolvers.add(name);
-                return mm.deserialize(
-                        placeholder,
-                        TagResolver.builder().resolvers(resolvers).build());
-            };
-            if(runner.trySendSpectatorMessage(player, messageBuilder)){
-                e.setCancelled(true);
-                return;
-            }
-            e.setCancelled(runner.trySendMessage(player, messageBuilder));
-        }
 
         @EventHandler
         public void onJoinEvent(PlayerJoinEvent e){

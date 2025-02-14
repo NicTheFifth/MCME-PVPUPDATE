@@ -27,11 +27,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -232,18 +230,17 @@ public abstract class GamemodeRunner implements Listener {
 
     public abstract String getGamemode();
 
-    public abstract Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder);
-
-    public @NonNull Boolean trySendSpectatorMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
-        if(spectator.getMembers().contains(player)) {
-            PVPPlugin.getInstance().sendMessageTo(messageBuilder.apply(
-                    List.of(Placeholder.styling("color", spectator.getChatColor()),
-                            Placeholder.parsed("prefix", spectator.getPrefix()))),
-                    spectator.getMembers());
-            return true;
-        }
-        return false;
+    public TagResolver.Single getSpectatorPrefix(Player player){
+        return spectator.getMembers().contains(player) ? Placeholder.parsed("prefix", spectator.getPrefix()) : null;
     }
+
+    public TagResolver.Single getSpectatorColor(Player player){
+        return spectator.getMembers().contains(player) ? Placeholder.styling("color", spectator.getChatColor()) : null;
+    }
+
+    public abstract TagResolver.Single getPlayerPrefix(Player player);
+    public abstract TagResolver.Single getPlayerColor(Player player);
+
     protected abstract class GamemodeListener implements Listener {
         HashMap<UUID, Long> playerAreaLeaveTimer = new HashMap<>();
         protected List<Consumer<PlayerDeathEvent>> onPlayerDeathActions =

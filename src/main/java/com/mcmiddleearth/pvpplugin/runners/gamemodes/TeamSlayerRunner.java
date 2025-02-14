@@ -15,7 +15,6 @@ import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.apache.commons.lang3.tuple.Pair;
@@ -32,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -244,22 +242,26 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
     }
     //</editor-fold>
 
-    public Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
+    @Override
+    public TagResolver.Single getPlayerPrefix(Player player){
         if(!players.contains(player))
-            return false;
-        Team team = null;
-        if(redTeam.getMembers().contains(player))
-            team = redTeam;
+            return null;
         if(blueTeam.getMembers().contains(player))
-            team=blueTeam;
-        if(team == null)
-            return false;
+            return Placeholder.parsed("prefix", blueTeam.getPrefix());
+        if(redTeam.getMembers().contains(player))
+            return Placeholder.parsed("prefix", redTeam.getPrefix());
+        return null;
+    }
 
-        List<TagResolver> resolvers = new ArrayList<>();
-        resolvers.add(Placeholder.parsed("prefix", team.getPrefix()));
-        resolvers.add(Placeholder.styling("color", team.getChatColor()));
-        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
-        return true;
+    @Override
+    public TagResolver.Single getPlayerColor(Player player){
+        if(!players.contains(player))
+            return null;
+        if(blueTeam.getMembers().contains(player))
+            return Placeholder.styling("color", blueTeam.getChatColor());
+        if(redTeam.getMembers().contains(player))
+            return Placeholder.styling("color", redTeam.getChatColor());
+        return null;
     }
 
     public int getScoreGoal(){return scoreGoal;}

@@ -16,7 +16,6 @@ import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -36,12 +35,10 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
@@ -288,22 +285,22 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
     }
     //</editor-fold>
 
-    public Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
-        if(!players.contains(player))
-            return false;
-        Team team = null;
+    @Override
+    public TagResolver.Single getPlayerPrefix(Player player){
         if(infected.getMembers().contains(player))
-            team = infected;
+            return Placeholder.parsed("prefix", infected.getPrefix());
         if(survivors.getMembers().contains(player))
-            team=survivors;
-        if(team == null)
-            return false;
+            return Placeholder.parsed("prefix", survivors.getPrefix());
+        return null;
+    }
 
-        List<TagResolver> resolvers = new ArrayList<>();
-        resolvers.add(Placeholder.parsed("prefix", team.getPrefix()));
-        resolvers.add(Placeholder.styling("color", team.getChatColor()));
-        PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
-        return true;
+    @Override
+    public TagResolver.Single getPlayerColor(Player player){
+        if(infected.getMembers().contains(player))
+            return Placeholder.styling("color", infected.getChatColor());
+        if(survivors.getMembers().contains(player))
+            return Placeholder.styling("color", survivors.getChatColor());
+        return null;
     }
 
     @Override

@@ -12,7 +12,6 @@ import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -28,7 +27,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -144,20 +142,6 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
         playerInventory.forEach(KitEditor::setUnbreaking);
     }
 
-    public Boolean trySendMessage(Player player, Function<List<TagResolver>, Component> messageBuilder){
-        if(!players.contains(player))
-            return false;
-        PlayerTeam team = OITQplayers.get(player.getUniqueId());
-        if(team != null){
-            List<TagResolver> resolvers = new ArrayList<>();
-            resolvers.add(Placeholder.parsed("prefix", team.getChatColor().examinableName()));
-            resolvers.add(Placeholder.styling("color", team.getChatColor()));
-            PVPPlugin.getInstance().sendMessage(messageBuilder.apply(resolvers));
-            return true;
-        }
-        return false;
-    }
-
     @Override
     protected void initLeaveActions() {
         leaveActions.add(this::leave);
@@ -165,6 +149,19 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
     private void leave(Player player){
         if(players.size() <= 1)
             end(true);
+    }
+
+    @Override
+    public TagResolver.Single getPlayerPrefix(Player player){
+        return Placeholder.parsed("prefix", "");
+    }
+
+    @Override
+    public  TagResolver.Single getPlayerColor(Player player){
+        PlayerTeam team = OITQplayers.get(player.getUniqueId());
+        if(team != null)
+            return Placeholder.styling("color", team.getChatColor());
+        return null;
     }
 
     @Override
