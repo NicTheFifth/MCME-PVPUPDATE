@@ -7,6 +7,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
@@ -25,63 +26,43 @@ public class ChatExpansion extends PlaceholderExpansion implements Relational {
         if(player1==null || !player1.isOnline())
             return null;
         GamemodeRunner runner = pvpPlugin.getActiveGame();
-        String placeholderPrefix = "<prefix> <name><reset>:";
-        String placeholderColor = "<color>";
+        String placeholderPrefix = "<color><prefix> <name></color>:";
         TagResolver.Single name = Placeholder.parsed("name", player1.getName());
-        if(runner == null) {
-            switch (params) {
-                case "prefix":
-                    if (pvpPlugin.getActiveGame() == null) {
-                        if (player1.hasPermission(Permissions.PVP_ADMIN.getPermissionNode()))
-                            return mm.serialize(mm.deserialize(placeholderPrefix,
-                                    Placeholder.parsed("prefix", "PVP Staff"),
-                                    name));
-                        if (player1.hasPermission(Permissions.RUN.getPermissionNode()))
-                            return mm.serialize(mm.deserialize(placeholderPrefix,
-                                    Placeholder.parsed("prefix", "Manager"),
-                                    name));
-                        return mm.serialize(mm.deserialize(placeholderPrefix,
-                                Placeholder.parsed("prefix", "Lobby"),
-                                name));
-                    }
-                    break;
-                case "color":
-                    if (pvpPlugin.getActiveGame() == null) {
-                        if (player1.hasPermission(Permissions.RUN.getPermissionNode()))
-                            return mm.serialize(mm.deserialize(placeholderColor,
-                                    Placeholder.styling("color", NamedTextColor.GOLD)));
-                        return mm.serialize(mm.deserialize(placeholderColor,
-                                Placeholder.styling("color", NamedTextColor.GRAY)));
-                    }
-            }
-
+        if(!params.equalsIgnoreCase("prefix"))
             return null;
+        if (runner == null || runner.getGameState() == GamemodeRunner.State.QUEUED) {
+            if (player1.hasPermission(Permissions.PVP_ADMIN.getPermissionNode()))
+                return LegacyComponentSerializer.legacySection().serialize(mm.deserialize(placeholderPrefix,
+                        Placeholder.parsed("prefix", "PVP Staff"),
+                        Placeholder.styling("color", NamedTextColor.GOLD),
+                        name));
+            if (player1.hasPermission(Permissions.RUN.getPermissionNode()))
+                return LegacyComponentSerializer.legacySection().serialize(mm.deserialize(placeholderPrefix,
+                        Placeholder.parsed("prefix", "Manager"),
+                        Placeholder.styling("color", NamedTextColor.GOLD),
+                        name));
+            return LegacyComponentSerializer.legacySection().serialize(mm.deserialize(placeholderPrefix,
+                    Placeholder.parsed("prefix", "Lobby"),
+                    Placeholder.styling("color", NamedTextColor.GRAY),
+                    name));
         }
+
         if(player2==null || !player2.isOnline())
             return null;
-        switch(params){
-            case "prefix":
-                TagResolver.Single spectatorPrefix = runner.getSpectatorPrefix(player1);
-                if(spectatorPrefix != null && runner.getSpectatorPrefix(player2) != null)
-                    return mm.serialize(mm.deserialize(placeholderPrefix,
-                            spectatorPrefix,
-                            name));
-                TagResolver.Single activePlayerPrefix = runner.getPlayerPrefix(player1);
-                if(activePlayerPrefix != null)
-                    return mm.serialize(mm.deserialize(placeholderPrefix,
-                            activePlayerPrefix,
-                            name));
-                break;
-            case "color":
-                TagResolver.Single spectatorColor = runner.getSpectatorColor(player1);
-                if (spectatorColor != null && runner.getSpectatorColor(player2) != null)
-                    return mm.serialize(mm.deserialize(placeholderColor,
-                            spectatorColor));
-                TagResolver.Single activePlayerColor = runner.getPlayerColor(player1);
-                if (activePlayerColor != null)
-                    return mm.serialize(mm.deserialize(placeholderColor,
-                            activePlayerColor));
-        }
+        TagResolver.Single spectatorPrefix = runner.getSpectatorPrefix(player1);
+        TagResolver.Single spectatorColor = runner.getSpectatorColor(player1);
+        if(spectatorPrefix != null && runner.getSpectatorPrefix(player2) != null)
+            return LegacyComponentSerializer.legacySection().serialize(mm.deserialize(placeholderPrefix,
+                    spectatorPrefix,
+                    spectatorColor,
+                    name));
+        TagResolver.Single activePlayerPrefix = runner.getPlayerPrefix(player1);
+        TagResolver.Single activePlayerColor= runner.getPlayerColor(player1);
+        if(activePlayerPrefix != null)
+            return LegacyComponentSerializer.legacySection().serialize(mm.deserialize(placeholderPrefix,
+                    activePlayerPrefix,
+                    activePlayerColor,
+                    name));
         return null;
     }
 

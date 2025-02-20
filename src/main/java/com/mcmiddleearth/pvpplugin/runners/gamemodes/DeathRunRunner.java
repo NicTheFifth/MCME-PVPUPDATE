@@ -213,7 +213,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
 
     private void JoinDeathRun(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            player.sendMessage(mm.deserialize("<teal>You joined the game.</teal>"));
+            player.sendMessage(mm.deserialize("<aqua>You joined the game.</aqua>"));
             return;
         }
         if(death.getMembers().contains(player)){
