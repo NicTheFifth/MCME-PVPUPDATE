@@ -237,7 +237,7 @@ public abstract class GamemodeRunner implements Listener {
     public TagResolver.Single getSpectatorColor(Player player){
         return spectator.getMembers().contains(player) ? Placeholder.styling("color", spectator.getChatColor()) : null;
     }
-
+    public Set<Player> getPlayers(){return players;}
     public abstract TagResolver.Single getPlayerPrefix(Player player);
     public abstract TagResolver.Single getPlayerColor(Player player);
 

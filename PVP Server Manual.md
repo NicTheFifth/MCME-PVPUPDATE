@@ -1,17 +1,17 @@
 # PVP Server Manual
 
-1. Commands
-    1. Based on permissions in the plugin
-        1. Role collections
-        2. canRun
-        3. pvp.mapEditor
-        4. adminPermission
-        5. No permissions
-    2. Based on roles on the server
-        1. Valar
-        2. Guide
-        3. Others
-2. Maps
+1. [Commands](#1-commands)
+   1. [Permissions in the plugin](#1i-permissions-in-the-plugin)
+      1. [Role collections](#1ia-role-collections)
+      2. [No permissions](#1ib-no-permissions)
+      3. [canRun](#1ic-canrun)
+      4. [pvp.mapEditor](#1id-mapeditor)
+      5. [adminPermission](#1ie-adminpermission) 
+   2. [Based on roles on the server](#1ii-based-on-roles-on-the-server)
+      1. [Every player](#1iia-every-player)
+      2. [Guide](#1iib-guide)
+      3. [Valar](#1iic-valar)
+2. [Maps](#2-maps)
 
 ## 1. Commands
 
@@ -83,7 +83,10 @@ graph LR
 mapedit --> delete --> A([Existing map name]) --> B([Gamemode name])
 ```
 ### 1.ii Based on roles on the server
-#### 1.ii.a Valar
+#### 1.ii.a Every player
+The commands that every player can use are detailed in [No permissions](#1ib-no-permissions).
 #### 1.ii.b Guide
-#### 1.ii.c Others
+The commands that guides can use are [No permissions](#1ib-no-permissions) and [canRun](#1ic-canrun)
+#### 1.ii.c Valar
+Valar can use all commands within the pvp plugin.
 ## 2. Maps

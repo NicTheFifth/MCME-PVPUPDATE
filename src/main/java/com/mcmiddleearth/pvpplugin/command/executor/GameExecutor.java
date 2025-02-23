@@ -227,10 +227,11 @@ public class GameExecutor {
         Player player = CommandUtil.getPlayer(c.getSource());
         GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
 
-        if(runner.canJoin(player)) {
+        if(runner != null && runner.getPlayers().contains(player)) {
             runner.leaveGame(player, false);
             return 1;
         }
+        player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Can't leave the game.</red>"));
         return 0;
     }
 
