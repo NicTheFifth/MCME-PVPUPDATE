@@ -23,6 +23,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -419,7 +420,12 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         public void onPlayerDamage(EntityDamageByEntityEvent e){
             if(!(e.getEntity() instanceof Player player))
                 return;
-            if(!(e.getDamager() instanceof Player damager))
+            Player damager = null;
+            if(e.getDamager() instanceof Player hitter)
+                damager = hitter;
+            if(e.getDamager() instanceof Arrow arrow && arrow.getShooter() instanceof Player shooter)
+                damager = shooter;
+            if(damager == null)
                 return;
             if((redTeam.getMembers().contains(player) && redTeam.getMembers().contains(damager)) ||
                     (blueTeam.getMembers().contains(player) && blueTeam.getMembers().contains(damager)))

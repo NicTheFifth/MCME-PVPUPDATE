@@ -25,6 +25,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -389,7 +390,12 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         public void onPlayerDamage(EntityDamageByEntityEvent e){
             if(!(e.getEntity() instanceof Player player))
                 return;
-            if(!(e.getDamager() instanceof Player damager))
+            Player damager = null;
+            if(e.getDamager() instanceof Player hitter)
+                damager = hitter;
+            if(e.getDamager() instanceof Arrow arrow && arrow.getShooter() instanceof Player shooter)
+                damager = shooter;
+            if(damager == null)
                 return;
             if((death.getMembers().contains(player) && death.getMembers().contains(damager)) ||
                     (runner.getMembers().contains(player) && runner.getMembers().contains(damager)))
