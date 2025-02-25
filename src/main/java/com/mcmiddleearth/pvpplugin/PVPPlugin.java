@@ -242,7 +242,9 @@ public class PVPPlugin extends JavaPlugin {
         public void onVentureChat(AsyncPlayerChatEvent e){
             Player player = e.getPlayer();
             GamemodeRunner runner = PVPPlugin.getInstance().activeGame;
-            if(runner != null && runner.getSpectatorPrefix(player) != null) {
+            if(runner != null &&
+               runner.getGameState() != GamemodeRunner.State.COUNTDOWN &&
+               runner.getSpectatorPrefix(player) != null) {
                 String placeholderPrefix = "<color><prefix> <name></color>: <message>";
                 TagResolver.Single spectatorPrefix = runner.getSpectatorPrefix(player);
                 TagResolver.Single spectatorColor = runner.getSpectatorColor(player);
