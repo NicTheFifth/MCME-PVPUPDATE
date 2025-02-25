@@ -17,16 +17,22 @@ import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.util.*;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
@@ -103,11 +109,6 @@ public class PVPPlugin extends JavaPlugin {
         addEventListener(new GlobalListeners());
         spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58,
                 0.3F, -24.15F);
-        if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            new ChatExpansion().register();
-        } else {
-            Logger.getGlobal().warning("PlaceholderAPI not enabled");
-        }
     }
 
     @Override
@@ -198,16 +199,11 @@ public class PVPPlugin extends JavaPlugin {
     public void sendMessage(String message) {
         adventure.filterAudience(audience -> audience instanceof Player).sendMessage(mm.deserialize(message));
     }
-    public void sendMessageTo(Component message, Player... player){
-        if(player.length == 0)
-            Logger.getLogger("MCME-PVP").log(Level.INFO, "Tried to send a message to an empty list of players.");
-        sendMessageTo(message, Arrays.stream(player).collect(Collectors.toSet()));
-    }
 
     public void sendMessageTo(Component message, Set<Player> player){
             Audience subAud = adventure.filterAudience(member -> member instanceof Player && player.contains(member));
             subAud.sendMessage(message);
-        }
+    }
 
     public void sendMessageTo(String message, Player... player) {
         if (player.length == 0)
@@ -237,6 +233,64 @@ public class PVPPlugin extends JavaPlugin {
         @EventHandler
         public void onLeaveEvent(PlayerQuitEvent e) {
              PVPPlugin.getInstance().autojoiners.remove(e.getPlayer());
+        }
+
+        @EventHandler
+        public void onVentureChat(AsyncPlayerChatEvent e){
+            e.setCancelled(true);
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST)
+        public void onChatEvent(AsyncChatEvent e){
+            Player player = e.getPlayer();
+            PVPPlugin pvpPlugin = PVPPlugin.getInstance();
+            MiniMessage mm = pvpPlugin.getMiniMessage();
+            GamemodeRunner runner = pvpPlugin.getActiveGame();
+
+            String placeholderPrefix = "<color><prefix> <name></color>: <message>";
+            TagResolver.Single name = Placeholder.parsed("name", player.getName());
+            TagResolver.Single message = Placeholder.component("message", e.message());
+            TagResolver.Single prefix = null;
+            TagResolver.Single color;
+            if (runner == null || runner.getGameState() == GamemodeRunner.State.QUEUED) {
+                color = Placeholder.styling("color", NamedTextColor.GOLD);
+                if (player.hasPermission(Permissions.PVP_ADMIN.getPermissionNode()))
+                    prefix = Placeholder.parsed("prefix", "PVP Staff");
+                if (player.hasPermission(Permissions.RUN.getPermissionNode()))
+                    prefix = Placeholder.parsed("prefix", "Manager");
+                if(prefix == null){
+                    prefix = Placeholder.parsed("prefix", "Lobby");
+                    color = Placeholder.styling("color", NamedTextColor.GRAY);
+                }
+                pvpPlugin.getServer().sendMessage(mm.deserialize(placeholderPrefix,
+                        prefix,
+                        color,
+                        name,
+                        message));
+                e.setCancelled(true);
+                return;
+            }
+            prefix = runner.getSpectatorPrefix(player);
+            color = runner.getSpectatorColor(player);
+            if(prefix != null) {
+                Audience.audience(runner.getSpectators().getMembers()).sendMessage(mm.deserialize(placeholderPrefix,
+                        prefix,
+                        color,
+                        name,
+                        message));
+                e.setCancelled(true);
+                return;
+            }
+            prefix = runner.getPlayerPrefix(player);
+            color= runner.getPlayerColor(player);
+            if(prefix != null) {
+                pvpPlugin.getServer().sendMessage(mm.deserialize(placeholderPrefix,
+                        prefix,
+                        color,
+                        name,
+                        message));
+                e.setCancelled(true);
+            }
         }
     }
 }

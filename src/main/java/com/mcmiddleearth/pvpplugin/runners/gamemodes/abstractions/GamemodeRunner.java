@@ -63,12 +63,7 @@ public abstract class GamemodeRunner implements Listener {
         startActions.add(() ->
             spectator.getMembers().forEach(player -> player.setScoreboard(scoreboard)));
         startActions.add(() -> MapEditor.hideSpawns(null, false));
-        startActions.add(() ->{
-            Bukkit.getServer().getOnlinePlayers().forEach(player -> {
-                if(!players.contains(player))
-                    spectator.getMembers().add(player);
-            } );
-            TeamHandler.spawnAll(spectator);});
+        startActions.add(() -> TeamHandler.spawnAll(spectator));
 
         joinConditions.put(player -> players.size() < maxPlayers,
             mm.deserialize("<red>Can't join the game, as it is full.</red>"));
@@ -111,6 +106,10 @@ public abstract class GamemodeRunner implements Listener {
     protected List<Runnable> startActions = new ArrayList<>();
     public void start(){
         PVPPlugin.addEventListener(eventListener);
+        Bukkit.getServer().getOnlinePlayers().forEach(player -> {
+            if(!players.contains(player))
+                spectator.getMembers().add(player);
+        } );
         startActions.forEach(Runnable::run);
         CountDown();
     }
@@ -218,6 +217,7 @@ public abstract class GamemodeRunner implements Listener {
     protected abstract  void  initLeaveActions();
     //</editor-fold>
 
+    public Team getSpectators(){return spectator;}
     public String getMapName() {
         return mapName;
     }
