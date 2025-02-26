@@ -51,7 +51,7 @@ public class PVPPlugin extends JavaPlugin {
     Queue<Supplier<GamemodeRunner>> gameQueue = new LinkedList<>();
     HashMap<UUID, MapEditor> mapEditors = new HashMap<>();
     static PVPPlugin instance;
-    ChatExpansion expansion = new ChatExpansion();
+    ChatExpansion expansion;
     //TODO: Implement switching between servermode and minigame mode.
 //    Boolean isPVPServer = true;
     File mapDirectory;
@@ -93,6 +93,7 @@ public class PVPPlugin extends JavaPlugin {
 
     private void setup() {
         this.adventure = Bukkit.getServer();
+        expansion = new ChatExpansion();
         MapLoader.loadMaps();
         StatLoader.loadStats();
         pluginManager = this.getServer().getPluginManager();
