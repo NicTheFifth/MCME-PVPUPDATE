@@ -11,6 +11,7 @@ import com.mcmiddleearth.pvpplugin.util.Team;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -81,6 +82,7 @@ public abstract class GamemodeRunner implements Listener {
     protected void initSpectator(JSONLocation spawn){
         spectator.setPrefix("Spectator");
         spectator.setTeamColour(Color.SILVER);
+        spectator.setChatColor(NamedTextColor.GRAY);
         spectator.setSpawnLocations(new ArrayList<>(List.of(
             LocationTranscriber.TranscribeFromJSON(spawn)
         )));

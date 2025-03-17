@@ -244,7 +244,6 @@ public class PVPPlugin extends JavaPlugin {
             Player player = e.getPlayer();
             GamemodeRunner runner = PVPPlugin.getInstance().activeGame;
             if(runner != null &&
-               runner.getGameState() != GamemodeRunner.State.COUNTDOWN &&
                runner.getSpectatorPrefix(player) != null) {
                 String placeholderPrefix = "<color><prefix> <name></color>: <message>";
                 TagResolver.Single spectatorPrefix = runner.getSpectatorPrefix(player);
