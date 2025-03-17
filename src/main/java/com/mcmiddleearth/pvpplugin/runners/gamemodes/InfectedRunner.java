@@ -195,7 +195,14 @@ public class InfectedRunner extends GamemodeRunner implements TimeLimit {
                     else
                         PVPPlugin.getInstance().sendMessage(mm.deserialize("<blue>Survivors Won!!!</blue>"));
                 });
-        endActions.get(true).add(()-> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
+        endActions.get(false).add(()-> {
+            PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
+        });
+        endActions.get(true).add(()-> {
+            PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
+        });
         endActions.get(false).add(() -> players.forEach(player -> player.removePotionEffect(PotionEffectType.SPEED)));
         endActions.get(true).add(() -> players.forEach(player -> player.removePotionEffect(PotionEffectType.SPEED)));
     }

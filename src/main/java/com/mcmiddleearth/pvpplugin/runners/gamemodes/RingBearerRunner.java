@@ -197,11 +197,13 @@ public class RingBearerRunner extends GamemodeRunner {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
             EntityPotionEffectEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
         });
         endActions.get(true).add(()-> {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
             EntityPotionEffectEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
         });
     }
 

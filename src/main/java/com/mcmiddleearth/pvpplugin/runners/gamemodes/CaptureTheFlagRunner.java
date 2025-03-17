@@ -231,10 +231,14 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
         endActions.get(false).add(() -> {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
+            PlayerMoveEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
         });
         endActions.get(true).add(()->{
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
+            PlayerMoveEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
         });
         endActions.get(true).add(() -> {
             redTeam.getFlag().getBlock().setType(Material.AIR);

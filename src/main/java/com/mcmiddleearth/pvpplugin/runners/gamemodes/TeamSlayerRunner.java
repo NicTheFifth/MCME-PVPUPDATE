@@ -144,10 +144,14 @@ public class TeamSlayerRunner extends GamemodeRunner implements ScoreGoal {
                 PVPPlugin.getInstance().sendMessage(mm.deserialize("<red>Red won!!!</red>"));
             else
                 PVPPlugin.getInstance().sendMessage(mm.deserialize("<blue>Blue won!!!</blue>"));});
-        endActions.get(false).add(() ->
-            PlayerRespawnEvent.getHandlerList().unregister(eventListener));
-        endActions.get(true).add(()->
-            PlayerRespawnEvent.getHandlerList().unregister(eventListener));
+        endActions.get(false).add(() -> {
+            PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
+        });
+        endActions.get(true).add(()-> {
+            PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
+        });
     }
 
     private Set<Player> getLosingTeamMembers() {

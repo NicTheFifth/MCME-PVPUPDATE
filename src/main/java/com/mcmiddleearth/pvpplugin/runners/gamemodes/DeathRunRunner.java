@@ -190,12 +190,16 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
                 }});
         endActions.get(false).add(() -> {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            PlayerMoveEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
             goal.getBlock().setType(Material.AIR);
         });
         endActions.get(true).add(() -> {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            PlayerMoveEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
             goal.getBlock().setType(Material.AIR);
         });
     }
