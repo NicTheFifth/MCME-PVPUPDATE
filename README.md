@@ -19,6 +19,7 @@ PVP Plugin version 2
 * Siege
 * Juggernaut
 * King of the Hill
+* One in the Barrel
 
 ## Features
 * FBT tag whilst in lobby
