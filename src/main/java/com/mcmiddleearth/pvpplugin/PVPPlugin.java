@@ -25,6 +25,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -37,7 +38,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PVPPlugin extends JavaPlugin {
-
     MiniMessage mm = MiniMessage.miniMessage();
     PluginManager pluginManager;
     Audience adventure;
@@ -93,20 +93,32 @@ public class PVPPlugin extends JavaPlugin {
 
     private void setup() {
         this.adventure = Bukkit.getServer();
-        expansion = new ChatExpansion();
+        this.expansion = new ChatExpansion();
         MapLoader.loadMaps();
         StatLoader.loadStats();
-        pluginManager = this.getServer().getPluginManager();
-        handlerList = new HandlerList();
-        matchmaker = new Matchmaker();
+        this.pluginManager = this.getServer().getPluginManager();
+        this.handlerList = new HandlerList();
+        this.matchmaker = new Matchmaker();
         MapEditCommand mapEditCommand = new MapEditCommand("mapedit");
-        Bukkit.getServer().getPluginCommand("mapedit").setExecutor(mapEditCommand);
-        Bukkit.getServer().getPluginCommand("mapedit").setTabCompleter(mapEditCommand);
+        PluginCommand mapEdit = Bukkit.getServer().getPluginCommand("mapedit");
+        if(mapEdit == null){
+            instance.getLogger().severe("Mapedit command is null, line 103 in PVPPlugin.java");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        mapEdit.setExecutor(mapEditCommand);
+        mapEdit.setTabCompleter(mapEditCommand);
         GameCommand gameCommand = new GameCommand("pvp");
-        Bukkit.getServer().getPluginCommand("pvp").setExecutor(gameCommand);
-        Bukkit.getServer().getPluginCommand("pvp").setTabCompleter(gameCommand);
+        PluginCommand pvp = Bukkit.getServer().getPluginCommand("pvp");
+        if(pvp == null){
+            instance.getLogger().severe("PVP command is null, line 112 in PVPPlugin.java");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        pvp.setExecutor(gameCommand);
+        pvp.setTabCompleter(gameCommand);
         addEventListener(new GlobalListeners());
-        spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58,
+        this.spawn = new Location(Bukkit.getWorld("world"), 344.47, 39, 521.58,
                 0.3F, -24.15F);
         if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             expansion.register();
@@ -131,11 +143,13 @@ public class PVPPlugin extends JavaPlugin {
         PluginManager pm = pvpPlugin.getPluginManager();
         pm.registerEvents(listener, pvpPlugin);
     }
+
     public static void removeEventListener(Listener listener){
         PVPPlugin pvpPlugin = PVPPlugin.getInstance();
         pvpPlugin.getHandlerList().unregister(listener);
 
     }
+
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public MiniMessage getMiniMessage(){
         return mm;
@@ -149,15 +163,20 @@ public class PVPPlugin extends JavaPlugin {
         }
         return (WorldEditPlugin) p;
     }
+
     public static PVPPlugin getInstance() {
         return instance;
     }
+
     public PluginManager getPluginManager() {
         return this.pluginManager;
     }
+
     public HandlerList getHandlerList(){ return handlerList;
     }
+
     public Set<Player> getAutojoiners(){return autojoiners;}
+
     public HashMap<String, JSONMap> getMaps() {
         return this.maps;
     }
@@ -165,6 +184,7 @@ public class PVPPlugin extends JavaPlugin {
     public HashMap<UUID, Playerstat> getPlayerstats() {
         return this.playerstats;
     }
+
     public GamemodeRunner getActiveGame() {
         return this.activeGame;
     }
@@ -243,14 +263,13 @@ public class PVPPlugin extends JavaPlugin {
         public void onVentureChat(AsyncPlayerChatEvent e){
             Player player = e.getPlayer();
             GamemodeRunner runner = PVPPlugin.getInstance().activeGame;
-            if(runner != null &&
-               runner.getSpectatorPrefix(player) != null) {
+            if(runner != null && runner.getSpectators().getMembers().contains(player)) {
                 String placeholderPrefix = "<color><prefix> <name></color>: <message>";
                 TagResolver.Single spectatorPrefix = runner.getSpectatorPrefix(player);
                 TagResolver.Single spectatorColor = runner.getSpectatorColor(player);
                 TagResolver.Single name = Placeholder.parsed("name", player.getName());
                 TagResolver.Single message = Placeholder.parsed("message", e.getMessage());
-                PVPPlugin.getInstance().adventure.filterAudience(p -> p instanceof Player && runner.getSpectatorColor((Player)p) != null)
+                PVPPlugin.getInstance().adventure.filterAudience(p -> p instanceof Player && runner.getSpectators().getMembers().contains(p))
                                 .sendMessage(PVPPlugin.getInstance().mm.deserialize(placeholderPrefix,
                                         spectatorPrefix,
                                         spectatorColor,

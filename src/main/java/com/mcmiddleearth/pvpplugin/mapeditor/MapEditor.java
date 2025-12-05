@@ -19,6 +19,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -86,21 +87,22 @@ public class MapEditor {
         PVPPlugin.getInstance().getMaps().remove(oldName);
         File f = new File(PVPPlugin.getInstance().getMapDirectory() +
                 FileSystems.getDefault().getSeparator() +
-                oldName);
+                oldName + ".json");
         map.setTitle(newName);
         PVPPlugin.getInstance().getMaps().put(newName, map);
         try {
-            f.delete();
+            if(!f.delete())
+                PVPPlugin.getInstance().getLogger().warning("File " + oldName + ".json has not been deleted!");
             player.sendMessage(mm.deserialize(
-                    "<aqua><oldName> has been renamed to <newName>.</aqua>",
-                    Placeholder.parsed("oldName", oldName),
-                    Placeholder.parsed("newName", newName)
+                    "<aqua><old_name> has been renamed to <new_name>.</aqua>",
+                    Placeholder.parsed("old_name", oldName),
+                    Placeholder.parsed("new_name", newName)
             ));
         }
         catch(SecurityException e){
             player.sendMessage(mm.deserialize(
-                    "<red><oldName> couldn't be deleted.</red>",
-                    Placeholder.parsed("oldName", oldName)
+                    "<red><old_name> couldn't be deleted.</red>",
+                    Placeholder.parsed("old_name", oldName)
             ));
             Logger.getLogger("PVPPlugin").log(Level.WARNING,
                 String.format("%s couldn't be deleted.", oldName));
@@ -158,6 +160,7 @@ public class MapEditor {
     public JSONMap getMap() {
         return map;
     }
+
     public void setMap(String mapName, Player player){
         map = PVPPlugin.getInstance().getMaps().get(mapName);
         gamemodeEditor = null;
@@ -168,6 +171,7 @@ public class MapEditor {
     public GamemodeEditor getGamemodeEditor(){
         return gamemodeEditor;
     }
+
     public void setGamemodeEditor(String gamemode, Player player){
         switch(gamemode){
             case Gamemodes.CAPTURETHEFLAG:
@@ -202,14 +206,28 @@ public class MapEditor {
                 Placeholder.parsed("gamemode", gamemode)));
         gamemodeEditor.sendStatus(player);
     }
+
     public void showSpawns(Player player) {
-        SpawnMarker(map.getSpawn(), "Map spawn");
+        try {
+            SpawnMarker(map.getSpawn(), "Map spawn");
+        } catch (NullPointerException e){
+            //TODO: Fix messaging
+            player.sendMessage("Something went wrong!");
+        }
         if(gamemodeEditor != null)
             gamemodeEditor.ShowPoints(player);
     }
+
     public static void hideSpawns(Player player, boolean toMessage) {
         ArmorStand toDelete;
-        for(Entity marker : Bukkit.getWorld("world").getEntities())
+        World world = Bukkit.getWorld("world");
+        if(world == null) {
+            PVPPlugin.getInstance().getLogger().severe("Couldn't load world, error in MapEditor, line 218!");
+            player.sendMessage("Something went wrong, please send in dev-public" +
+                    "\"I tried to hide spawns, but it threw an error\"");
+            return;
+        }
+        for(Entity marker : world.getEntities())
             if(marker.getType() == EntityType.ARMOR_STAND){
                 toDelete = (ArmorStand) marker;
                 if(toDelete.isMarker())

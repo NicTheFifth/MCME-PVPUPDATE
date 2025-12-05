@@ -8,6 +8,7 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
+import com.mcmiddleearth.pvpplugin.runners.listeners.ArrowRestocker;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
@@ -22,7 +23,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -62,6 +62,7 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
 
     public CaptureTheFlagRunner(JSONMap map, int scoreGoal, int timeLimit){
         region = AreaTranscriber.TranscribeArea(map);
+        listeners.add(new ArrowRestocker(this));
         this.scoreGoal = scoreGoal;
         this.timeLimit = timeLimit;
         JSONCaptureTheFlag captureTheFlag = map.getJSONCaptureTheFlag();
@@ -119,9 +120,8 @@ public class CaptureTheFlagRunner extends GamemodeRunner implements ScoreGoal, T
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.INFINITY, 1);
             returnInventory.setItem(1, bow);
-            returnInventory.setItem(2, new ItemStack(Material.ARROW));
+            returnInventory.setItem(2, new ItemStack(Material.ARROW, 30));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
                     color));
             returnInventory.forEach(KitEditor::setUnbreaking);

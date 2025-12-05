@@ -366,7 +366,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
             Player p = e.getPlayer();
             if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
                 return;
-            if(gameState != State.RUNNING )
+            if(gameState != State.RUNNING)
                 return;
             if(!players.contains(p))
                 return;

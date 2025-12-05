@@ -16,6 +16,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.*;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,6 +29,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -43,7 +45,7 @@ public abstract class GamemodeRunner implements Listener {
     }
     protected String mapName;
     protected int maxPlayers;
-    protected State gameState;
+    protected @NotNull State gameState = State.QUEUED;
     protected long countDownTimer = 5;//TODO: default countdown timer
     //protected boolean isPrivate;
     //protected Set<Player> whiteList = new HashSet<>();
@@ -53,9 +55,9 @@ public abstract class GamemodeRunner implements Listener {
     protected Region region;
     protected Listener eventListener;
     protected MiniMessage mm = PVPPlugin.getInstance().getMiniMessage();
+    protected Set<com.mcmiddleearth.pvpplugin.runners.listeners.GamemodeListener> listeners = new HashSet<>();
 
     public GamemodeRunner(){
-        gameState = State.QUEUED;
         startConditions.put(()-> players.size() >= 2,
             mm.deserialize("<red>Can't start the game with less than two players.</red>"));
 
@@ -145,11 +147,14 @@ public abstract class GamemodeRunner implements Listener {
         PlayerQuitEvent.getHandlerList().unregister(eventListener);
         PlayerMoveEvent.getHandlerList().unregister(eventListener);
         PlayerDropItemEvent.getHandlerList().unregister(eventListener);
+        listeners.forEach(com.mcmiddleearth.pvpplugin.runners.listeners.GamemodeListener :: unregister);
         players.forEach(player -> {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
             player.setGameMode(GameMode.ADVENTURE);
-            player.setHealth(player.getAttribute(MAX_HEALTH).getDefaultValue());
+            AttributeInstance maxHealth = player.getAttribute(MAX_HEALTH);
+            if(maxHealth != null)
+                player.setHealth(maxHealth.getDefaultValue());
             player.teleport(player.getWorld().getSpawnLocation());
         });
         scoreboard.getObjectives().forEach(Objective::unregister);
@@ -228,7 +233,7 @@ public abstract class GamemodeRunner implements Listener {
         return maxPlayers;
     }
 
-    public State getGameState() {return gameState;}
+    public @NotNull State getGameState() {return gameState;}
 
     public abstract String getGamemode();
 
