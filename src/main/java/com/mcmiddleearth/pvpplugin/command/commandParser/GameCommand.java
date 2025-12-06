@@ -6,12 +6,9 @@ import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
-import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.command.PVPCommandSender;
 import com.mcmiddleearth.pvpplugin.command.executor.GameExecutor;
-import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -62,11 +59,11 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
                 Requirements::canRun)
                 .then(Arguments.ScoreGoalArgument()
                     .executes(GameExecutor::SetGoal)))
-                .then(MultiReqLiteral("settimelimit",
-                    Requirements::hasTimeLimit,
-                    Requirements::canRun)
-                        .then(Arguments.TimeLimitArgument()
-                            .executes(GameExecutor::SetTimeLimit)))
+            .then(MultiReqLiteral("settimelimit",
+                Requirements::hasTimeLimit,
+                Requirements::canRun)
+                    .then(Arguments.TimeLimitArgument()
+                        .executes(GameExecutor::SetTimeLimit)))
             .then(MultiReqLiteral("stop",
                 Requirements::ActiveGameExists,
                 Requirements::canRun)
@@ -83,14 +80,14 @@ public class GameCommand extends AbstractCommandHandler implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
         PVPCommandSender wrappedSender = new PVPCommandSender(sender);
         execute(wrappedSender, args);
         return true;
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String @NotNull [] args) {
         TabCompleteRequest request = new SimpleTabCompleteRequest(new PVPCommandSender(sender),
                 String.format("/%s %s", alias, Joiner.on(' ').join(args)));
         onTabComplete(request);

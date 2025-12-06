@@ -34,25 +34,21 @@ public class MapEditCommand extends AbstractCommandHandler implements TabExecuto
             .requires(
                 CommandUtil.multiRequirements(Requirements::isMapEditor,
                     (sender -> ((PVPCommandSender)sender).getSender() instanceof Player)))
-            .then(
-                HelpfulLiteralBuilder.literal("create")
-                    .then(Arguments.NonExistingMap()
-                        .executes(EditExecutor::CreateMap)))
-            .then(
-                HelpfulLiteralBuilder.literal("delete")
-                    .requires(Requirements::isAdmin)
-                    .then(Arguments.ExistingMap()
-                        .executes(EditExecutor::DeleteMap)
-                        .then(Arguments.ExistingGamemode()
-                            .executes(EditExecutor::DeleteGamemode))))
-            .then(
-                ActiveMapEditorLiteral("rename")
-                    .then(Arguments.NonExistingMap()
-                        .executes(EditExecutor::SetTitle)))
-            .then(
-                HelpfulLiteralBuilder.literal("select")
-                    .then(Arguments.ExistingMap()
-                        .executes(EditExecutor::SelectMap)))
+            .then(HelpfulLiteralBuilder.literal("create")
+                .then(Arguments.NonExistingMap()
+                    .executes(EditExecutor::CreateMap)))
+            .then(HelpfulLiteralBuilder.literal("delete")
+                .requires(Requirements::isAdmin)
+                .then(Arguments.ExistingMap()
+                    .executes(EditExecutor::DeleteMap)
+                    .then(Arguments.ExistingGamemode()
+                        .executes(EditExecutor::DeleteGamemode))))
+            .then(ActiveMapEditorLiteral("rename")
+                .then(Arguments.NonExistingMap()
+                    .executes(EditExecutor::SetTitle)))
+            .then(HelpfulLiteralBuilder.literal("select")
+                .then(Arguments.ExistingMap()
+                    .executes(EditExecutor::SelectMap)))
             .then(
                 ActiveMapEditorLiteral("setarea")
                     .executes(EditExecutor::SetArea))
