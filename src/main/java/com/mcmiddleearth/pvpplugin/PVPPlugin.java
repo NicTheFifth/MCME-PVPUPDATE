@@ -204,13 +204,19 @@ public class PVPPlugin extends JavaPlugin {
             ChatUtils.AnnounceNewGame(activeGame.getGamemode(), activeGame.getMapName(), String.valueOf(activeGame.getMax()));
         this.activeGame = activeGame;
     }
+
     public File getMapDirectory() {
         return this.mapDirectory;
     }
+
     public File getStatDirectory() {
         return this.statDirectory;
     }
-    public HashMap<UUID,MapEditor> getMapEditors(){return this.mapEditors;}
+
+    public HashMap<UUID,MapEditor> getMapEditors(){
+        return this.mapEditors;
+    }
+
     public Location getSpawn(){
         return spawn;
     }
@@ -251,10 +257,7 @@ public class PVPPlugin extends JavaPlugin {
         @EventHandler
         public void onJoinEvent(PlayerJoinEvent e){
             Player p = e.getPlayer();
-            HashMap<UUID, Playerstat> playerStats =
-                PVPPlugin.getInstance().getPlayerstats();
-            if(!playerStats.containsKey(p.getUniqueId()))
-                playerStats.put(p.getUniqueId(), new Playerstat());
+            PVPPlugin.getInstance().getPlayerstats().putIfAbsent(p.getUniqueId(), new Playerstat());
             GamemodeRunner runner = PVPPlugin.getInstance().getActiveGame();
             if(runner != null && runner.getGameState().equals(GamemodeRunner.State.RUNNING))
                 runner.joinSpectator(p);
