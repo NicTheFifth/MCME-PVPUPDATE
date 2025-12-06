@@ -238,6 +238,7 @@ public class MapEditor {
     }
 
     public static void SpawnMarker(JSONLocation loc, String name){
+        //TODO: add null check
         ArmorStand marker =
             (ArmorStand) Bukkit.getWorld(loc.getWorld()).spawnEntity(
                 LocationTranscriber.TranscribeFromJSON(loc)
