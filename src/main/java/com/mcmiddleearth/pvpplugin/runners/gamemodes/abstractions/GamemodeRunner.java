@@ -5,6 +5,7 @@ import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
+import com.mcmiddleearth.pvpplugin.util.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import com.mcmiddleearth.pvpplugin.util.Team;
@@ -88,6 +89,7 @@ public abstract class GamemodeRunner implements Listener {
         spectator.setSpawnLocations(new ArrayList<>(List.of(
             LocationTranscriber.TranscribeFromJSON(spawn)
         )));
+        spectator.setKit(new Kit(player -> player.getInventory().clear()));
         spectator.setGameMode(GameMode.SPECTATOR);
     }
     //<editor-fold defaultstate="collapsed" desc="Start conditions">
