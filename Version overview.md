@@ -26,7 +26,7 @@ PVP Plugin version 2
 * Kit implementation
 * Functionality to assign team before game start
 * Team Chat
-* BossBar implementation to keep track of ingame stats
+* BossBar implementation to keep track of in game stats
 
 ## QOL programming
 * Look at a team rework (using Team)

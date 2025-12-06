@@ -38,24 +38,30 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PVPPlugin extends JavaPlugin {
+    //To be used all throughout plugin
     MiniMessage mm = MiniMessage.miniMessage();
     PluginManager pluginManager;
     Audience adventure;
     HandlerList handlerList;
+    static PVPPlugin instance;
+    ChatExpansion expansion;
+    File mapDirectory;
+    File statDirectory;
+    Location spawn;
+
+    //Data
     HashMap<String, JSONMap> maps = new HashMap<>();
     HashMap<UUID, Playerstat> playerstats = new HashMap<>();
+
+    //Active games/editors
     Set<Player> autojoiners = new HashSet<>();
-    Location spawn;
-    Matchmaker matchmaker;
     GamemodeRunner activeGame;
     Queue<Supplier<GamemodeRunner>> gameQueue = new LinkedList<>();
     HashMap<UUID, MapEditor> mapEditors = new HashMap<>();
-    static PVPPlugin instance;
-    ChatExpansion expansion;
+    Matchmaker matchmaker;
+
     //TODO: Implement switching between servermode and minigame mode.
 //    Boolean isPVPServer = true;
-    File mapDirectory;
-    File statDirectory;
 
     @Override
     public void onEnable() {
