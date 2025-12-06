@@ -142,7 +142,7 @@ public class MapEditor {
                           Team Deathmatch: <tdm>
                           Team Slayer: <ts></aqua>""",
                 Placeholder.parsed("title", map.getTitle()),
-                Placeholder.parsed("rp", map.getResourcePack()),
+                Placeholder.parsed("rp", map.getResourcePack()==null ? "not set" : map.getResourcePack()),
                 Placeholder.parsed("region", String.valueOf(map.getRegionPoints() != null)),
                 Placeholder.parsed("spawn", String.valueOf(map.getSpawn() != null)),
                 Placeholder.parsed("ctf", String.valueOf(map.getJSONCaptureTheFlag() != null)),
