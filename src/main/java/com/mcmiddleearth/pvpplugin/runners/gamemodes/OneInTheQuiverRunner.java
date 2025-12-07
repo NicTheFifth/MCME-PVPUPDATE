@@ -36,7 +36,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
     public static int DefaultScoreGoal(){return 20;}
 
     private final List<Location> spawns;
-    private final Map<UUID, PlayerTeam> OITQplayers = new HashMap<>();
+    private final Map<UUID, PlayerTeam> OITQPlayers = new HashMap<>();
     //TODO: add random offset to PlayerTeamColours
     private Player winningPlayer;
 
@@ -66,7 +66,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
     @Override
     protected void initStartActions() {
         startActions.add(() -> players.forEach(player -> JoinOneInTheQuiver(player, true)));
-        startActions.add(()-> ScoreboardEditor.InitOneInTheQuiver(scoreboard, OITQplayers, scoreGoal));
+        startActions.add(()-> ScoreboardEditor.InitOneInTheQuiver(scoreboard, OITQPlayers, scoreGoal));
     }
 
     @Override
@@ -94,7 +94,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     @Override
     protected void initJoinConditions() {
-        joinConditions.put((player -> OITQplayers.values().stream().noneMatch(playerTeam -> playerTeam.getKills() <= (scoreGoal * 0.9))),
+        joinConditions.put((player -> OITQPlayers.values().stream().noneMatch(playerTeam -> playerTeam.getKills() <= (scoreGoal * 0.9))),
                 mm.deserialize("<red>The game is close to over, you cannot join.</red>"));
     }
 
@@ -109,7 +109,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
             return;
         }
 
-        NamedTextColor color = OITQplayers.getOrDefault(player.getUniqueId(), GenerateNewPlayer(player)).getChatColor();
+        NamedTextColor color = OITQPlayers.getOrDefault(player.getUniqueId(), GenerateNewPlayer(player)).getChatColor();
         KitOutPlayer(player);
         player.setGameMode(GameMode.ADVENTURE);
         TeamHandler.spawn(player, spawns);
@@ -123,9 +123,9 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     private PlayerTeam GenerateNewPlayer(Player player){
         PlayerTeam playerTeam = new PlayerTeam();
-        playerTeam.setChatColor((NamedTextColor)NamedTextColor.NAMES.values().toArray()[OITQplayers.size() % 16]);
+        playerTeam.setChatColor((NamedTextColor)NamedTextColor.NAMES.values().toArray()[OITQPlayers.size() % 16]);
         playerTeam.setPlayerName(player.getName());
-        OITQplayers.put(player.getUniqueId(), playerTeam);
+        OITQPlayers.put(player.getUniqueId(), playerTeam);
         return playerTeam;
     }
 
@@ -158,7 +158,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
 
     @Override
     public  TagResolver.Single getPlayerColor(Player player){
-        PlayerTeam team = OITQplayers.get(player.getUniqueId());
+        PlayerTeam team = OITQPlayers.get(player.getUniqueId());
         if(team != null)
             return Placeholder.styling("color", team.getChatColor());
         return null;
@@ -193,7 +193,7 @@ public class OneInTheQuiverRunner extends GamemodeRunner implements ScoreGoal {
                 if(killer == null)
                     return;
                 killer.getInventory().addItem(new ItemStack(Material.ARROW, 1));
-                PlayerTeam killerTeam = OITQplayers.get(killer.getUniqueId());
+                PlayerTeam killerTeam = OITQPlayers.get(killer.getUniqueId());
                 killerTeam.addKill();
                 if(killerTeam.getKills() == scoreGoal){
                     winningPlayer = killer;
