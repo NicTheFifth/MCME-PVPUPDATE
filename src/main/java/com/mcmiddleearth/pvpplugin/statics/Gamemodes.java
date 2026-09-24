@@ -3,8 +3,8 @@ package com.mcmiddleearth.pvpplugin.statics;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.*;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
-import com.mcmiddleearth.pvpplugin.util.HashMapFactory;
-import com.mcmiddleearth.pvpplugin.util.HashSetFactory;
+import com.mcmiddleearth.pvpplugin.util.factories.HashMapFactory;
+import com.mcmiddleearth.pvpplugin.util.factories.HashSetFactory;
 import net.kyori.adventure.text.Component;
 
 import java.util.HashMap;

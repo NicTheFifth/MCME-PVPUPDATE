@@ -1,7 +1,7 @@
 package com.mcmiddleearth.pvpplugin.runners.runnerUtil;
 
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.RingBearerRunner;
-import com.mcmiddleearth.pvpplugin.util.Team;
+import com.mcmiddleearth.pvpplugin.util.generics.Team;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
@@ -11,7 +11,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 

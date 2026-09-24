@@ -1,4 +1,4 @@
-package com.mcmiddleearth.pvpplugin.util;
+package com.mcmiddleearth.pvpplugin.util.plugin;
 
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;

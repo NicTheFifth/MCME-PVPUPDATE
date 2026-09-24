@@ -2,7 +2,7 @@ package com.mcmiddleearth.pvpplugin.json.transcribers;
 
 import com.mcmiddleearth.pvpplugin.exceptions.JSONLocationException;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
-import com.mcmiddleearth.pvpplugin.util.Team;
+import com.mcmiddleearth.pvpplugin.util.generics.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 

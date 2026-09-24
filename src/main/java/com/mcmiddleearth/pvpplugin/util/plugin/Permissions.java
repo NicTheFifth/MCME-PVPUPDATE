@@ -1,4 +1,4 @@
-package com.mcmiddleearth.pvpplugin.util;
+package com.mcmiddleearth.pvpplugin.util.plugin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
