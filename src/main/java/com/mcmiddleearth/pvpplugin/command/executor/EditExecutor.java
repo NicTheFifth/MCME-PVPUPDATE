@@ -1,7 +1,6 @@
 package com.mcmiddleearth.pvpplugin.command.executor;
 
 import com.mcmiddleearth.command.sender.McmeCommandSender;
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.command.CommandUtil;
 import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.DeathRunEditor;
@@ -9,14 +8,18 @@ import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.*;
 import com.mcmiddleearth.pvpplugin.statics.ArgumentNames;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
+import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mojang.brigadier.context.CommandContext;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.nio.file.FileSystems;
 import java.util.Optional;
-
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class EditExecutor {
             //Structure function
@@ -192,7 +195,7 @@ public class EditExecutor {
             String.class);
         Optional<MapEditor> result = getMapEditor(player, true);
 
-        if(!result.isPresent()) {
+        if(result.isEmpty()) {
             return 0;
         }
         if(result.get().getGamemodeEditor() instanceof TeamSpawnEditor) {
@@ -200,13 +203,9 @@ public class EditExecutor {
                 .getSpawnNames().get(spawnName).Teleport(player);
             return 1;
         }
-        sendBaseComponent(
-            new ComponentBuilder("Please add an index, you have a Team Spawn " +
-                "List editor")
-                .color(Style.ERROR)
-                .create(),
-            player
-        );
+        player.sendMessage(Component.text()
+                .content("Please add an index, you have a Team Spawn List editor")
+                .color(NamedTextColor.RED).build());
         return 0;
     }
 
@@ -277,17 +276,13 @@ public class EditExecutor {
             String.class);
         Optional<MapEditor> result = getMapEditor(player, true);
 
-        if(!result.isPresent()) {
+        if(result.isEmpty()) {
             return 0;
         }
         if(result.get() instanceof SpecialPointListEditor) {
-            sendBaseComponent(
-                new ComponentBuilder("Please add an index, you have a special " +
-                    "point list editor")
-                    .color(Style.ERROR)
-                    .create(),
-                player
-            );
+            player.sendMessage(Component.text()
+                    .content("Please add an index, you have a Special Point List editor")
+                    .color(NamedTextColor.RED).build());
             return 0;
         }
         ((SpecialPointEditor)result.get().getGamemodeEditor())
@@ -364,6 +359,73 @@ public class EditExecutor {
         return 0;
     }
 
+    public static int DeleteMap(CommandContext<McmeCommandSender> c) {
+        Player player = CommandUtil.getPlayer(c.getSource());
+        String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
+        PVPPlugin pvpPlugin = PVPPlugin.getInstance();
+        File f = new File(PVPPlugin.getInstance().getMapDirectory() +
+                FileSystems.getDefault().getSeparator() +
+                mapName + ".json");
+        if(f.delete()){
+            pvpPlugin.getMaps().remove(mapName);
+            player.sendMessage(pvpPlugin.getMiniMessage().deserialize("<aqua>Deleted <mapname>!</aqua>",
+                    Placeholder.parsed("mapname", mapName)));
+            return 1;
+        }
+        player.sendMessage(pvpPlugin.getMiniMessage().deserialize("<red>Couldn't delete <mapname>!</red>",
+                Placeholder.parsed("mapname", mapName)));
+        return 0;
+    }
+
+    public static int DeleteGamemode(CommandContext<McmeCommandSender> c) {
+        Player player = CommandUtil.getPlayer(c.getSource());
+        String mapName = c.getArgument(ArgumentNames.MAP_NAME, String.class);
+        String gamemode = c.getArgument(ArgumentNames.GAMEMODE, String.class);
+        PVPPlugin pvpPlugin = PVPPlugin.getInstance();
+        JSONMap map = pvpPlugin.getMaps().get(mapName);
+        switch(gamemode){
+            case Gamemodes.CAPTURETHEFLAG:
+                map.setJSONCaptureTheFlag(null);
+                break;
+            case Gamemodes.DEATHRUN:
+                map.setJSONDeathRun(null);
+                break;
+            case Gamemodes.FREEFORALL:
+                map.setJSONFreeForAll(null);
+                break;
+            case Gamemodes.INFECTED:
+                map.setJSONInfected(null);
+                break;
+            case Gamemodes.ONEINTHEQUIVER:
+                map.setJSONOneInTheQuiver(null);
+                break;
+            case Gamemodes.RINGBEARER:
+                map.setJSONRingBearer(null);
+                break;
+            case Gamemodes.TEAMCONQUEST:
+                map.setJSONTeamConquest(null);
+                break;
+            case Gamemodes.TEAMDEATHMATCH:
+                map.setJSONTeamDeathMatch(null);
+                break;
+            case Gamemodes.TEAMSLAYER:
+                map.setJSONTeamSlayer(null);
+                break;
+            default:
+                player.sendMessage(pvpPlugin.getMiniMessage().deserialize(
+                        "<red>Couldn't delete the gamemode, please send a message in dev-general!</red>"));
+                Bukkit.getConsoleSender().sendMessage(
+                        pvpPlugin.getMiniMessage().deserialize("<red>Delete gamemode does not have <gamemode>.<red>",
+                                Placeholder.parsed("gamemode", gamemode))
+                );
+                return 0;
+        }
+        player.sendMessage(pvpPlugin.getMiniMessage().deserialize("<aqua>Deleted <gamemode> on <mapname>!</aqua>",
+                Placeholder.parsed("gamemode", gamemode),
+                Placeholder.parsed("mapname", mapName)));
+        return 1;
+    }
+
     public static int ShowSpawns(CommandContext<McmeCommandSender> c) {
         Player player = CommandUtil.getPlayer(c.getSource());
         Optional<MapEditor> result = getMapEditor(player, true);
@@ -398,10 +460,9 @@ public class EditExecutor {
         MapEditor me = PVPPlugin.getInstance().getMapEditors().get(player.getUniqueId());
         if(me == null) {
             if(sendMessage)
-                sendBaseComponent(new ComponentBuilder("Please select which map you " +
-                "wish to edit with /mapedit <map name>")
-                .color(Style.ERROR)
-                .create(),player);
+                player.sendMessage(Component.text()
+                        .content("Please select which map you wish to edit with /mapedit <map name>")
+                        .color(NamedTextColor.RED).build());
             return Optional.empty();
         }
         return Optional.of(me);

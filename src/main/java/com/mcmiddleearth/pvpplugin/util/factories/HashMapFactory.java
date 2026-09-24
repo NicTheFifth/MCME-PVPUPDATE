@@ -1,4 +1,4 @@
-package com.mcmiddleearth.pvpplugin.util;
+package com.mcmiddleearth.pvpplugin.util.factories;
 
 import java.util.HashMap;
 

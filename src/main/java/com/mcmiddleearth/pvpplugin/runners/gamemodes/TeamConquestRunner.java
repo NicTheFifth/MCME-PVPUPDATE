@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONTeamConquest;
@@ -8,27 +7,28 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
-import com.mcmiddleearth.pvpplugin.util.Kit;
+import com.mcmiddleearth.pvpplugin.util.generics.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
-import com.mcmiddleearth.pvpplugin.util.Team;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import com.mcmiddleearth.pvpplugin.util.generics.Team;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -41,7 +41,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
 import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
@@ -76,7 +75,6 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
-        ChatUtils.AnnounceNewGame("Team Conquest", mapName, String.valueOf(maxPlayers));
     }
     //<editor-fold defaultstate="collapsed" desc="Teams">
     private void initTeams(JSONMap map){
@@ -90,7 +88,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         blueTeam.setPrefix("Blue");
         blueTeam.setTeamColour(Color.BLUE);
         blueTeam.setChatColor(BLUE);
-        blueTeam.setGameMode(GameMode.SURVIVAL);
+        blueTeam.setGameMode(GameMode.ADVENTURE);
         blueTeam.setKit(createKit(Color.BLUE));
         blueTeam.setSpawnLocations(jsonTeamConquest.getBlueSpawns()
                 .stream().map(LocationTranscriber::TranscribeFromJSON)
@@ -101,7 +99,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         redTeam.setPrefix("Red");
         redTeam.setChatColor(RED);
         redTeam.setTeamColour(Color.RED);
-        redTeam.setGameMode(GameMode.SURVIVAL);
+        redTeam.setGameMode(GameMode.ADVENTURE);
         redTeam.setKit(createKit(Color.RED));
         redTeam.setSpawnLocations(jsonTeamConquest.getRedSpawns()
                 .stream().map(LocationTranscriber::TranscribeFromJSON)
@@ -119,7 +117,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
             returnInventory.setItemInOffHand(new ItemStack(Material.SHIELD));
             returnInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+            bow.addEnchantment(Enchantment.INFINITY, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(item -> KitEditor.setItemColour(item,
@@ -159,13 +157,9 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         Supplier<Integer> totalInTeams = () ->
                 redTeam.getOnlineMembers().size() + blueTeam.getOnlineMembers().size();
         startConditions.put(() -> totalInTeams.get() != players.size() || !redTeam.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, red team has to have at least " +
-                        "one online player.")
-                        .color(Style.ERROR).create());
+                mm.deserialize("<red>Can't start, red team has to have at least one online player.</red>"));
         startConditions.put(() -> totalInTeams.get() != players.size() ||!blueTeam.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, blue team has to have at least" +
-                        " one online player.")
-                        .color(Style.ERROR).create());
+                mm.deserialize("<red>Can't start, blue team has to have at least one online player.</red>"));
     }
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Start Actions">
@@ -191,26 +185,22 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                 }));
         endActions.get(false).add(() ->{
             if(redTeam.getPoints() == scoreGoal)
-                players.forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Red Won!!!").color(ChatColor.RED)
-                                        .create(), player)) ;
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<red>Red Won!!!</red>"));
             else
-                players.forEach(player ->
-                        sendBaseComponent(
-                                new ComponentBuilder("Blue Won!!!").color(ChatColor.BLUE)
-                                        .create(), player));});
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<blue>Blue Won!!!</blue>"));});
         endActions.get(false).add(() ->
                 capturePointsProgress.keySet().forEach(this::deleteCapturePoint));
         endActions.get(true).add(() ->
                 capturePointsProgress.keySet().forEach(this::deleteCapturePoint));
-        endActions.get(false).add(() ->{
-                    PlayerRespawnEvent.getHandlerList().unregister(eventListener);
-                    PlayerInteractEvent.getHandlerList().unregister(eventListener);
+        endActions.get(false).add(() -> {
+            PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            PlayerInteractEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
         });
         endActions.get(true).add(()->{
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
         });
     }
 
@@ -243,9 +233,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         joinConditions.put(((player) ->
                         redTeam.getPoints() <=(scoreGoal *0.9) ||
                                 blueTeam.getPoints() <=(scoreGoal *0.9)),
-                new ComponentBuilder("The game is close to over, you cannot join.")
-                        .color(Style.INFO)
-                        .create());
+                mm.deserialize("<aqua>The game is close to over, you cannot join.</aqua>"));
     }
 
     @Override
@@ -254,9 +242,7 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
     }
     private void JoinTeamConquest(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            sendBaseComponent(
-                    new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
-                    player);
+            player.sendMessage(mm.deserialize("<aqua>You joined the game.</aqua>"));
             return;
         }
         if(redTeam.getMembers().contains(player)) {
@@ -276,12 +262,10 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         team.getOnlineMembers().add(player);
         Matchmaker.addMember(player, team);
         TeamHandler.spawn(player, team);
-        PVPPlugin.getInstance().sendMessage(
-                String.format("<%s>%s has joined the %s</%s>",
-                        team.getChatColor(),
-                        player.getName(),
-                        team.getPrefix(),
-                        team.getChatColor()));
+        PVPPlugin.getInstance().sendMessage(mm.deserialize("<color><name> has joined the <prefix></color>",
+                Placeholder.styling("color", team.getChatColor()),
+                Placeholder.parsed("name", player.getName()),
+                Placeholder.parsed("prefix", team.getPrefix())));
     }
 
     //</editor-fold>
@@ -303,33 +287,32 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
 
     private void leaveTeam(Player player, Team team){
         team.getOnlineMembers().remove(player);
-        PVPPlugin.getInstance().sendMessage(
-                String.format("<%s>%s has left the game.</%s>",
-                        team.getChatColor(),
-                        player.getName(),
-                        team.getChatColor()));
+        PVPPlugin.getInstance().sendMessage(mm.deserialize("<color><name> has left the game.</color>",
+                Placeholder.styling("color", team.getChatColor()),
+                Placeholder.parsed("name", player.getName())));
     }
     //</editor-fold>
 
-    public Boolean trySendMessage(Player player, String message){
+    @Override
+    public TagResolver.Single getPlayerPrefix(Player player){
         if(!players.contains(player))
-            return false;
-        Team team = null;
-        if(redTeam.getMembers().contains(player))
-            team = redTeam;
+            return null;
         if(blueTeam.getMembers().contains(player))
-            team=blueTeam;
-        if(team == null)
-            return false;
+            return Placeholder.parsed("prefix", blueTeam.getPrefix());
+        if(redTeam.getMembers().contains(player))
+            return Placeholder.parsed("prefix", redTeam.getPrefix());
+        return null;
+    }
 
-        PVPPlugin.getInstance().sendMessage(
-                String.format("<%s>%s %s:</%s> %s",
-                        team.getChatColor(),
-                        team.getPrefix(),
-                        player.getDisplayName(),
-                        team.getChatColor(),
-                        message));
-        return true;
+    @Override
+    public TagResolver.Single getPlayerColor(Player player){
+        if(!players.contains(player))
+            return null;
+        if(blueTeam.getMembers().contains(player))
+            return Placeholder.styling("color", blueTeam.getChatColor());
+        if(redTeam.getMembers().contains(player))
+            return Placeholder.styling("color", redTeam.getChatColor());
+        return null;
     }
 
     @Override
@@ -370,6 +353,8 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             Player player = e.getPlayer();
+            if(gameState != State.RUNNING)
+                return;
             if(redTeam.getMembers().contains(player))
                 TeamHandler.respawn(e, redTeam);
             if(blueTeam.getMembers().contains(player))
@@ -381,9 +366,11 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
             Player p = e.getPlayer();
             if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
                 return;
-            if(gameState != State.RUNNING )
+            if(gameState != State.RUNNING)
                 return;
             if(!players.contains(p))
+                return;
+            if(e.getClickedBlock() == null)
                 return;
             if(!e.getClickedBlock().getType().equals(Material.BEACON))
                 return;
@@ -407,15 +394,15 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                             redTeam.removeControlledPoint();
                     }
                     capturePoint.getBlock().setType(Material.AIR);
-                    sendBaseComponent(new ComponentBuilder("Point is neutral!").color(ChatColor.GRAY).create(),p);
+                    p.sendMessage(mm.deserialize("<color>Point is neutralised!!</color>",
+                            Placeholder.styling("color",
+                                    (newPointValue<oldPointValue)? blueTeam.getChatColor() : redTeam.getChatColor())));
                     break;
                 case 50:
                     redTeam.addControlledPoint();
                     capturePoint.add(0,1,0).getBlock().setType(Material.RED_STAINED_GLASS);
-                    PVPPlugin.getInstance().sendMessage(
-                            String.format("<%s>Red team has captured a point</%s>",
-                                    redTeam.getChatColor(),
-                                    redTeam.getChatColor()));
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<color>Red team has captured a point</color>",
+                                    Placeholder.styling("color", redTeam.getChatColor())));
                     break;
                 case -50:
                     blueTeam.addControlledPoint();
@@ -426,8 +413,25 @@ public class TeamConquestRunner extends GamemodeRunner implements ScoreGoal {
                                     blueTeam.getChatColor()));
                     break;
             }
-            sendBaseComponent(new ComponentBuilder(String.format("Point is now at %d!", newPointValue)).color(ChatColor.GRAY).create(),p);
+            p.sendMessage(mm.deserialize("<gray>Point is now at <value>!</gray>",
+                    Placeholder.parsed("value", String.valueOf(newPointValue))));
             capturePointsProgress.put(keyPoint, newPointValue);
+        }
+
+        @EventHandler
+        public void onPlayerDamage(EntityDamageByEntityEvent e){
+            if(!(e.getEntity() instanceof Player player))
+                return;
+            Player damager = null;
+            if(e.getDamager() instanceof Player hitter)
+                damager = hitter;
+            if(e.getDamager() instanceof Arrow arrow && arrow.getShooter() instanceof Player shooter)
+                damager = shooter;
+            if(damager == null)
+                return;
+            if((redTeam.getMembers().contains(player) && redTeam.getMembers().contains(damager)) ||
+                    (blueTeam.getMembers().contains(player) && blueTeam.getMembers().contains(damager)))
+                e.setCancelled(true);
         }
     }
 

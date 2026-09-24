@@ -1,11 +1,10 @@
 package com.mcmiddleearth.pvpplugin.util;
 
-import com.mcmiddleearth.pvpplugin.PVPPlugin;
+import com.mcmiddleearth.pvpplugin.util.generics.Team;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
-import java.util.Random;
 import java.util.Set;
 
 public class Matchmaker {

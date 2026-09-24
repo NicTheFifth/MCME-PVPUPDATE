@@ -1,40 +1,43 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.mapeditor.MapEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
+import com.mcmiddleearth.pvpplugin.util.generics.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
-import com.mcmiddleearth.pvpplugin.util.Team;
+import com.mcmiddleearth.pvpplugin.util.generics.Team;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.*;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
+import static org.bukkit.attribute.Attribute.MAX_HEALTH;
 
 
 public abstract class GamemodeRunner implements Listener {
@@ -43,7 +46,7 @@ public abstract class GamemodeRunner implements Listener {
     }
     protected String mapName;
     protected int maxPlayers;
-    protected State gameState;
+    protected @NotNull State gameState = State.QUEUED;
     protected long countDownTimer = 5;//TODO: default countdown timer
     //protected boolean isPrivate;
     //protected Set<Player> whiteList = new HashSet<>();
@@ -52,57 +55,55 @@ public abstract class GamemodeRunner implements Listener {
     protected Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     protected Region region;
     protected Listener eventListener;
+    protected MiniMessage mm = PVPPlugin.getInstance().getMiniMessage();
+    protected Set<com.mcmiddleearth.pvpplugin.runners.listeners.GamemodeListener> listeners = new HashSet<>();
 
     public GamemodeRunner(){
-        gameState = State.QUEUED;
         startConditions.put(()-> players.size() >= 2,
-            new ComponentBuilder("Can't start the game with less than two " +
-                "players.").color(Style.ERROR).create());
+            mm.deserialize("<red>Can't start the game with less than two players.</red>"));
 
         startActions.add(() ->
             players.forEach(player -> player.setScoreboard(scoreboard)));
         startActions.add(() ->
             spectator.getMembers().forEach(player -> player.setScoreboard(scoreboard)));
         startActions.add(() -> MapEditor.hideSpawns(null, false));
-        startActions.add(() ->TeamHandler.spawnAll(spectator));
+        startActions.add(() -> TeamHandler.spawnAll(spectator));
 
         joinConditions.put(player -> players.size() < maxPlayers,
-            new ComponentBuilder("Can't join the game as it is full.")
-                .color(Style.ERROR).create());
+            mm.deserialize("<red>Can't join the game, as it is full.</red>"));
         joinConditions.put(player -> gameState != State.COUNTDOWN,
-            new ComponentBuilder("Can't join the game during countdown, try " +
-                "again after the countdown is finished.")
-                .color(Style.ERROR).create());
+            mm.deserialize("<red>Can't join the game during countdown, try again after the countdown is finished.</red>"));
         joinConditions.put(player -> !players.contains(player),
-            new ComponentBuilder("Can't join the game, you've already joined it.")
-                    .color(Style.ERROR).create()
-        );
+            mm.deserialize("<red>Can't join the game, you've already joined it.</red>"));
 
         joinActions.add(players::add);
         joinActions.add(player -> spectator.getMembers().remove(player));
 
         leaveActions.add(players::remove);
     }
+
     protected void initSpectator(JSONLocation spawn){
         spectator.setPrefix("Spectator");
         spectator.setTeamColour(Color.SILVER);
+        spectator.setChatColor(NamedTextColor.GRAY);
         spectator.setSpawnLocations(new ArrayList<>(List.of(
             LocationTranscriber.TranscribeFromJSON(spawn)
         )));
+        spectator.setKit(new Kit(player -> player.getInventory().clear()));
         spectator.setGameMode(GameMode.SPECTATOR);
     }
     //<editor-fold defaultstate="collapsed" desc="Start conditions">
-    protected Map<Supplier<Boolean>, BaseComponent[]> startConditions =
+    protected Map<Supplier<Boolean>, Component> startConditions =
         new HashMap<>();
     public boolean canStart(Player player){
-        List<BaseComponent[]> errorMessage =
+        List<Component> errorMessage =
             startConditions.entrySet().stream()
                 .filter(condition -> !condition.getKey().get())
-                .map(Map.Entry::getValue).collect(Collectors.toList());
+                .map(Map.Entry::getValue).toList();
         if(errorMessage.isEmpty()) {
             return true;
         }
-        errorMessage.forEach(message -> sendBaseComponent(message, player));
+        errorMessage.forEach(player::sendMessage);
         return false;
     }
     protected abstract void initStartConditions();
@@ -111,6 +112,10 @@ public abstract class GamemodeRunner implements Listener {
     protected List<Runnable> startActions = new ArrayList<>();
     public void start(){
         PVPPlugin.addEventListener(eventListener);
+        Bukkit.getServer().getOnlinePlayers().forEach(player -> {
+            if(!players.contains(player))
+                spectator.getMembers().add(player);
+        } );
         startActions.forEach(Runnable::run);
         CountDown();
     }
@@ -121,12 +126,13 @@ public abstract class GamemodeRunner implements Listener {
             @Override
             public void run() {
                 if (countDownTimer == 0) {
-                    players.forEach(player -> player.sendMessage(ChatColor.GREEN + "Game starts!"));
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<green>Game starts!</green>"));
                     gameState = State.RUNNING;
                     this.cancel();
                     return;
                 }
-                players.forEach(player -> player.sendMessage(ChatColor.GREEN + "Game starts in " + countDownTimer));
+                PVPPlugin.getInstance().sendMessage(mm.deserialize("<green>Game starts in <cd></green>",
+                        Placeholder.parsed("cd", String.valueOf(countDownTimer))));
                 countDownTimer--;
             }
         }.runTaskTimer(PVPPlugin.getInstance(),0,20);
@@ -143,22 +149,28 @@ public abstract class GamemodeRunner implements Listener {
         PlayerQuitEvent.getHandlerList().unregister(eventListener);
         PlayerMoveEvent.getHandlerList().unregister(eventListener);
         PlayerDropItemEvent.getHandlerList().unregister(eventListener);
+        listeners.forEach(com.mcmiddleearth.pvpplugin.runners.listeners.GamemodeListener :: unregister);
         players.forEach(player -> {
             player.getInventory().clear();
             player.getActivePotionEffects().clear();
-            player.setGameMode(GameMode.SURVIVAL);
-            //player.teleport(pvpPlugin.getSpawn());
+            player.setGameMode(GameMode.ADVENTURE);
+            AttributeInstance maxHealth = player.getAttribute(MAX_HEALTH);
+            if(maxHealth != null)
+                player.setHealth(maxHealth.getDefaultValue());
+            player.teleport(player.getWorld().getSpawnLocation());
         });
         scoreboard.getObjectives().forEach(Objective::unregister);
         gameState = State.ENDED;
-        endActions.get(false).forEach(Runnable::run);
+        endActions.get(stopped).forEach(Runnable::run);
+        spectator.getMembers().forEach(spec -> {
+            spec.teleport(spec.getWorld().getSpawnLocation());
+            spec.setGameMode(GameMode.ADVENTURE);
+        });
         if(!stopped)
             spectator.getMembers().forEach(PlayerStatEditor::addSpectate);
-        Consumer<Player> message = player ->
-                sendBaseComponent(
-                        new ComponentBuilder(String.format("%s on %s has ended.", getGamemode(), mapName)).create(), player);
-        spectator.getMembers().forEach(message);
-        players.forEach(message);
+        PVPPlugin.getInstance().sendMessage(mm.deserialize("<aqua><gamemode> on <name> has ended.</aqua>",
+                Placeholder.parsed("gamemode", getGamemode()),
+                Placeholder.parsed("name", mapName)));
 
         Supplier<GamemodeRunner> nextGame = pvpPlugin.getGameQueue().poll();
         if(nextGame != null)
@@ -169,18 +181,17 @@ public abstract class GamemodeRunner implements Listener {
     protected abstract void initEndActions();
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Joining">
-    protected Map<Predicate<Player>, BaseComponent[]> joinConditions =
+    protected Map<Predicate<Player>, Component> joinConditions =
         new HashMap<>();
 
     public boolean canJoin(Player player){
-        List<BaseComponent[]> rejectedMessages =
+        List<Component> rejectedMessages =
             joinConditions.entrySet().stream()
             .filter(entry -> !entry.getKey().test(player))
-            .map(Map.Entry::getValue).collect(Collectors.toList());
+            .map(Map.Entry::getValue).toList();
         if(rejectedMessages.isEmpty())
             return true;
-        rejectedMessages.forEach(message -> sendBaseComponent(message,
-            player));
+        rejectedMessages.forEach(player::sendMessage);
         return false;
     }
 
@@ -192,6 +203,10 @@ public abstract class GamemodeRunner implements Listener {
         joinActions.forEach(joinAction -> joinAction.accept(player));
     }
 
+    public void joinSpectator(Player player){
+        player.setScoreboard(scoreboard);
+        TeamHandler.spawn(player,spectator);
+    }
     protected abstract void initJoinActions();
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Leave">
@@ -206,30 +221,35 @@ public abstract class GamemodeRunner implements Listener {
             return;
         Matchmaker.addMember(player, spectator);
         TeamHandler.spawn(player, spectator);
-        sendBaseComponent(new ComponentBuilder("You are now spectating.")
-            .color(Style.INFO).create(),
-            player);
+        player.sendMessage(mm.deserialize("<aqua>You are now spectating.</aqua>"));
     }
     protected abstract  void  initLeaveActions();
     //</editor-fold>
 
+    public Team getSpectators(){return spectator;}
     public String getMapName() {
         return mapName;
     }
 
-    public State getGameState() {return gameState;}
+    public Integer getMax(){
+        return maxPlayers;
+    }
+
+    public @NotNull State getGameState() {return gameState;}
 
     public abstract String getGamemode();
 
-    public abstract Boolean trySendMessage(Player player, String message);
-
-    public Boolean trySendSpectatorMessage(Player player, String message){
-        if(spectator.getMembers().contains(player)) {
-            PVPPlugin.getInstance().sendMessageTo(String.format("<gray>Spectator %s: %s</gray>", player.getDisplayName(), message), spectator.getMembers());
-            return true;
-        }
-        return false;
+    public TagResolver.Single getSpectatorPrefix(Player player){
+        return spectator.getMembers().contains(player) ? Placeholder.parsed("prefix", spectator.getPrefix()) : null;
     }
+
+    public TagResolver.Single getSpectatorColor(Player player){
+        return spectator.getMembers().contains(player) ? Placeholder.styling("color", spectator.getChatColor()) : null;
+    }
+    public Set<Player> getPlayers(){return players;}
+    public abstract TagResolver.Single getPlayerPrefix(Player player);
+    public abstract TagResolver.Single getPlayerColor(Player player);
+
     protected abstract class GamemodeListener implements Listener {
         HashMap<UUID, Long> playerAreaLeaveTimer = new HashMap<>();
         protected List<Consumer<PlayerDeathEvent>> onPlayerDeathActions =
@@ -268,7 +288,7 @@ public abstract class GamemodeRunner implements Listener {
             Player player = e.getPlayer();
             UUID uuid = player.getUniqueId();
 
-            if(gameState == State.QUEUED || to == null)
+            if(gameState == State.QUEUED)
                 return;
             if(gameState == State.COUNTDOWN &&
                     players.contains(e.getPlayer()) &&
@@ -280,12 +300,12 @@ public abstract class GamemodeRunner implements Listener {
             if(!region.contains(BlockVector3.at(to.getX(), to.getY(), to.getZ()))){
                 e.setCancelled(true);
                 if(!playerAreaLeaveTimer.containsKey(uuid)){
-                    player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
+                    player.sendMessage(mm.deserialize("<red>You aren't allowed to leave the map!</red>"));
                     playerAreaLeaveTimer.put(uuid, System.currentTimeMillis());
                     return;
                 }
                 if(System.currentTimeMillis() - playerAreaLeaveTimer.get(uuid) > 3000){
-                    player.sendMessage(ChatColor.RED + "You aren't allowed to leave the map!");
+                    player.sendMessage(mm.deserialize("<red>You aren't allowed to leave the map!</red>"));
                     playerAreaLeaveTimer.put(uuid, System.currentTimeMillis());
                 }
             }

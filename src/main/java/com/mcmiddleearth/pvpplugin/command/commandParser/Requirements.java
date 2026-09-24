@@ -10,7 +10,7 @@ import com.mcmiddleearth.pvpplugin.mapeditor.gamemodeeditor.abstractions.*;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
-import com.mcmiddleearth.pvpplugin.util.Permissions;
+import com.mcmiddleearth.pvpplugin.util.plugin.Permissions;
 import org.bukkit.entity.Player;
 
 public class Requirements {

@@ -1,20 +1,19 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
 import com.mcmiddleearth.pvpplugin.json.jsonData.jsonGamemodes.JSONFreeForAll;
 import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,13 +26,8 @@ import org.bukkit.inventory.PlayerInventory;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
     private final List<Location> spawns;
@@ -58,7 +52,6 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
         initJoinActions();
         initLeaveActions();
         initSpectator(map.getSpawn());
-        ChatUtils.AnnounceNewGame("Free for All", mapName, String.valueOf(maxPlayers));
     }
 
     @Override
@@ -105,9 +98,9 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
                 } else {
                     PlayerStatEditor.addLost(player);
                 }
-                sendBaseComponent(new ComponentBuilder(winningPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) + " has won!").create(),
-                        player);
             });
+            PVPPlugin.getInstance().sendMessage(mm.deserialize("<players> won!",
+                    Placeholder.parsed("players",winningPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")))));
         });
         endActions.get(false).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
         endActions.get(true).add(() -> PlayerRespawnEvent.getHandlerList().unregister(eventListener));
@@ -117,9 +110,7 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
     protected void initJoinConditions() {
         joinConditions.put(((player) ->
                     timeLimitSeconds >= 60),
-                new ComponentBuilder("The game is close to over, you cannot join.")
-                        .color(Style.INFO)
-                        .create());
+                mm.deserialize("<aqua>The game is close to over, you cannot join.</aqua>"));
     }
 
     @Override
@@ -129,14 +120,12 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
 
     private void JoinFreeForAll(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            sendBaseComponent(
-                    new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
-                    player);
+            player.sendMessage(mm.deserialize("<aqua>You joined the game.</aqua>"));
             return;
         }
         NamedTextColor color = FFAplayers.getOrDefault(player, GenerateNewPlayer(player)).getChatColor();
         KitOutPlayer(player);
-        player.setGameMode(GameMode.SURVIVAL);
+        player.setGameMode(GameMode.ADVENTURE);
         TeamHandler.spawn(player, spawns);
 
         PVPPlugin.getInstance().sendMessage(
@@ -162,27 +151,10 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
         playerInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
         playerInventory.setItem(0, new ItemStack(Material.IRON_SWORD));
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+        bow.addEnchantment(Enchantment.INFINITY, 1);
         playerInventory.setItem(1, bow);
         playerInventory.setItem(2, new ItemStack(Material.ARROW));
         playerInventory.forEach(KitEditor::setUnbreaking);
-    }
-
-    public Boolean trySendMessage(Player player, String message){
-        if(!players.contains(player))
-            return false;
-        PlayerTeam team = FFAplayers.get(player);
-        if(team != null){
-            PVPPlugin.getInstance().sendMessage(
-                    String.format("<%s>%s %s:</%s> %s",
-                            team.getChatColor(),
-                            team.getChatColor(),
-                            player.getDisplayName(),
-                            team.getChatColor(),
-                            message));
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -192,6 +164,19 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
     private void leave(Player player){
         if(players.size() <= 1)
             end(true);
+    }
+
+    @Override
+    public TagResolver.Single getPlayerPrefix(Player player){
+        return Placeholder.parsed("prefix", "");
+    }
+
+    @Override
+    public  TagResolver.Single getPlayerColor(Player player){
+        PlayerTeam team = FFAplayers.get(player);
+        if(team != null)
+            return Placeholder.styling("color", team.getChatColor());
+        return null;
     }
 
     @Override
@@ -231,6 +216,8 @@ public class FreeForAllRunner extends GamemodeRunner implements TimeLimit {
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             Player player = e.getPlayer();
+            if(gameState != State.RUNNING)
+                return;
             if(!players.contains(player))
                 return;
             TeamHandler.respawn(e, spawns);

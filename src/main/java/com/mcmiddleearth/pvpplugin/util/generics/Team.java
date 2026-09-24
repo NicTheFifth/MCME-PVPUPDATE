@@ -1,4 +1,4 @@
-package com.mcmiddleearth.pvpplugin.util;
+package com.mcmiddleearth.pvpplugin.util.generics;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Color;
@@ -31,8 +31,12 @@ public class Team {
     public void setTeamColour(final Color teamColour) {
         this.teamColour = teamColour;
     }
-    public NamedTextColor getChatColor(){return this.chatColor;}
-    public void setChatColor(NamedTextColor chatColor){this.chatColor = chatColor;}
+    public NamedTextColor getChatColor(){
+        return this.chatColor;
+    }
+    public void setChatColor(NamedTextColor chatColor){
+        this.chatColor = chatColor;
+    }
     public String getPrefix() {
         return this.Prefix;
     }

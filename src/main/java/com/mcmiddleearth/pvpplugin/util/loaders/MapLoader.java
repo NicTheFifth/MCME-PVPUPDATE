@@ -1,4 +1,4 @@
-package com.mcmiddleearth.pvpplugin.util;
+package com.mcmiddleearth.pvpplugin.util.loaders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;

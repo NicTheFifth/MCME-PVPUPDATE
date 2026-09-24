@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.mapeditor;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
@@ -14,10 +13,13 @@ import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.Region;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -30,22 +32,18 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class MapEditor {
 
     JSONMap map;
     GamemodeEditor gamemodeEditor;
+    MiniMessage mm = PVPPlugin.getInstance().getMiniMessage();
 
     public MapEditor(JSONMap map, Player player){
         this.map = map;
-        sendBaseComponent(
-            new ComponentBuilder(String.format("Map editor for %s created.",
-                    map.getTitle()))
-                .color(Style.INFO)
-                .create(),
-            player
-        );
+        player.sendMessage(mm.deserialize(
+                "Map editor for <title> created.",
+                Placeholder.parsed("title", map.getTitle())));
         sendStatus(player);
     }
 
@@ -58,136 +56,122 @@ public class MapEditor {
 
         try{
             Region r = session.getSelection(new BukkitWorld(source.getWorld()));
-            BaseComponent[] message;
+            Component message;
             if(r.getHeight() < 250){
-                message =
-                    new ComponentBuilder("Use //expand vert then try again!")
-                        .color(Style.ERROR)
-                        .create();
+                message = Component.text("Use //expand vert then try again!").style(net.kyori.adventure.text.format.Style.style(NamedTextColor.RED));
             }
             else{
                 List<BlockVector2> wePoints = r.polygonize(1000);
                 ArrayList<JSONLocation> bPoints = new ArrayList<>();
 
                 for(BlockVector2 point : wePoints){
-                    bPoints.add(new JSONLocation(new Location(source.getWorld(), point.getX(), 1, point.getZ())));
+                    bPoints.add(new JSONLocation(new Location(source.getWorld(), point.x(), 1, point.z())));
                 }
 
                 map.setRegionPoints(bPoints);
-                message =  new ComponentBuilder(String.format("Area set for " +
-                    "%s!", map.getTitle()))
-                        .color(Style.INFO)
-                        .create();
+                message = mm.deserialize(
+                        "<aqua>Area set for <title>!</aqua>",
+                        Placeholder.parsed("title", map.getTitle()));
             }
-            sendBaseComponent(message, source);
+            source.sendMessage(message);
         }
         catch(IncompleteRegionException e){
-            sendBaseComponent(
-                new ComponentBuilder("You don't have a region selected!")
-                    .color(Style.ERROR)
-                    .create(),
-                source);
+            source.sendMessage(mm.deserialize(
+                    "<red>You don't have a region selected!</red>"
+            ));
         }
     }
+
     public void setTitle(String newName, Player player) {
         String oldName = map.getTitle();
         PVPPlugin.getInstance().getMaps().remove(oldName);
         File f = new File(PVPPlugin.getInstance().getMapDirectory() +
                 FileSystems.getDefault().getSeparator() +
-                oldName);
+                oldName + ".json");
         map.setTitle(newName);
         PVPPlugin.getInstance().getMaps().put(newName, map);
         try {
-            f.delete();
-            sendBaseComponent(
-                new ComponentBuilder(String.format("%s has been renamed to %s.",
-                    oldName, newName))
-                    .color(Style.INFO)
-                    .create(),
-                player);
+            if(!f.delete())
+                PVPPlugin.getInstance().getLogger().warning("File " + oldName + ".json has not been deleted!");
+            player.sendMessage(mm.deserialize(
+                    "<aqua><old_name> has been renamed to <new_name>.</aqua>",
+                    Placeholder.parsed("old_name", oldName),
+                    Placeholder.parsed("new_name", newName)
+            ));
         }
         catch(SecurityException e){
-            sendBaseComponent(
-                new ComponentBuilder(String.format("%s couldn't be deleted.",
-                    oldName))
-                    .color(Style.ERROR)
-                    .create(),
-                player);
+            player.sendMessage(mm.deserialize(
+                    "<red><old_name> couldn't be deleted.</red>",
+                    Placeholder.parsed("old_name", oldName)
+            ));
             Logger.getLogger("PVPPlugin").log(Level.WARNING,
                 String.format("%s couldn't be deleted.", oldName));
         }
     }
+
     public void setSpawn(Player player) {
         Location location = player.getLocation();
         map.setSpawn(new JSONLocation(location));
-        BaseComponent[] message = new ComponentBuilder(String.format("Spawn " +
-                "location set for" +
-                " %s",
-            map.getTitle()))
-            .color(Style.INFO)
-            .create();
-        sendBaseComponent(message, player);
+        player.sendMessage(mm.deserialize("<aqua>Spawn location set for <title>!</aqua>",
+                Placeholder.parsed("title", map.getTitle())));
     }
+
     public void setRP(String rpName, Player player) {
         map.setResourcePack(rpName);
-        sendBaseComponent(
-            new ComponentBuilder(String.format("%s has been set as the " +
-                "resource pack on %s", rpName, map.getTitle()))
-                .color(Style.INFO)
-                .create(),
-            player);
+        player.sendMessage(mm.deserialize("<aqua><rp> has been set as the resource pack for <title>!</aqua>",
+                Placeholder.parsed("title", map.getTitle()),
+                Placeholder.parsed("rp", rpName)));
     }
     //</editor-fold>
 
     public void sendStatus(Player player){
-        BaseComponent[] message =
-            new ComponentBuilder(String.format("Map name: %s", map.getTitle()))
-                .color(Style.INFO)
-                .append(String.format("\nResource pack: %s", map.getResourcePack()))
-                .color(Style.INFO)
-                .append("\nGamemodes:")
-                .color(Style.INFO)
-                .append(String.format("\n  Capture The Flag: %b",
-                    map.getJSONCaptureTheFlag() != null))
-                .color(Style.INFO)
-                .append(String.format("\n  Death Run: %b",
-                    map.getJSONDeathRun() != null))
-                .color(Style.INFO)
-                .append(String.format("\n  Free for All: %b",
-                    map.getJSONFreeForAll() != null))
-                .color(Style.INFO)
-                .append(String.format("\n  Infected: %b",
-                    map.getJSONInfected() != null))
-                .color(Style.INFO)
-                .append(String.format("\n  One in the Quiver: %b",
-                    map.getJSONOneInTheQuiver() != null))
-                .color(Style.INFO)
-                .append(String.format("\n  Ringbearer: %b",
-                    map.getJSONRingBearer() != null))
-                .color(Style.INFO)
-                .append(String.format("\n  Team Conquest: %b",
-                    map.getJSONTeamConquest() != null))
-                .color(Style.INFO)
-                .append(String.format("\n  Team Deathmatch: %b",
-                    map.getJSONTeamDeathMatch() != null))
-                .color(Style.INFO)
-                .append(String.format("\n  Team Slayer: %b",
-                    map.getJSONTeamSlayer() != null))
-                .color(Style.INFO).create();
-        sendBaseComponent(message, player);
+        player.sendMessage(mm.deserialize(
+                """
+                        <aqua>Map name: <title>
+                        Resource pack: <rp>
+                        Spawn set: <spawn>
+                        Area set: <region>
+                        Gamemodes:
+                          Capture The Flag: <ctf>
+                          Death Run: <dr>
+                          Free for All: <ffa>
+                          Infected: <in>
+                          One in the Quiver: <oitq>
+                          Ringbearer: <rb>
+                          Team Conquest: <tc>
+                          Team Deathmatch: <tdm>
+                          Team Slayer: <ts></aqua>""",
+                Placeholder.parsed("title", map.getTitle()),
+                Placeholder.parsed("rp", map.getResourcePack()==null ? "not set" : map.getResourcePack()),
+                Placeholder.parsed("region", String.valueOf(map.getRegionPoints() != null)),
+                Placeholder.parsed("spawn", String.valueOf(map.getSpawn() != null)),
+                Placeholder.parsed("ctf", String.valueOf(map.getJSONCaptureTheFlag() != null)),
+                Placeholder.parsed("dr", String.valueOf(map.getJSONDeathRun() != null)),
+                Placeholder.parsed("ffa", String.valueOf(map.getJSONFreeForAll() != null)),
+                Placeholder.parsed("in", String.valueOf(map.getJSONInfected() != null)),
+                Placeholder.parsed("oitq", String.valueOf(map.getJSONOneInTheQuiver() != null)),
+                Placeholder.parsed("rb", String.valueOf(map.getJSONRingBearer() != null)),
+                Placeholder.parsed("tc", String.valueOf(map.getJSONTeamConquest() != null)),
+                Placeholder.parsed("tdm", String.valueOf(map.getJSONTeamDeathMatch() != null)),
+                Placeholder.parsed("ts", String.valueOf(map.getJSONTeamSlayer() != null))
+                ));
     }
+
     public JSONMap getMap() {
         return map;
     }
+
     public void setMap(String mapName, Player player){
         map = PVPPlugin.getInstance().getMaps().get(mapName);
         gamemodeEditor = null;
-        sendBaseComponent(new ComponentBuilder(String.format("Selected %s",
-            mapName)).color(Style.INFO).create(), player);
+        player.sendMessage(mm.deserialize("<aqua>Selected <title>!</aqua>",
+                Placeholder.parsed("title", map.getTitle())));
     }
+
     public GamemodeEditor getGamemodeEditor(){
         return gamemodeEditor;
     }
+
     public void setGamemodeEditor(String gamemode, Player player){
         switch(gamemode){
             case Gamemodes.CAPTURETHEFLAG:
@@ -218,43 +202,50 @@ public class MapEditor {
                 gamemodeEditor = new TeamSlayerEditor(map);
                 break;
         }
-        sendBaseComponent(
-            new ComponentBuilder(String.format("Set the gamemode to %s.\n " +
-                "Current state of the gamemode is:", gamemode))
-                .color(Style.INFO)
-                .create(),
-            player);
+        player.sendMessage(mm.deserialize("<aqua>Set the gamemode to <gamemode>!</aqua>",
+                Placeholder.parsed("gamemode", gamemode)));
         gamemodeEditor.sendStatus(player);
     }
+
     public void showSpawns(Player player) {
-        SpawnMarker(map.getSpawn(), "Map spawn");
+        try {
+            SpawnMarker(map.getSpawn(), "Map spawn");
+        } catch (NullPointerException e){
+            //TODO: Fix messaging
+            player.sendMessage("Something went wrong!");
+        }
         if(gamemodeEditor != null)
             gamemodeEditor.ShowPoints(player);
     }
+
     public static void hideSpawns(Player player, boolean toMessage) {
         ArmorStand toDelete;
-        for(Entity marker : Bukkit.getWorld("world").getEntities())
+        World world = Bukkit.getWorld("world");
+        if(world == null) {
+            PVPPlugin.getInstance().getLogger().severe("Couldn't load world, error in MapEditor, line 218!");
+            player.sendMessage("Something went wrong, please send in dev-public" +
+                    "\"I tried to hide spawns, but it threw an error\"");
+            return;
+        }
+        for(Entity marker : world.getEntities())
             if(marker.getType() == EntityType.ARMOR_STAND){
                 toDelete = (ArmorStand) marker;
                 if(toDelete.isMarker())
                     toDelete.remove();
             }
         if(toMessage)
-            sendBaseComponent(
-                new ComponentBuilder("Spawns hidden.")
-                    .color(Style.INFO)
-                    .create(),
-                player);
+            player.sendMessage(PVPPlugin.getInstance().getMiniMessage().deserialize("<aqua>Spawns hidden.</aqua>"));
     }
 
     public static void SpawnMarker(JSONLocation loc, String name){
+        //TODO: add null check
         ArmorStand marker =
             (ArmorStand) Bukkit.getWorld(loc.getWorld()).spawnEntity(
                 LocationTranscriber.TranscribeFromJSON(loc)
                     .add(0, 1, 0),
                 EntityType.ARMOR_STAND);
         marker.setGravity(false);
-        marker.setCustomName(name);
+        marker.customName(PVPPlugin.getInstance().getMiniMessage().deserialize(name));
         marker.setCustomNameVisible(true);
         marker.setGlowing(true);
         marker.setMarker(true);

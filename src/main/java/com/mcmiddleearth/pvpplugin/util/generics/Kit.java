@@ -1,9 +1,8 @@
-package com.mcmiddleearth.pvpplugin.util;
+package com.mcmiddleearth.pvpplugin.util.generics;
 
 import org.bukkit.entity.Player;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Kit {
     private Consumer<Player> inventory;

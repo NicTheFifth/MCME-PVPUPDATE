@@ -1,7 +1,6 @@
 package com.mcmiddleearth.pvpplugin.command.argumentTypes;
 
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.ScoreGoal;
-import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -9,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class ScoreGoalArgument implements ArgumentType<Integer> {
@@ -34,6 +34,8 @@ public class ScoreGoalArgument implements ArgumentType<Integer> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        if(Objects.equals(builder.getRemaining(), ""))
+            builder.suggest("Score goal argument (int)");
         return innerArgument.listSuggestions(context, builder);
     }
 }

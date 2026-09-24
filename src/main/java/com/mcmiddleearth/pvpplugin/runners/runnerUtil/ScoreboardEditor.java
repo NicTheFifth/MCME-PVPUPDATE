@@ -9,7 +9,7 @@ import com.mcmiddleearth.pvpplugin.runners.gamemodes.FreeForAllRunner;
 
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.*;
 
-import com.mcmiddleearth.pvpplugin.util.Team;
+import com.mcmiddleearth.pvpplugin.util.generics.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Criteria;

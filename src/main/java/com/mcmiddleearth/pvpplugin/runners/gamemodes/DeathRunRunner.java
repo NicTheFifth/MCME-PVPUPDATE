@@ -1,6 +1,5 @@
 package com.mcmiddleearth.pvpplugin.runners.gamemodes;
 
-import com.mcmiddleearth.command.Style;
 import com.mcmiddleearth.pvpplugin.PVPPlugin;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONLocation;
 import com.mcmiddleearth.pvpplugin.json.jsonData.JSONMap;
@@ -9,28 +8,29 @@ import com.mcmiddleearth.pvpplugin.json.transcribers.AreaTranscriber;
 import com.mcmiddleearth.pvpplugin.json.transcribers.LocationTranscriber;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.GamemodeRunner;
 import com.mcmiddleearth.pvpplugin.runners.gamemodes.abstractions.TimeLimit;
-import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ChatUtils;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.KitEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.ScoreboardEditor;
 import com.mcmiddleearth.pvpplugin.runners.runnerUtil.TeamHandler;
 import com.mcmiddleearth.pvpplugin.statics.Gamemodes;
-import com.mcmiddleearth.pvpplugin.util.Kit;
+import com.mcmiddleearth.pvpplugin.util.generics.Kit;
 import com.mcmiddleearth.pvpplugin.util.Matchmaker;
 import com.mcmiddleearth.pvpplugin.util.PlayerStatEditor;
-import com.mcmiddleearth.pvpplugin.util.Team;
+import com.mcmiddleearth.pvpplugin.util.generics.Team;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -45,8 +45,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import static com.mcmiddleearth.pvpplugin.command.CommandUtil.sendBaseComponent;
 
 public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
     int timeLimit;
@@ -76,7 +74,6 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         initJoinConditions();
         initJoinActions();
         initLeaveActions();
-        ChatUtils.AnnounceNewGame("Death Run", mapName, String.valueOf(maxPlayers));
     }
     public void initGoal(){
         goal.getBlock().setType(Material.BEACON);
@@ -91,7 +88,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         runner.setPrefix("Runner");
         runner.setTeamColour(Color.BLUE);
         runner.setChatColor(NamedTextColor.BLUE);
-        runner.setGameMode(GameMode.SURVIVAL);
+        runner.setGameMode(GameMode.ADVENTURE);
         runner.setKit(new Kit(player -> {
             PlayerInventory returnInventory = player.getInventory();
             returnInventory.clear();}));
@@ -102,7 +99,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         death.setPrefix("Death");
         death.setTeamColour(Color.BLACK);
         death.setChatColor(NamedTextColor.BLACK);
-        death.setGameMode(GameMode.SURVIVAL);
+        death.setGameMode(GameMode.ADVENTURE);
         death.setKit(DeathKit());
         death.setSpawnLocations(List.of(LocationTranscriber.TranscribeFromJSON(deathSpawn)));
     }
@@ -113,7 +110,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
             returnInventory.clear();
             returnInventory.setHelmet(new ItemStack(Material.WITHER_SKELETON_SKULL));
             ItemStack bow = new ItemStack(Material.BOW);
-            bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+            bow.addEnchantment(Enchantment.INFINITY, 1);
             returnInventory.setItem(1, bow);
             returnInventory.setItem(2, new ItemStack(Material.ARROW));
             returnInventory.forEach(KitEditor::setUnbreaking);
@@ -126,13 +123,9 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         Supplier<Integer> totalInTeams = () ->
                 death.getOnlineMembers().size() + runner.getOnlineMembers().size();
         startConditions.put(() -> totalInTeams.get() != players.size() || !runner.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, runner has to have at least " +
-                        "one online player.")
-                        .color(Style.ERROR).create());
+                mm.deserialize("<red>Can't start, runner has to have at least one online player.</red>"));
         startConditions.put(() -> totalInTeams.get() != players.size() ||!death.getOnlineMembers().isEmpty(),
-                new ComponentBuilder("Can't start, death has to have at least" +
-                        " one online player.")
-                        .color(Style.ERROR).create());
+                mm.deserialize("<red>Can't start, death has to have at least one online player.</red>"));
     }
 
     @Override
@@ -182,34 +175,31 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
                 if(runner.getFinished().isEmpty()) {
                     death.getMembers().forEach(PlayerStatEditor::addWon);
                     runner.getMembers().forEach(PlayerStatEditor::addLost);
-                    players.forEach(player ->
-                            sendBaseComponent(
-                                    new ComponentBuilder("Death Won!!!")
-                                            .create(), player));
-                    spectator.getMembers().forEach(player ->
-                            sendBaseComponent(
-                                    new ComponentBuilder("Death Won!!!")
-                                            .create(), player));
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<color><prefix> won!!!</color>",
+                            Placeholder.styling("color", death.getChatColor()),
+                            Placeholder.parsed("prefix", death.getPrefix())));
                 } else{
                     runner.getFinished().forEach(PlayerStatEditor::addWon);
                     runner.getDeadMembers().forEach(PlayerStatEditor::addLost);
                     death.getMembers().forEach(PlayerStatEditor::addLost);
-                    Consumer<Player> message = player -> sendBaseComponent(
-                            new ComponentBuilder(
-                                    String.format("%s has won!",
-                                            runner.getFinished().stream().map(Player::getName).collect(Collectors.joining(", ")))).create(),
-                            player);
-                    players.forEach(message);
-                    spectator.getMembers().forEach(message);
+                    PVPPlugin.getInstance().sendMessage(mm.deserialize("<color><names> won!!!</color>",
+                            Placeholder.styling("color", death.getChatColor()),
+                            Placeholder.parsed("names",
+                                    runner.getFinished().stream().map(Player::getName).collect(
+                                            Collectors.joining(", ")))));
                 }});
         endActions.get(false).add(() -> {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            PlayerMoveEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
             goal.getBlock().setType(Material.AIR);
         });
         endActions.get(true).add(() -> {
             PlayerRespawnEvent.getHandlerList().unregister(eventListener);
+            PlayerMoveEvent.getHandlerList().unregister(eventListener);
             PlayerInteractEvent.getHandlerList().unregister(eventListener);
+            EntityDamageByEntityEvent.getHandlerList().unregister(eventListener);
             goal.getBlock().setType(Material.AIR);
         });
     }
@@ -218,9 +208,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
     protected void initJoinConditions() {
         joinConditions.put((player ->
                         gameState == State.QUEUED || timeLimit <= 60),
-                new ComponentBuilder("The game is close to over, you cannot join.")
-                        .color(Style.INFO)
-                        .create());
+                mm.deserialize("<red>The game is close to over, you cannot join.</red>"));
     }
 
     @Override
@@ -230,51 +218,36 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
 
     private void JoinDeathRun(Player player, boolean onStart){
         if(!onStart && gameState == State.QUEUED) {
-            sendBaseComponent(
-                    new ComponentBuilder("You joined the game.").color(Style.INFO).create(),
-                    player);
+            player.sendMessage(mm.deserialize("<aqua>You joined the game.</aqua>"));
             return;
         }
         if(death.getMembers().contains(player)){
             death.getOnlineMembers().add(player);
             Matchmaker.addMember(player, death);
             TeamHandler.spawn(player, death);
-            BaseComponent[] publicJoinMessage = new ComponentBuilder(
-                    String.format("%s has joined the deaths!", player.getName())).create();
-            players.forEach(playerOther ->
-                    sendBaseComponent(publicJoinMessage, playerOther));
-            spectator.getMembers().forEach(spectator ->
-                    sendBaseComponent(publicJoinMessage, spectator));
+            PVPPlugin.getInstance().sendMessage(mm.deserialize(
+                    "<name> has joined the deaths!",
+                    Placeholder.parsed("name", player.getName())
+            ));
             return;
         }
         runner.getOnlineMembers().add(player);
         Matchmaker.addMember(player, runner);
         if(runner.getDeadMembers().contains(player)) {
             TeamHandler.spawn(player, spectator);
-            sendBaseComponent(
-                    new ComponentBuilder("You've joined the runners, but were already dead.")
-                            .color(Style.INFO)
-                            .create(),
-                    player);
+            player.sendMessage(mm.deserialize("<aqua>You've joined the runners, but were already dead.</aqua>"));
             return;
         }
         if(runner.getFinished().contains(player)) {
             TeamHandler.spawn(player, spectator);
-            sendBaseComponent(
-                    new ComponentBuilder("You've joined the runners, but had already finished.")
-                            .color(Style.INFO)
-                            .create(),
-                    player);
+            player.sendMessage(mm.deserialize("<aqua>You've joined the runners, but had already finished.</aqua>"));
             return;
         }
         TeamHandler.spawn(player, runner);
-        BaseComponent[] publicJoinMessage = new ComponentBuilder(
-                String.format("%s has joined the runners!", player.getName())).create();
-        players.forEach(playerOther ->
-                sendBaseComponent(publicJoinMessage, playerOther));
-        spectator.getMembers().forEach(spectator ->
-                sendBaseComponent(publicJoinMessage, spectator));
-
+        PVPPlugin.getInstance().sendMessage(mm.deserialize(
+                "<name> has joined the runners!",
+                Placeholder.parsed("name", player.getName())
+        ));
     }
 
     @Override
@@ -283,18 +256,13 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
     }
 
     public void LeaveDeathRun(Player player){
-        Consumer<Player> leaveMessage = playerOther ->sendBaseComponent(
-                new ComponentBuilder(String.format("%s has left the game.",
-                        player.getName())).create(),
-                playerOther
-        );
         if (death.getMembers().contains(player)) {
             death.getOnlineMembers().remove(player);
         } else {
             runner.getOnlineMembers().remove(player);
         }
-        players.forEach(leaveMessage);
-        spectator.getMembers().forEach(leaveMessage);
+        PVPPlugin.getInstance().sendMessage(mm.deserialize("<name> has left the game.",
+                Placeholder.parsed("name", player.getName())));
         if(death.getOnlineMembers().isEmpty())
             end(true);
         if(runner.getOnlineMembers().isEmpty())
@@ -302,50 +270,40 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
     }
 
     @Override
-    public Boolean trySendSpectatorMessage(Player player, String message){
-        return trySendMessage(player, message);
+    public TagResolver.Single getSpectatorPrefix(Player player){
+        if(runner.getDeadMembers().contains(player))
+            return Placeholder.parsed("prefix", "Dead Runner");
+        if(runner.finished.contains(player))
+            return Placeholder.parsed("prefix", "Finished Runner");
+        if(spectator.getMembers().contains(player))
+            return Placeholder.parsed("prefix", spectator.getPrefix());
+        return null;
     }
 
-    public Boolean trySendMessage(Player player, String message){
-        if(!players.contains(player))
-            return false;
+    @Override
+    public TagResolver.Single getSpectatorColor(Player player){
+        return spectator.getMembers().contains(player) ||
+                runner.getDeadMembers().contains(player) ||
+                runner.finished.contains(player)
+                ? Placeholder.styling("color", spectator.getChatColor()) : null;
+    }
 
-        Set<Player> deads = new HashSet<>(runner.getDeadMembers());
-        deads.addAll(spectator.getMembers());
-        deads.addAll(runner.finished);
-        String prefix = null;
-        if(runner.getDeadMembers().contains(player)){
-            prefix = "Dead Runner";
-        }
-        if(runner.finished.contains(player))
-            prefix = "Finished Runner";
-        if(spectator.getMembers().contains(player))
-            prefix = "Spectator";
-        if(prefix != null){
-            PVPPlugin.getInstance().sendMessageTo(
-                    String.format("<gray>%s %s:</gray> %s",
-                            prefix,
-                            player.getDisplayName(),
-                            message),
-                    deads);
-            return true;
-        }
-        Team team = null;
+    @Override
+    public TagResolver.Single getPlayerPrefix(Player player){
         if(death.getMembers().contains(player))
-            team = death;
+            return Placeholder.parsed("prefix", death.getPrefix());
         if(runner.getMembers().contains(player))
-            team = runner;
-        if(team == null)
-            return false;
+            return Placeholder.parsed("prefix", runner.getPrefix());
+        return null;
+    }
 
-        PVPPlugin.getInstance().sendMessage(
-                String.format("<%s>%s %s:</%s> %s",
-                        team.getChatColor(),
-                        team.getPrefix(),
-                        player.getDisplayName(),
-                        team.getChatColor(),
-                        message));
-        return true;
+    @Override
+    public TagResolver.Single getPlayerColor(Player player){
+        if(death.getMembers().contains(player))
+            return Placeholder.styling("color", death.getChatColor());
+        if(runner.getMembers().contains(player))
+            return Placeholder.styling("color", runner.getChatColor());
+        return null;
     }
 
     @Override
@@ -386,6 +344,8 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         @EventHandler
         public void onPlayerRespawn(PlayerRespawnEvent e){
             Player player = e.getPlayer();
+            if(gameState != State.RUNNING)
+                return;
             if(death.getMembers().contains(player))
                 TeamHandler.respawn(e, death);
             else
@@ -399,7 +359,7 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
                 return;
             if(spectator.getMembers().contains(player))
                 return;
-            if(e.getTo() != null && e.getTo().getBlockY() <=killHeight)
+            if(e.getTo().getBlockY() <=killHeight)
                 player.setHealth(0);
 
         }
@@ -407,15 +367,14 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
         @EventHandler
         public void onPlayerInteract(PlayerInteractEvent e){
             Player player = e.getPlayer();
-            if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
                 return;
-            }
-            if(gameState != State.RUNNING ) {
+            if(gameState != State.RUNNING)
                 return;
-            }
-            if(!players.contains(player)) {
+            if(!players.contains(player))
                 return;
-            }
+            if(e.getClickedBlock() == null)
+                return;
             if(e.getClickedBlock().getType() != Material.BEACON)
                 return;
             Block possibleGoal = e.getClickedBlock();
@@ -429,6 +388,22 @@ public class DeathRunRunner extends GamemodeRunner implements TimeLimit {
             if(runner.getOnlineMembers().isEmpty())
                 end(false);
             e.setUseInteractedBlock(Event.Result.DENY);
+        }
+
+        @EventHandler
+        public void onPlayerDamage(EntityDamageByEntityEvent e){
+            if(!(e.getEntity() instanceof Player player))
+                return;
+            Player damager = null;
+            if(e.getDamager() instanceof Player hitter)
+                damager = hitter;
+            if(e.getDamager() instanceof Arrow arrow && arrow.getShooter() instanceof Player shooter)
+                damager = shooter;
+            if(damager == null)
+                return;
+            if((death.getMembers().contains(player) && death.getMembers().contains(damager)) ||
+                    (runner.getMembers().contains(player) && runner.getMembers().contains(damager)))
+                e.setCancelled(true);
         }
     }
 

@@ -3,6 +3,7 @@ main: com.mcmiddleearth.pvpplugin.PVPPlugin
 version: ${project.version}
 authors: [NicoviçTheSixth,Johnyeric]
 depend: [WorldEdit]
+softdepend: ["PlaceholderAPI"]
 api-version: 1.19
 
 commands:
