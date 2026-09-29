@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <jackson.version>2.18.9</jackson.version>
+        <jackson.version>2.18.10</jackson.version>
         <bungeecord.version>1.21-R0.1-SNAPSHOT</bungeecord.version>
         <paper.version>1.21.4-R0.1-SNAPSHOT</paper.version>
         <worldedit.version>7.3.10</worldedit.version>
